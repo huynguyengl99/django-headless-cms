@@ -1,0 +1,4 @@
+-e .[extra]
+-r requirements-tests.txt
+-r docs/requirements.txt
+pre-commit >=3.4.0,<4.0.0

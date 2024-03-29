@@ -1,0 +1,6 @@
+-e .[extra]
+pytest
+coverage[toml]
+ruff
+black
+toml-sort
