@@ -1,0 +1,31 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n %}
+
+{% block object-tools %}
+    {{ block.super }}
+    {% if published_state %}
+        <div style="flex-basis: 100%">Item <b>{{ published_state }}</b>.</div>
+    {% endif %}
+{% endblock %}
+
+{% block field_sets %}
+    {% if published_state %}
+        <div class="submit-row">
+            {% if show_publish %}
+                <input class="default" type="submit" value="{% translate 'Publish' %}" name="_publish">{% endif %}
+            {% if show_unpublish %}<input style="background-color: var(--delete-button-bg)" type="submit"
+                                          value="{% translate 'Unpublish' %}" name="_unpublish">{% endif %}
+        </div>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}
+
+{% block after_related_objects %}
+    {{ block.super }}
+    {% if show_translate %}
+        <div class="submit-row">
+            <input class="default" type="submit" value="{% translate 'Translate missing' %}" name="_translate">
+            <input class="default" type="submit" value="{% translate 'Force re-translate' %}" name="_force_translate">
+        </div>
+    {% endif %}
+{% endblock %}

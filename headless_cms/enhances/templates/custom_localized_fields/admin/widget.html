@@ -1,0 +1,18 @@
+{% with widget_id=widget.attrs.id %}
+<div class="localized-fields-widget" role="tabs" data-synctabs="translation">
+    <ul class="localized-fields-widget tabs">
+    {% for widget in widget.subwidgets %}
+        <li class="localized-fields-widget tab">
+            <label for="{{ widget_id }}_{{ widget.lang_code }}">{{ widget.lang_name|capfirst }}</label>
+        </li>
+    {% endfor %}
+    </ul>
+{% for widget in widget.subwidgets %}
+    <div class="localized-panel" role="tabpanel" id="{{ widget_id }}_{{ widget.lang_code }}">
+        {% autoescape off %}
+            {{ widget.martor }}
+        {% endautoescape %}
+    </div>
+{% endfor %}
+</div>
+{% endwith %}

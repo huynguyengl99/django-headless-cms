@@ -37,6 +37,7 @@ dependencies = [
   "django-reversion",
   "django-solo",
   "djangorestframework>=3",
+  "drf_spectacular",
   "martor"
 ]
 description = "A simple django-based headless CMS."
