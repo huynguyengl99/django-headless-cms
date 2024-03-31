@@ -1,0 +1,12 @@
+services:
+  db_pg:
+    image: postgres:15
+    volumes:
+      - "dbdata:/var/lib/postgresql/data"
+    env_file:
+      - .env.test
+    ports:
+      - "5454:5432"
+
+volumes:
+  dbdata:

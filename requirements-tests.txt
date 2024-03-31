@@ -4,3 +4,4 @@ coverage[toml]
 ruff
 black
 toml-sort
+django-environ

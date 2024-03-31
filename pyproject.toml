@@ -38,7 +38,8 @@ dependencies = [
   "django-solo",
   "djangorestframework>=3",
   "drf_spectacular",
-  "martor"
+  "martor",
+  "psycopg"
 ]
 description = "A simple django-based headless CMS."
 dynamic = ["version"]
@@ -86,7 +87,7 @@ packages = ["headless_cms"]
 path = "headless_cms/__init__.py"
 
 [tool.ruff]
-src = ["headless_cms"]
+src = ["headless_cms", 'tests']
 
 [tool.ruff.lint]
 ignore = [
@@ -107,7 +108,8 @@ select = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/*" = ["PLR2004"]
+"tests/*" = ["PLR0913", "PLR2004"]
+"tests/test_utils/base.py" = ["N802"]
 
 [tool.tomlsort]
 all = true
