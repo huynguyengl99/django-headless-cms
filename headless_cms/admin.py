@@ -37,17 +37,7 @@ class PublishStatusInlineMixin:
 @admin.action(description="Publish selected")
 def publish(modeladmin, request, queryset):
     for obj in queryset.all():
-        with reversion.create_revision():
-            reversion.set_comment("Publish")
-            reversion.set_user(request.user)
-
-            obj.save()
-
-        with reversion.create_revision(manage_manually=True):
-            last_ver = Version.objects.get_for_object(obj).first()
-
-            obj.published_version = last_ver
-            obj.save()
+        obj.publish(request.user)
 
 
 class EnhancedLocalizedVersionAdmin(LocalizedFieldsAdminMixin, VersionAdmin):

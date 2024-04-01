@@ -1,5 +1,6 @@
 from functools import cached_property
 
+import reversion
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -9,11 +10,6 @@ from reversion.models import Version
 
 
 class PublishedQuerySet(models.QuerySet):
-    def serialize(self):
-        return [p.published_version.field_dict for p in self.all()]
-
-    serialize.queryset_only = True
-
     @cached_property
     def prefetch_related_list(self):
         prefetch_list = set()
@@ -47,6 +43,11 @@ class PublishedManager(models.Manager):
 
 
 class PublicationModel(models.Model):
+    class AdminPublishedStateHtml:
+        UNPUBLISHED = '<div style="color:red;">unpublished<div>'
+        PUBLISHED_OUTDATED = '<div style="color:orange;">published (outdated)<div>'
+        PUBLISHED_LATEST = '<div style="color:blue;">published (latest)<div>'
+
     published_version = models.ForeignKey(
         Version, editable=False, null=True, on_delete=models.SET_NULL
     )
@@ -63,15 +64,29 @@ class PublicationModel(models.Model):
         if self.published_version_id:
             return self.published_version.field_dict
 
+    def publish(self, user=None):
+        with reversion.create_revision():
+            reversion.set_comment("Publish")
+            if user:
+                reversion.set_user(user)
+
+            self.save()
+
+        with reversion.create_revision(manage_manually=True):
+            last_ver = Version.objects.get_for_object(self).first()
+
+            self.published_version = last_ver
+            self.save()
+
     @admin.display
     def published_state(self):
-        state = '<div style="color:red;">unpublished<div>'
-        if self.published_version:
+        state = self.AdminPublishedStateHtml.UNPUBLISHED
+        if self.published_version_id:
             last_ver = Version.objects.get_for_object(self).first()
-            if last_ver.id == self.published_version.id:
-                state = '<div style="color:blue;">published (latest)<div>'
+            if last_ver.id == self.published_version_id:
+                state = self.AdminPublishedStateHtml.PUBLISHED_LATEST
             else:
-                state = '<div style="color:orange;">published (outdated)<div>'
+                state = self.AdminPublishedStateHtml.PUBLISHED_OUTDATED
 
         return format_html(state)
 

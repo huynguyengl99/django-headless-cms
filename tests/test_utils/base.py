@@ -109,7 +109,7 @@ class TestModelParentMixin(TestModelMixin):
 
     def setUp(self):
         super().setUp()
-        reversion.register(Comment, follow=("testmodel_ptr",))
+        reversion.register(Comment)
 
 
 @override_settings(PASSWORD_HASHERS=["django.contrib.auth.hashers.MD5PasswordHasher"])
