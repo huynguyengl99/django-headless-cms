@@ -1,7 +1,10 @@
 -e .[extra]
-pytest
-coverage[toml]
-ruff
 black
-toml-sort
+coverage[toml]
 django-environ
+factory-boy
+pytest
+pytest-cov
+pytest-django
+ruff
+toml-sort

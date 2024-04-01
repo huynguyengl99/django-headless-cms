@@ -26,11 +26,14 @@ some/directory/django-headless-cms/.venv/bin/pip
 ```
 
 ## Validate the changes before creating a pull request
+0. Prepare for test:
+- Docker running
+- Run `docker-compose up` to create testing postgresql database.
 
 1. Make sure the existing tests are still passing (and consider adding new tests as well!):
 
 ```bash
-pytest tests/
+pytest --cov-report term-missing --cov=headless_cms tests
 ```
 
 2. Reformat and validate the code with the following tools:
