@@ -33,38 +33,58 @@ jobs:
       - name: Lint
         run: bash scripts/lint.sh
 
-#  test:
-#    runs-on: ubuntu-latest
-#    strategy:
-#      matrix:
-#        python-version: ["3.9", "3.10", "3.11"]
-#      fail-fast: false
-#    steps:
-#      - name: Dump GitHub context
-#        env:
-#          GITHUB_CONTEXT: ${{ toJson(github) }}
-#        run: echo "$GITHUB_CONTEXT"
-#      - uses: actions/checkout@v3
-#      - name: Set up Python
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#      - uses: actions/cache@v3
-#        id: cache
-#        with:
-#          path: ${{ env.pythonLocation }}
-#          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-tests.txt') }}-test
-#      - name: Install Dependencies
-#        if: steps.cache.outputs.cache-hit != 'true'
-#        run: pip install -r requirements-tests.txt
-#      - run: mkdir coverage
-#      - name: Test
-#        run: coverage run -m pytest tests
-#        env:
-#          COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
-#          CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}
-#      - name: Store coverage files
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: coverage
-#          path: coverage
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11"]
+      fail-fast: false
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: cms_test_pass
+          POSTGRES_DB: cms_test_db
+          POSTGRES_USER: cms_test_user
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      POSTGRES_DB: cms_test_db
+      POSTGRES_USER: cms_test_user
+      POSTGRES_PASSWORD: cms_test_pass
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: 5432
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - uses: actions/cache@v3
+        id: cache
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-tests.txt') }}-test
+      - name: Install Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install -r requirements-tests.txt
+      - run: mkdir coverage
+      - name: Test
+        run: coverage run -m pytest tests
+        env:
+          COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
+          CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}
+      - name: Store coverage files
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage
+          path: coverage
