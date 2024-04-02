@@ -4,10 +4,10 @@ from reversion.models import Version
 
 from test_app.factories import CommentFactory, PostFactory
 from test_app.models import Comment, Post
-from test_utils.base import TestBase, TestModelMixin, TestModelParentMixin, UserMixin
+from test_utils.base import BaseTestCase
 
 
-class TestPublicationModel(UserMixin, TestModelParentMixin, TestModelMixin, TestBase):
+class TestPublicationModel(BaseTestCase):
     def test_not_published_model(self):
         with reversion.create_revision():
             obj = PostFactory.create()

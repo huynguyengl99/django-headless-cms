@@ -5,5 +5,6 @@ admin.autodiscover()
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("", include("martor.urls")),
     path("test-app/", include("test_app.urls")),
 ]
