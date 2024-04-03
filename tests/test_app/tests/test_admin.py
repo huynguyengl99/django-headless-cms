@@ -7,9 +7,34 @@ from django.shortcuts import resolve_url
 from django.utils import translation
 from reversion.models import Version
 
-from test_app.factories import PostFactory
-from test_app.models import Post
+from test_app.factories import CommentFactory, PostFactory
+from test_app.models import Comment, Post
 from test_utils.base import BaseTestCase
+
+
+class AdminChangeListViewTests(BaseTestCase):
+    def test_render_change_list_view_with_unpublished_post(self):
+        with reversion.create_revision():
+            PostFactory.create()
+        res = self.client.get(resolve_url("admin:test_app_post_changelist"))
+        self.assertContains(res, Post.AdminPublishedStateHtml.UNPUBLISHED)
+
+    def test_render_change_list_view_with_latest_published_post(self):
+        with reversion.create_revision():
+            post = PostFactory.create()
+        post.publish(self.user)
+        res = self.client.get(resolve_url("admin:test_app_post_changelist"))
+        self.assertContains(res, Post.AdminPublishedStateHtml.PUBLISHED_LATEST)
+
+    def test_render_change_list_view_with_outdated_published_post(self):
+        with reversion.create_revision():
+            post = PostFactory.create()
+        post.publish(self.user)
+        with reversion.create_revision():
+            post.title = "new title"
+            post.save()
+        res = self.client.get(resolve_url("admin:test_app_post_changelist"))
+        self.assertContains(res, Post.AdminPublishedStateHtml.PUBLISHED_OUTDATED)
 
 
 class AdminChangeViewTests(BaseTestCase):
@@ -101,6 +126,32 @@ class AdminPostRequestTests(BaseTestCase):
 
         assert "Reverted to previous version" in version.revision.comment
 
+    def test_revert_published_post(self):
+        self.obj.publish(self.user)
+        published_version_id = self.obj.published_version_id
+        old_title = str(self.obj.title)
+
+        with reversion.create_revision():
+            self.obj.title = "New title"
+            self.obj.save()
+
+        versions = Version.objects.get_for_object(self.obj)
+        res = self.client.post(
+            resolve_url("admin:test_app_post_revision", self.obj.id, versions[0].id),
+            {**self.localized_dt},
+        )
+        self.obj.refresh_from_db()
+
+        self.assertEqual(res.status_code, 302)  # Check redirect
+        self.assertEqual(
+            str(self.obj.title), old_title
+        )  # The title should be the same as before the revert
+
+        version: Version = Version.objects.get_for_object(self.obj).first()
+
+        assert "Reverted to previous version" in version.revision.comment
+        assert self.obj.published_version_id == published_version_id
+
     @patch("headless_cms.auto_translate.BaseTranslate")
     def test_translate_post(self, mock_translate):
         res = self.client.post(
@@ -129,3 +180,77 @@ class AdminAddViewTests(BaseTestCase):
         ).exists()
 
         assert obj.published_state() == Post.AdminPublishedStateHtml.UNPUBLISHED
+
+
+class AdminActionTests(BaseTestCase):
+    def test_publish_action(self):
+        with reversion.create_revision():
+            obj: Post = PostFactory.create()
+        with reversion.create_revision():
+            obj2: Post = PostFactory.create()
+        with reversion.create_revision():
+            obj3: Post = PostFactory.create()
+
+        assert not obj.published_version_id
+        assert not obj2.published_version_id
+        data = {"action": "publish", "_selected_action": [obj.id, obj2.id]}
+        self.client.post(resolve_url("admin:test_app_post_changelist"), data)
+
+        obj.refresh_from_db()
+        obj2.refresh_from_db()
+        obj3.refresh_from_db()
+
+        assert obj.published_version_id
+        assert obj2.published_version_id
+        assert not obj3.published_version_id
+
+
+class AdminInlineMixinTests(BaseTestCase):
+    def test_admin_inline_mixin_unpublished(self):
+        with reversion.create_revision():
+            post: Post = PostFactory()
+        with reversion.create_revision():
+            CommentFactory(post=post)
+
+        res = self.client.get(
+            resolve_url("admin:test_app_postwithcomment_change", post.id)
+        )
+
+        self.assertContains(res, "unpublished", 3)  # post + comment + extra comment
+        self.assertNotContains(res, "published (latest)")
+        self.assertNotContains(res, "published (outdated)")
+
+    def test_admin_inline_latest_published(self):
+        with reversion.create_revision():
+            post: Post = PostFactory()
+
+        with reversion.create_revision():
+            comment2: Comment = CommentFactory(post=post)
+        comment2.publish(self.user)
+
+        res = self.client.get(
+            resolve_url("admin:test_app_postwithcomment_change", post.id)
+        )
+
+        self.assertContains(res, "unpublished", 2)  # post + extra comment
+        self.assertContains(res, "published (latest)")
+        self.assertNotContains(res, "published (outdated)")
+
+    def test_admin_inline_outdated_published(self):
+        with reversion.create_revision():
+            post: Post = PostFactory()
+
+        with reversion.create_revision():
+            comment3: Comment = CommentFactory(post=post)
+        comment3.publish(self.user)
+        with reversion.create_revision():
+            comment3.title = "New title"
+            comment3.save()
+
+        res = self.client.get(
+            resolve_url("admin:test_app_postwithcomment_change", post.id)
+        )
+
+        self.assertContains(res, "unpublished", 2)  # post + extra comment
+        self.assertNotContains(res, "published (latest)")
+        self.assertContains(res, "published (outdated)")

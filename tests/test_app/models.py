@@ -27,3 +27,8 @@ class Comment(LocalizedModel, PublicationModel):
         null=True,
         blank=True,
     )
+
+    position = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["position"]

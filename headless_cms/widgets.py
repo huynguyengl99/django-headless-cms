@@ -91,7 +91,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
                 widget["name"],
                 widget["value"],
                 {
-                    "required": w_attrs["required"],
+                    "required": w_attrs.get("required"),
                     "id": w_attrs["id"],
                     "cols": "40",
                     "rows": "10",
