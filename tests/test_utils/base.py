@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TransactionTestCase
 from django.test.utils import override_settings
+from rest_framework.test import APITransactionTestCase
 
 # Test helpers.
 
@@ -27,4 +28,8 @@ class LoginMixin(UserMixin):
 
 
 class BaseTestCase(LoginMixin, TestBaseTransaction):
+    pass
+
+
+class BaseAPITestCase(LoginMixin, TestBaseTransaction, APITransactionTestCase):
     pass

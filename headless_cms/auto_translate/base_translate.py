@@ -45,9 +45,7 @@ class BaseTranslate:
         if len(translated_texts) != len(langs_to_translate):
             return
 
-        for lang, translated_text in zip(
-            langs_to_translate, translated_texts, strict=True
-        ):
+        for lang, translated_text in zip(langs_to_translate, translated_texts):
             field_value.set(lang, translated_text)
 
     def process(self, force=False):
