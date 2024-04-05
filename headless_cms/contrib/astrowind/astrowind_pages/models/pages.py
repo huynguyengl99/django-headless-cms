@@ -10,7 +10,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFaq,
     AWFeature,
     AWHero,
-    AWStep,
+    AWSteps,
 )
 from headless_cms.models import PublicationModel
 
@@ -21,7 +21,7 @@ class AWIndexPage(LocalizedModel, PublicationModel, SingletonModel):
     features = models.ForeignKey(
         AWFeature, blank=True, null=True, on_delete=models.SET_NULL
     )
-    steps = models.ForeignKey(AWStep, blank=True, null=True, on_delete=models.SET_NULL)
+    steps = models.ForeignKey(AWSteps, blank=True, null=True, on_delete=models.SET_NULL)
     faqs = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
     cta = models.ForeignKey(
         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL

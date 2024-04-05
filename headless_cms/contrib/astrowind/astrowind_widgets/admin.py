@@ -9,13 +9,33 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 from headless_cms.admin import EnhancedLocalizedVersionAdmin, PublishStatusInlineMixin
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWAction,
+    AWBlogHighlightedPost,
+    AWBlogLatestPost,
+    AWBrand,
     AWCallToAction,
+    AWContact,
+    AWContent,
     AWFaq,
     AWFeature,
+    AWFeature2,
+    AWFeature3,
+    AWFooter,
+    AWFooterLink,
+    AWFooterLinkItem,
     AWHero,
+    AWHeroText,
     AWImage,
+    AWInput,
     AWItem,
+    AWPriceItem,
+    AWPricing,
+    AWStat,
+    AWStatItem,
     AWStep,
+    AWStep2,
+    AWTestimonial,
+    AWTestimonialItem,
+    AWTextArea,
 )
 
 
@@ -42,6 +62,14 @@ class AWItemInline(
     GenericStackedInline,
 ):
     model = AWItem
+    extra = 0
+
+
+class AWStatItemInline(
+    PublishStatusInlineMixin,
+    SortableStackedInline,
+):
+    model = AWStatItem
     extra = 0
 
 
@@ -91,4 +119,106 @@ class AWItemAdmin(EnhancedLocalizedVersionAdmin):
 
 @admin.register(AWStep)
 class AWStepAdmin(AWSectionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWBlogHighlightedPost)
+class AWBlogHighlightedPostAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWBlogLatestPost)
+class AWBlogLatestPostAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWBrand)
+class AWBrandAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWContact)
+class AWContactAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWContent)
+class AWContentAdmin(AWSectionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWFeature2)
+class AWFeature2Admin(AWSectionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWFeature3)
+class AWFeature3Admin(AWSectionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWFooter)
+class AWFooterAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWFooterLink)
+class AWFooterLinkAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWFooterLinkItem)
+class AWFooterLinkItemAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWHeroText)
+class AWHeroTextAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWInput)
+class AWInputAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWPriceItem)
+class AWPriceItemAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWPricing)
+class AWPricingAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWStatItem)
+class AWStatItemAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWStat)
+class AWStatAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [AWStatItemInline]
+
+
+@admin.register(AWStep2)
+class AWStep2Admin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWTextArea)
+class AWTextAreaAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWTestimonialItem)
+class AWTestimonialItemAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWTestimonial)
+class AWTestimonialAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True

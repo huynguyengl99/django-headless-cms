@@ -6,7 +6,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHero,
     AWImage,
     AWItem,
-    AWStep,
+    AWSteps,
 )
 from headless_cms.serializers import LocalizedModelSerializer
 
@@ -52,7 +52,7 @@ class AWStepSerializer(AWBaseSerializer):
     items = AWItemSerializer(read_only=True, many=True)
 
     class Meta(AWBaseSerializer.Meta):
-        model = AWStep
+        model = AWSteps
 
 
 class AWFaqSerializer(AWBaseSerializer):
