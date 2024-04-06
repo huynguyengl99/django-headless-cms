@@ -1,5 +1,6 @@
 import reversion
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from localized_fields.models import LocalizedModel
 from solo import settings as solo_settings
@@ -7,10 +8,13 @@ from solo.models import SingletonModel, get_cache
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
+    AWContent,
     AWFaq,
     AWFeature,
+    AWFeature2,
     AWHero,
-    AWSteps,
+    AWStat,
+    AWStep,
 )
 from headless_cms.models import PublicationModel
 
@@ -18,11 +22,18 @@ from headless_cms.models import PublicationModel
 @reversion.register(exclude=("published_version",))
 class AWIndexPage(LocalizedModel, PublicationModel, SingletonModel):
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
-    features = models.ForeignKey(
+    feature = models.ForeignKey(
         AWFeature, blank=True, null=True, on_delete=models.SET_NULL
     )
-    steps = models.ForeignKey(AWSteps, blank=True, null=True, on_delete=models.SET_NULL)
-    faqs = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
+    feature2 = models.ForeignKey(
+        AWFeature2, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    step = models.ForeignKey(AWStep, blank=True, null=True, on_delete=models.SET_NULL)
+
+    contents = GenericRelation(AWContent)
+
+    faq = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
+    stat = models.ForeignKey(AWStat, blank=True, null=True, on_delete=models.SET_NULL)
     cta = models.ForeignKey(
         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
     )

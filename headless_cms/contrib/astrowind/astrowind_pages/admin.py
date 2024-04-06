@@ -1,3 +1,4 @@
+from adminsortable2.admin import SortableAdminBase
 from django.contrib import admin
 from solo.admin import SingletonModelAdmin
 
@@ -5,8 +6,13 @@ from headless_cms.admin import EnhancedLocalizedVersionAdmin
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWIndexPage,
 )
+from headless_cms.contrib.astrowind.astrowind_widgets.admin import AWContentInline
 
 
 @admin.register(AWIndexPage)
-class AWIndexPageAdmin(EnhancedLocalizedVersionAdmin, SingletonModelAdmin):
+class AWIndexPageAdmin(
+    SortableAdminBase, EnhancedLocalizedVersionAdmin, SingletonModelAdmin
+):
     history_latest_first = True
+
+    inlines = [AWContentInline]

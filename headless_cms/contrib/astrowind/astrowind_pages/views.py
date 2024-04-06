@@ -13,17 +13,17 @@ class AWIndexPageCMSView(RetrieveAPIView):
         obj, created = (
             AWIndexPage.published_objects.select_related(
                 "hero__published_version",
-                "features__published_version",
-                "steps__published_version",
-                "steps__image__published_version",
-                "faqs__published_version",
+                "feature__published_version",
+                "step__published_version",
+                "step__image__published_version",
+                "faq__published_version",
                 "cta__published_version",
             )
             .prefetch_related(
                 "hero__actions__published_version",
-                "features__items__published_version",
-                "steps__items__published_version",
-                "faqs__items__published_version",
+                "feature__items__published_version",
+                "step__items__published_version",
+                "faq__items__published_version",
                 "cta__actions__published_version",
             )
             .get_or_create(pk=AWIndexPage.singleton_instance_id)

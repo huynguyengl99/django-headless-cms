@@ -1,25 +1,25 @@
 from headless_cms.contrib.astrowind.astrowind_pages.models import AWIndexPage
 from headless_cms.contrib.astrowind.astrowind_widgets.serializers import (
     AWCallToActionSerializer,
+    AWContentSerializer,
     AWFaqSerializer,
+    AWFeature2Serializer,
     AWFeatureSerializer,
     AWHeroSerializer,
+    AWStatSerializer,
     AWStepSerializer,
 )
-from headless_cms.serializers import LocalizedModelSerializer
-
-
-class AWBaseSerializer(LocalizedModelSerializer):
-    class Meta:
-        extra_exclude = ["id", "position", "content_type", "object_id"]
-        abstract = True
+from headless_cms.contrib.astrowind.shared.serializers import AWBaseSerializer
 
 
 class AWIndexPageSerializer(AWBaseSerializer):
     hero = AWHeroSerializer(read_only=True)
-    features = AWFeatureSerializer(read_only=True)
-    steps = AWStepSerializer(read_only=True)
-    faqs = AWFaqSerializer(read_only=True)
+    feature = AWFeatureSerializer(read_only=True)
+    feature2 = AWFeature2Serializer(read_only=True)
+    contents = AWContentSerializer(read_only=True, many=True)
+    step = AWStepSerializer(read_only=True)
+    faq = AWFaqSerializer(read_only=True)
+    stat = AWStatSerializer(read_only=True)
     cta = AWCallToActionSerializer(read_only=True)
 
     class Meta(AWBaseSerializer.Meta):

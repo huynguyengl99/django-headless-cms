@@ -1,5 +1,5 @@
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db.models import ForeignKey
+from django.db.models import ForeignKey, ManyToManyField
 from localized_fields import fields
 from rest_framework.fields import (
     BooleanField,
@@ -34,7 +34,7 @@ class LocalizedModelSerializer(ModelSerializer):
         fk_fields = {
             field.attname: field
             for field in field_list
-            if isinstance(field, ForeignKey)
+            if (isinstance(field, (ForeignKey, ManyToManyField)))
             and field.attname in data
             and field.name != "content_type"
         }
@@ -57,8 +57,12 @@ class LocalizedModelSerializer(ModelSerializer):
                 continue
 
             rel_model = field.related_model
-            if not isinstance(rel_model, PublicationModel):
+            if not issubclass(rel_model, PublicationModel):
                 rel_instance = getattr(instance, field.name)
+            elif isinstance(field_id, list):
+                rel_instance = rel_model.published_objects.published().filter(
+                    id__in=field_id
+                )
             else:
                 rel_instance = (
                     rel_model.published_objects.published().filter(id=field_id).first()

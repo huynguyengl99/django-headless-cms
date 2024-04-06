@@ -65,6 +65,17 @@ class AWItemInline(
     extra = 0
 
 
+class AWContentInline(
+    PublishStatusInlineMixin,
+    SortableGenericInlineAdminMixin,
+    SortableStackedInline,
+    GenericStackedInline,
+):
+    model = AWContent
+    fields = ["id"]
+    extra = 0
+
+
 class AWStatItemInline(
     PublishStatusInlineMixin,
     SortableStackedInline,

@@ -15,10 +15,12 @@ from headless_cms.models import PublicationModel
 
 
 class AWGenericBaseModel(models.Model):
+    limit = Q(app_label="astrowind_widgets")
+
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
-        limit_choices_to=Q(app_label="astrowind_widgets"),
+        limit_choices_to=limit,
         blank=True,
         null=True,
     )
@@ -34,7 +36,7 @@ class AWGenericBaseModel(models.Model):
         abstract = True
 
     def __str__(self):
-        return f"{self._meta.object_name} for {self.object}"
+        return f"{self._meta.object_name} - {self.id} for {self.object}"
 
     @property
     def _content_type(self):
@@ -193,7 +195,19 @@ class AWContact(AWFragment, AWForm):
 
 
 @reversion.register(exclude=("published_version",))
-class AWContent(AWSection):
+class AWContent(AWSection, AWGenericBaseModel):
+    limit = Q(app_label="astrowind_pages")
+
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to=limit,
+        blank=True,
+        null=True,
+    )
+
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+
     content = LocalizedTextField(blank=True, null=True, required=False)
     call_to_action = models.ForeignKey(
         AWAction, on_delete=models.SET_NULL, blank=True, null=True
@@ -210,7 +224,7 @@ class AWContent(AWSection):
 
 
 class AWBaseFeature(AWSection):
-    columns = models.IntegerField()
+    columns = models.IntegerField(default=0)
     default_icon = models.CharField(default="", blank=True)
 
     class Meta:

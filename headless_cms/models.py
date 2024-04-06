@@ -6,6 +6,9 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models import Prefetch
 from django.utils.html import format_html
+from polymorphic.managers import PolymorphicManager
+from polymorphic.models import PolymorphicModel
+from psqlextra.manager import PostgresManager
 from reversion.models import Version
 
 
@@ -91,3 +94,15 @@ class PublicationModel(models.Model):
         return format_html(state)
 
     published_state.allow_tags = True
+
+
+class LocalizedPolymorphicManager(PostgresManager, PolymorphicManager):
+    pass
+
+
+class LocalizedPolymorphicModel(PolymorphicModel):
+    objects = LocalizedPolymorphicManager()
+
+    class Meta:
+        abstract = True
+        base_manager_name = "objects"
