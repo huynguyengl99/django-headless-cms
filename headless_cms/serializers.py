@@ -34,7 +34,7 @@ class LocalizedModelSerializer(ModelSerializer):
         fk_fields = {
             field.attname: field
             for field in field_list
-            if (isinstance(field, (ForeignKey, ManyToManyField)))
+            if (isinstance(field, ForeignKey | ManyToManyField))
             and field.attname in data
             and field.name != "content_type"
         }
@@ -43,11 +43,19 @@ class LocalizedModelSerializer(ModelSerializer):
         for f in field_list:
             if f.auto_created and not f.concrete:
                 related_fields.append(f.related_name)
-            elif isinstance(f, GenericRelation) and f.name != "versions":
+            elif isinstance(f, GenericRelation) and issubclass(
+                f.related_model, PublicationModel
+            ):
                 related_fields.append(f.name)
 
         data.update(
-            {field: getattr(instance, field).all() for field in related_fields if field}
+            {
+                field: getattr(instance, field)
+                .filter(published_version_id__isnull=False)
+                .all()
+                for field in related_fields
+                if field
+            }
         )
 
         for field_id_name, field in fk_fields.items():
