@@ -9,9 +9,8 @@ from localized_fields.fields import (
     LocalizedCharField,
     LocalizedTextField,
 )
-from localized_fields.models import LocalizedModel
 
-from headless_cms.models import PublicationModel
+from headless_cms.models import LocalizedPublicationModel
 
 
 class AWGenericBaseModel(models.Model):
@@ -50,13 +49,13 @@ class AWGenericBaseModel(models.Model):
 
 
 @reversion.register(exclude=("published_version",))
-class AWImage(LocalizedModel, PublicationModel):
+class AWImage(LocalizedPublicationModel):
     src = models.FileField()
     alt = LocalizedTextField(blank=True, null=True, required=False)
 
 
 @reversion.register(exclude=("published_version",))
-class AWAction(LocalizedModel, PublicationModel, AWGenericBaseModel):
+class AWAction(LocalizedPublicationModel, AWGenericBaseModel):
     class CTAVariants(models.TextChoices):
         PRIMARY = "primary", _("Primary")
         SECONDARY = "secondary", _("Secondary")
@@ -76,7 +75,7 @@ class AWAction(LocalizedModel, PublicationModel, AWGenericBaseModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWItem(LocalizedModel, PublicationModel, AWGenericBaseModel):
+class AWItem(LocalizedPublicationModel, AWGenericBaseModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     description = LocalizedTextField(blank=True, null=True, required=False)
     icon = models.CharField(blank=True, default="")
@@ -88,7 +87,7 @@ class AWItem(LocalizedModel, PublicationModel, AWGenericBaseModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWInput(LocalizedModel, PublicationModel, AWGenericBaseModel):
+class AWInput(LocalizedPublicationModel, AWGenericBaseModel):
     type = CharField(default="text", blank=True)
     name = CharField()
     label = LocalizedCharField(blank=True, null=True, required=False)
@@ -101,7 +100,7 @@ class AWInput(LocalizedModel, PublicationModel, AWGenericBaseModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWTextArea(LocalizedModel, PublicationModel, AWGenericBaseModel):
+class AWTextArea(LocalizedPublicationModel, AWGenericBaseModel):
     name = CharField()
     label = LocalizedCharField(blank=True, null=True, required=False)
     rows = IntegerField(default=4)
@@ -112,7 +111,7 @@ class AWTextArea(LocalizedModel, PublicationModel, AWGenericBaseModel):
         ordering = ["position"]
 
 
-class AWFragment(LocalizedModel, PublicationModel):
+class AWFragment(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     subtitle = LocalizedTextField(blank=True, null=True, required=False)
     tagline = LocalizedTextField(blank=True, null=True, required=False)
@@ -122,7 +121,7 @@ class AWFragment(LocalizedModel, PublicationModel):
         abstract = True
 
 
-class AWForm(LocalizedModel, PublicationModel):
+class AWForm(LocalizedPublicationModel):
     inputs = models.ManyToManyField(AWInput, related_name="aw_form_inputs")
     textarea = models.ForeignKey(
         AWTextArea, on_delete=models.SET_NULL, null=True, blank=True
@@ -158,13 +157,13 @@ class AWFaq(AWSection):
 
 
 @reversion.register(exclude=("published_version",))
-class AWCallToAction(LocalizedModel, PublicationModel):
+class AWCallToAction(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     subtitle = LocalizedTextField(blank=True, null=True, required=False)
     actions = GenericRelation(AWAction)
 
 
-class BlogPostsBase(LocalizedModel, PublicationModel):
+class BlogPostsBase(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     link_text = LocalizedCharField(blank=True, null=True, required=False)
     link_url = LocalizedCharField(blank=True, null=True, required=False)
@@ -247,7 +246,7 @@ class AWFeature3(AWBaseFeature):
     is_after_content = models.BooleanField(default=False)
 
 
-class AWBaseLinkItem(LocalizedModel, PublicationModel):
+class AWBaseLinkItem(LocalizedPublicationModel):
     text = LocalizedCharField(blank=True, null=True, required=False)
     href = CharField(default="", blank=True)
     aria_label = LocalizedCharField(blank=True, null=True, required=False)
@@ -258,7 +257,7 @@ class AWBaseLinkItem(LocalizedModel, PublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWFooterLink(LocalizedModel, PublicationModel):
+class AWFooterLink(LocalizedPublicationModel):
     pass
 
 
@@ -270,7 +269,7 @@ class AWFooterLinkItem(AWBaseLinkItem):
 
 
 @reversion.register(exclude=("published_version",))
-class AWFooter(LocalizedModel, PublicationModel):
+class AWFooter(LocalizedPublicationModel):
     links = models.ManyToManyField(AWFooterLink, related_name="links_footers")
     secondary_links = models.ManyToManyField(
         AWFooterLink, related_name="secondary_links_footers"
@@ -306,7 +305,7 @@ class AWPricing(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPriceItem(LocalizedModel, PublicationModel):
+class AWPriceItem(LocalizedPublicationModel):
     title = LocalizedCharField(blank=True, null=True, required=False)
     subtitle = LocalizedCharField(blank=True, null=True, required=False)
     price = LocalizedCharField(blank=True, null=True, required=False)
@@ -334,7 +333,7 @@ class AWStat(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWStatItem(LocalizedModel, PublicationModel):
+class AWStatItem(LocalizedPublicationModel):
     title = LocalizedCharField(blank=True, null=True, required=False)
     amount = LocalizedCharField(blank=True, null=True, required=False)
     icon = CharField(default="", blank=True)
@@ -371,7 +370,7 @@ class AWTestimonial(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWTestimonialItem(LocalizedModel, PublicationModel):
+class AWTestimonialItem(LocalizedPublicationModel):
     title = LocalizedCharField(blank=True, null=True, required=False)
     testimonial = LocalizedCharField(blank=True, null=True, required=False)
     name = LocalizedCharField(blank=True, null=True, required=False)

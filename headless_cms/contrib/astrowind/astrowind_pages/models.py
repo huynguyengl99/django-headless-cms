@@ -2,7 +2,6 @@ import reversion
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from localized_fields.models import LocalizedModel
 from solo import settings as solo_settings
 from solo.models import SingletonModel, get_cache
 
@@ -16,11 +15,11 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStat,
     AWStep,
 )
-from headless_cms.models import PublicationModel
+from headless_cms.models import LocalizedPublicationModel
 
 
 @reversion.register(exclude=("published_version",))
-class AWIndexPage(LocalizedModel, PublicationModel, SingletonModel):
+class AWIndexPage(LocalizedPublicationModel, SingletonModel):
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
     feature = models.ForeignKey(
         AWFeature, blank=True, null=True, on_delete=models.SET_NULL
