@@ -7,11 +7,12 @@
         </li>
     {% endfor %}
     </ul>
+{{ widget.md }}
 {% for widget in widget.subwidgets %}
     <div class="localized-panel" role="tabpanel" id="{{ widget_id }}_{{ widget.lang_code }}">
-        {% autoescape off %}
-            {{ widget.martor }}
-        {% endautoescape %}
+        <div style="display: none;">
+            {% include widget.template_name %}
+        </div>
     </div>
 {% endfor %}
 </div>

@@ -26,8 +26,7 @@ class LocalizedMartorWidget(LocalizedFieldWidget):
 
 class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
     widget = AdminMartorWidget
-    localized_template_name = "custom_localized_fields/admin/widget.html"
-    template_name = "django/forms/widgets/textarea.html"
+    template_name = "custom_localized_fields/admin/widget.html"
 
     def markdown_render(self, name, value, attrs=None, renderer=None, **kwargs):
         random_string = "".join(
@@ -84,23 +83,10 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
 
     def render(self, name, value, attrs=None, renderer=None):
         context = self.get_context(name, value, attrs)
-        widgets = context["widget"]["subwidgets"]
-        for widget in widgets:
-            w_attrs = widget["attrs"]
-            md = self.markdown_render(
-                widget["name"],
-                widget["value"],
-                {
-                    "required": w_attrs.get("required"),
-                    "id": w_attrs["id"],
-                    "cols": "40",
-                    "rows": "10",
-                },
-            )
-            widget["martor"] = md
-        template = get_template(self.localized_template_name)
-        res = template.render(context)
-        return res
+        widget = context["widget"]
+        md = self.markdown_render(widget["name"], "", attrs)
+        context["widget"]["md"] = md
+        return self._render(self.template_name, context, renderer)
 
     class Media:
         selected_theme = get_theme()
