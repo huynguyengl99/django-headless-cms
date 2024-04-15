@@ -10,6 +10,7 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
+from headless_cms.fields.url_field import AutoLanguageUrlField
 from headless_cms.models import LocalizedPublicationModel
 
 
@@ -66,7 +67,7 @@ class AWAction(LocalizedPublicationModel):
     variant = models.CharField(choices=CTAVariants.choices, default=CTAVariants.PRIMARY)
     target = models.CharField(default="", blank=True)
     text = LocalizedCharField(blank=True, null=True, required=False)
-    href = CharField(default="", blank=True)
+    href = AutoLanguageUrlField(default="", blank=True)
     icon = CharField(default="", blank=True)
 
     position = models.PositiveIntegerField(default=0)
@@ -303,7 +304,7 @@ class AWFeature3(AWBaseFeature):
 
 class AWBaseLinkItem(LocalizedPublicationModel):
     text = LocalizedCharField(blank=True, null=True, required=False)
-    href = CharField(default="", blank=True)
+    href = AutoLanguageUrlField(default="", blank=True)
     aria_label = LocalizedCharField(blank=True, null=True, required=False)
     icon = CharField(default="", blank=True)
 
