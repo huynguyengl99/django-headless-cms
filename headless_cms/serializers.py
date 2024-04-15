@@ -1,5 +1,3 @@
-from django.contrib.contenttypes.fields import GenericRelation
-from django.db.models import ForeignKey, ManyToManyField
 from localized_fields import fields
 from rest_framework.fields import (
     BooleanField,
@@ -10,8 +8,6 @@ from rest_framework.fields import (
     SlugField,
 )
 from rest_framework.serializers import ModelSerializer
-
-from .models import PublicationModel
 
 
 class LocalizedModelSerializer(ModelSerializer):
@@ -30,54 +26,10 @@ class LocalizedModelSerializer(ModelSerializer):
         if not data:
             return None
 
-        field_list = instance._meta.get_fields()
-        fk_fields = {
-            field.attname: field
-            for field in field_list
-            if (isinstance(field, ForeignKey | ManyToManyField))
-            and field.attname in data
-            and field.name != "content_type"
-        }
-        related_fields = []
+        for k, v in data.items():
+            setattr(instance, k, v)
 
-        for f in field_list:
-            if f.auto_created and not f.concrete:
-                related_fields.append(f.related_name)
-            elif isinstance(f, GenericRelation) and issubclass(
-                f.related_model, PublicationModel
-            ):
-                related_fields.append(f.name)
-
-        data.update(
-            {
-                field: getattr(instance, field)
-                .filter(published_version_id__isnull=False)
-                .all()
-                for field in related_fields
-                if field
-            }
-        )
-
-        for field_id_name, field in fk_fields.items():
-            field_id = data[field_id_name]
-            if not field_id:
-                data.update({field_id_name: field_id})
-                continue
-
-            rel_model = field.related_model
-            if not issubclass(rel_model, PublicationModel):
-                rel_instance = getattr(instance, field.name)
-            elif isinstance(field_id, list):
-                rel_instance = rel_model.published_objects.published().filter(
-                    id__in=field_id
-                )
-            else:
-                rel_instance = (
-                    rel_model.published_objects.published().filter(id=field_id).first()
-                )
-            data[field.name] = rel_instance
-
-        return super().to_representation(data)
+        return super().to_representation(instance)
 
     def __init__(self, *args, **kwargs):
         if not hasattr(self.Meta, "fields"):

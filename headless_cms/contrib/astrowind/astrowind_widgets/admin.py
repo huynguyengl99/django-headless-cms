@@ -4,17 +4,21 @@ from adminsortable2.admin import (
     SortableStackedInline,
 )
 from django.contrib import admin
+from django.contrib.admin import StackedInline
 from django.contrib.contenttypes.admin import GenericStackedInline
 
 from headless_cms.admin import EnhancedLocalizedVersionAdmin, PublishStatusInlineMixin
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
-    AWAction,
     AWBlogHighlightedPost,
     AWBlogLatestPost,
     AWBrand,
+    AWBrandImage,
     AWCallToAction,
     AWContact,
     AWContent,
+    AWContentAction,
+    AWContentImage,
+    AWCtaAction,
     AWFaq,
     AWFeature,
     AWFeature2,
@@ -23,57 +27,46 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFooterLink,
     AWFooterLinkItem,
     AWHero,
+    AWHeroAction,
+    AWHeroImage,
     AWHeroText,
-    AWImage,
+    AWHeroTextAction,
+    AWHeroTextAction2,
     AWInput,
     AWItem,
     AWPriceItem,
+    AWPriceItemAction,
     AWPricing,
     AWStat,
     AWStatItem,
     AWStep,
     AWStep2,
+    AWStep2Action,
+    AWStepImage,
     AWTestimonial,
+    AWTestimonialAction,
     AWTestimonialItem,
+    AWTestimonialItemImage,
     AWTextArea,
 )
 
 
-@admin.register(AWAction)
-class AWActionAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-    list_filter = ("content_type",)
-
-
-class AWActionInline(
+class BaseSortablePublishGenericAdmin(
     PublishStatusInlineMixin,
     SortableGenericInlineAdminMixin,
     SortableStackedInline,
     GenericStackedInline,
 ):
-    model = AWAction
     extra = 0
 
 
-class AWItemInline(
-    PublishStatusInlineMixin,
-    SortableGenericInlineAdminMixin,
-    SortableStackedInline,
-    GenericStackedInline,
-):
+class AWItemInline(BaseSortablePublishGenericAdmin):
     model = AWItem
-    extra = 0
 
 
-class AWContentInline(
-    PublishStatusInlineMixin,
-    SortableGenericInlineAdminMixin,
-    SortableStackedInline,
-    GenericStackedInline,
-):
+class AWContentInline(BaseSortablePublishGenericAdmin):
     model = AWContent
     fields = ["id"]
-    extra = 0
 
 
 class AWStatItemInline(
@@ -84,11 +77,24 @@ class AWStatItemInline(
     extra = 0
 
 
+@admin.register(AWCtaAction)
+class AWCTAActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWCtaActionInline(
+    PublishStatusInlineMixin,
+    SortableStackedInline,
+):
+    model = AWCtaAction
+    extra = 0
+
+
 @admin.register(AWCallToAction)
 class AWCallToActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
-    inlines = [AWActionInline]
+    inlines = [AWCtaActionInline]
 
 
 class AWSectionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
@@ -110,16 +116,37 @@ class AWFeatureAdmin(AWSectionAdmin):
     history_latest_first = True
 
 
+@admin.register(AWHeroAction)
+class AWHeroActionActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWHeroActionInline(
+    PublishStatusInlineMixin,
+    SortableStackedInline,
+):
+    model = AWHeroAction
+    extra = 0
+
+
+@admin.register(AWHeroImage)
+class AWHeroImageAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWHeroImageInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWHeroImage
+    extra = 0
+
+
 @admin.register(AWHero)
 class AWHeroAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
-    inlines = [AWActionInline]
-
-
-@admin.register(AWImage)
-class AWImageAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
+    inlines = [AWHeroActionInline, AWHeroImageInline]
 
 
 @admin.register(AWItem)
@@ -128,9 +155,23 @@ class AWItemAdmin(EnhancedLocalizedVersionAdmin):
     list_filter = ("content_type",)
 
 
+@admin.register(AWStepImage)
+class AWStepImageAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWStepImageInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWStepImage
+    extra = 0
+
+
 @admin.register(AWStep)
 class AWStepAdmin(AWSectionAdmin):
     history_latest_first = True
+    inlines = AWSectionAdmin.inlines + [AWStepImageInline]
 
 
 @admin.register(AWBlogHighlightedPost)
@@ -143,9 +184,24 @@ class AWBlogLatestPostAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-@admin.register(AWBrand)
-class AWBrandAdmin(EnhancedLocalizedVersionAdmin):
+@admin.register(AWBrandImage)
+class AWBrandImageAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+
+class AWBrandImageInline(
+    PublishStatusInlineMixin,
+    SortableStackedInline,
+):
+    model = AWBrandImage
+    extra = 0
+
+
+@admin.register(AWBrand)
+class AWBrandAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [AWBrandImageInline]
 
 
 @admin.register(AWContact)
@@ -153,9 +209,36 @@ class AWContactAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
+@admin.register(AWContentAction)
+class AWContentActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWContentActionInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWContentAction
+    extra = 0
+
+
+@admin.register(AWContentImage)
+class AWContentImageAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWContentImageInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWContentImage
+    extra = 0
+
+
 @admin.register(AWContent)
 class AWContentAdmin(AWSectionAdmin):
     history_latest_first = True
+    inlines = AWSectionAdmin.inlines + [AWContentActionInline, AWContentImageInline]
 
 
 @admin.register(AWFeature2)
@@ -183,9 +266,37 @@ class AWFooterLinkItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
+@admin.register(AWHeroTextAction)
+class AWHeroTextActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWHeroTextActionInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWHeroTextAction
+    extra = 0
+
+
+@admin.register(AWHeroTextAction2)
+class AWHeroTextAction2Admin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWHeroTextAction2Inline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWHeroTextAction2
+    extra = 0
+
+
 @admin.register(AWHeroText)
 class AWHeroTextAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+    inlines = [AWHeroTextActionInline, AWHeroTextAction2Inline]
 
 
 @admin.register(AWInput)
@@ -193,9 +304,23 @@ class AWInputAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
+@admin.register(AWPriceItemAction)
+class AWPriceItemActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWPriceItemActionInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWPriceItemAction
+    extra = 0
+
+
 @admin.register(AWPriceItem)
 class AWPriceItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+    inlines = [AWPriceItemActionInline]
 
 
 @admin.register(AWPricing)
@@ -215,9 +340,23 @@ class AWStatAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     inlines = [AWStatItemInline]
 
 
+@admin.register(AWStep2Action)
+class AWStep2ActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWStep2ActionInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWStep2Action
+    extra = 0
+
+
 @admin.register(AWStep2)
 class AWStep2Admin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+    inlines = [AWStep2ActionInline]
 
 
 @admin.register(AWTextArea)
@@ -225,11 +364,47 @@ class AWTextAreaAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
+@admin.register(AWTestimonialItemImage)
+class AWTestimonialItemImageAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWTestimonialItemImageInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWTestimonialItemImage
+    extra = 0
+
+
 @admin.register(AWTestimonialItem)
 class AWTestimonialItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+    inlines = [AWTestimonialItemImageInline]
+
+
+class AWTestimonialItemInline(
+    PublishStatusInlineMixin,
+    SortableStackedInline,
+):
+    model = AWTestimonialItem
+    fields = ["id"]
+
+
+@admin.register(AWTestimonialAction)
+class AWTestimonialActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWTestimonialActionInline(
+    PublishStatusInlineMixin,
+    StackedInline,
+):
+    model = AWTestimonialAction
+    extra = 0
 
 
 @admin.register(AWTestimonial)
-class AWTestimonialAdmin(EnhancedLocalizedVersionAdmin):
+class AWTestimonialAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+    inlines = [AWTestimonialActionInline, AWTestimonialItemInline]

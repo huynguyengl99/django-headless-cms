@@ -98,7 +98,6 @@ select = [
   "B",  # flake8-bugbear
   "C",  # flake8-comprehensions
   "E",  # pycodestyle errors
-  "ERA",  # eradicate
   "F",  # pyflakes
   "I",  # isort
   "N",  # pep8-naming

@@ -4,7 +4,6 @@ import reversion
 from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.db.models import Prefetch
 from django.utils.html import format_html
 from localized_fields.models import LocalizedModel
 from reversion.models import Version
@@ -12,26 +11,21 @@ from reversion.models import Version
 
 class PublishedQuerySet(models.QuerySet):
     @cached_property
-    def prefetch_related_list(self):
-        prefetch_list = set()
-        related_fields = [
-            f
-            for f in self.model._meta.get_fields()
-            if f.auto_created and not f.concrete
-        ]
-        for field in related_fields:
-            if issubclass(field.model, PublicationModel) and field.related_name:
-                prefetch_list.add(
-                    Prefetch(
-                        field.related_name,
-                        queryset=field.related_model.published_objects.published(),
-                    )
-                )
-        return prefetch_list
+    def prefetch_relation_list(self):
+        from headless_cms.utils.relations import calculate_prefetch_relation  # noqa
 
-    def published(self):
-        return self.prefetch_related(*self.prefetch_related_list).filter(
-            published_version__isnull=False
+        return calculate_prefetch_relation(self.model)
+
+    def published(self, auto_prefetch=False):
+        prefetches = []
+        selects = []
+        if auto_prefetch:
+            prefetches, selects = self.prefetch_relation_list
+
+        return (
+            self.select_related(*selects)
+            .prefetch_related(*prefetches)
+            .filter(published_version__isnull=False)
         )
 
 
@@ -39,8 +33,8 @@ class PublishedManager(models.Manager):
     def get_queryset(self):
         return PublishedQuerySet(self.model, using=self._db)
 
-    def published(self):
-        return self.get_queryset().published()
+    def published(self, auto_prefetch=False):
+        return self.get_queryset().published(auto_prefetch)
 
 
 class PublicationModel(models.Model):

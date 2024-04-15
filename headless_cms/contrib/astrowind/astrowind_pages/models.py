@@ -1,9 +1,7 @@
 import reversion
-from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from solo import settings as solo_settings
-from solo.models import SingletonModel, get_cache
+from solo.models import SingletonModel
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
@@ -39,18 +37,7 @@ class AWIndexPage(LocalizedPublicationModel, SingletonModel):
 
     @classmethod
     def get_solo(cls):
-        cache_name = getattr(settings, "SOLO_CACHE", solo_settings.SOLO_CACHE)
-        if not cache_name:
-            obj, created = cls.published_objects.published().get_or_create(
-                pk=cls.singleton_instance_id
-            )
-            return obj
-        cache = get_cache(cache_name)
-        cache_key = cls.get_cache_key()
-        obj = cache.get(cache_key)
-        if not obj:
-            obj, created = cls.published_objects.published().get_or_create(
-                pk=cls.singleton_instance_id
-            )
-            obj.set_to_cache()
+        obj: AWIndexPage = super().get_solo()
+        if not obj.published_version_id:
+            return None
         return obj
