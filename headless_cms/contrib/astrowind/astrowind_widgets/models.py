@@ -10,6 +10,7 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
+from headless_cms.admin import ThroughTableMixin
 from headless_cms.fields.url_field import AutoLanguageUrlField
 from headless_cms.models import LocalizedPublicationModel
 
@@ -314,7 +315,7 @@ class AWBaseLinkItem(LocalizedPublicationModel):
 
 @reversion.register(exclude=("published_version",))
 class AWFooterLink(LocalizedPublicationModel):
-    pass
+    title = LocalizedTextField(default=dict, blank=True, null=True, required=False)
 
 
 @reversion.register(exclude=("published_version",))
@@ -323,17 +324,56 @@ class AWFooterLinkItem(AWBaseLinkItem):
         AWFooterLink, on_delete=models.SET, null=True, blank=True
     )
 
+    position = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["position"]
+
 
 @reversion.register(exclude=("published_version",))
 class AWFooter(LocalizedPublicationModel):
-    links = models.ManyToManyField(AWFooterLink, related_name="links_footers")
+    links = models.ManyToManyField(
+        AWFooterLink,
+        related_name="links_footers",
+        blank=True,
+        through="AWFooterLinksThrough",
+    )
     secondary_links = models.ManyToManyField(
-        AWFooterLink, related_name="secondary_links_footers"
+        AWFooterLink,
+        related_name="secondary_links_footers",
+        blank=True,
+        through="AWFooterSecondaryLinksThrough",
     )
     social_links = models.ManyToManyField(
-        AWFooterLink, related_name="social_links_footers"
+        AWFooterLink,
+        related_name="social_links_footers",
+        blank=True,
+        through="AWFooterSocialLinksThrough",
     )
-    foot_name = LocalizedTextField(blank=True, null=True, required=False)
+    foot_note = LocalizedTextField(blank=True, null=True, required=False)
+
+
+class AWFooterLinkBaseThough(ThroughTableMixin, models.Model):
+
+    position = models.PositiveIntegerField(default=0)
+    footer = models.ForeignKey(AWFooter, on_delete=models.CASCADE, null=True)
+    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        ordering = ["position"]
+        abstract = True
+
+
+class AWFooterLinksThrough(AWFooterLinkBaseThough):
+    pass
+
+
+class AWFooterSecondaryLinksThrough(AWFooterLinkBaseThough):
+    pass
+
+
+class AWFooterSocialLinksThrough(AWFooterLinkBaseThough):
+    pass
 
 
 @reversion.register(exclude=("published_version",))

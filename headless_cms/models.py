@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.html import format_html
 from localized_fields.models import LocalizedModel
 from reversion.models import Version
+from solo.models import SingletonModel
 
 
 class PublishedQuerySet(models.QuerySet):
@@ -89,5 +90,17 @@ class PublicationModel(models.Model):
 
 
 class LocalizedPublicationModel(LocalizedModel, PublicationModel):
+    class Meta:
+        abstract = True
+
+
+class LocalizedSingletonModel(SingletonModel):
+    @classmethod
+    def get_solo(cls):
+        obj = super().get_solo()
+        if not obj.published_version_id:
+            return None
+        return obj
+
     class Meta:
         abstract = True

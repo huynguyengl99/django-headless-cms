@@ -15,7 +15,12 @@ from rest_framework import status
 from reversion.admin import VersionAdmin
 from reversion.models import Version
 
+from headless_cms.models import PublicationModel
 from headless_cms.settings import headless_cms_settings
+
+
+class ThroughTableMixin:
+    is_through_table = True
 
 
 class PublishStatusInlineMixin:
@@ -23,7 +28,7 @@ class PublishStatusInlineMixin:
 
     readonly_fields = ("publish_status",)
 
-    def publish_status(self, obj):
+    def _get_publish_status(self, obj):
         published_state = "unpublished"
         if obj.published_version:
             last_ver = Version.objects.get_for_object(obj).first()
@@ -31,6 +36,22 @@ class PublishStatusInlineMixin:
                 published_state = "published (latest)"
             else:
                 published_state = "published (outdated)"
+        return published_state
+
+    def publish_status(self, obj):
+        published_state = "unpublished"
+        if hasattr(obj, "is_through_table") and obj.is_through_table:
+            fields = obj._meta.get_fields()
+            for field in fields:
+                rel_model = field.related_model
+                if (
+                    rel_model
+                    and issubclass(rel_model, PublicationModel)
+                    and rel_model != self.parent_model
+                ):
+                    published_state = self._get_publish_status(getattr(obj, field.name))
+        else:
+            published_state = self._get_publish_status(obj)
         return published_state
 
 

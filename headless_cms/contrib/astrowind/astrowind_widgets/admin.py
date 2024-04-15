@@ -1,6 +1,7 @@
 from adminsortable2.admin import (
     SortableAdminBase,
     SortableGenericInlineAdminMixin,
+    SortableInlineAdminMixin,
     SortableStackedInline,
 )
 from django.contrib import admin
@@ -251,19 +252,65 @@ class AWFeature3Admin(AWSectionAdmin):
     history_latest_first = True
 
 
-@admin.register(AWFooter)
-class AWFooterAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
-@admin.register(AWFooterLink)
-class AWFooterLinkAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWFooterLinkItem)
 class AWFooterLinkItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+
+class AWFooterLinkItemInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWFooterLinkItem
+    extra = 0
+
+
+@admin.register(AWFooterLink)
+class AWFooterLinkAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [AWFooterLinkItemInline]
+
+
+class AWFooterLinkInlineBase(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    extra = 0
+
+
+class AWFooterLinksInline(AWFooterLinkInlineBase):
+    model = AWFooter.links.through
+    extra = 0
+
+    verbose_name = "Link"
+
+
+class AWFooterSecondaryLinksInline(AWFooterLinkInlineBase):
+    model = AWFooter.secondary_links.through
+    extra = 0
+
+    verbose_name = "Secondary link"
+
+
+class AWFooterSocialLinksInline(AWFooterLinkInlineBase):
+    model = AWFooter.social_links.through
+    extra = 0
+    verbose_name = "Social link"
+
+
+@admin.register(AWFooter)
+class AWFooterAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [
+        AWFooterLinksInline,
+        AWFooterSecondaryLinksInline,
+        AWFooterSocialLinksInline,
+    ]
+    exclude = ["links", "secondary_links", "social_links"]
 
 
 @admin.register(AWHeroTextAction)

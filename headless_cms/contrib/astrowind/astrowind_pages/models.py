@@ -1,7 +1,7 @@
 import reversion
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from solo.models import SingletonModel
+from localized_fields.fields import LocalizedTextField
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
@@ -13,11 +13,13 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStat,
     AWStep,
 )
-from headless_cms.models import LocalizedPublicationModel
+from headless_cms.models import LocalizedPublicationModel, LocalizedSingletonModel
 
 
 @reversion.register(exclude=("published_version",))
-class AWIndexPage(LocalizedPublicationModel, SingletonModel):
+class AWIndexPage(LocalizedPublicationModel, LocalizedSingletonModel):
+    title = LocalizedTextField(default=dict, blank=True, null=True)
+
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
     feature = models.ForeignKey(
         AWFeature, blank=True, null=True, on_delete=models.SET_NULL
@@ -35,9 +37,26 @@ class AWIndexPage(LocalizedPublicationModel, SingletonModel):
         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
     )
 
-    @classmethod
-    def get_solo(cls):
-        obj: AWIndexPage = super().get_solo()
-        if not obj.published_version_id:
-            return None
-        return obj
+
+#
+#
+# @reversion.register(exclude=("published_version",))
+# class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
+#     title = LocalizedTextField(default=dict, blank=True, null=True)
+#
+#     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
+#     feature = models.ForeignKey(
+#         AWFeature, blank=True, null=True, on_delete=models.SET_NULL
+#     )
+#     feature2 = models.ForeignKey(
+#         AWFeature2, blank=True, null=True, on_delete=models.SET_NULL
+#     )
+#     step = models.ForeignKey(AWStep, blank=True, null=True, on_delete=models.SET_NULL)
+#
+#     contents = GenericRelation(AWContent)
+#
+#     faq = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
+#     stat = models.ForeignKey(AWStat, blank=True, null=True, on_delete=models.SET_NULL)
+#     cta = models.ForeignKey(
+#         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
+#     )
