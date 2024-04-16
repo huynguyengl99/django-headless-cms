@@ -1,3 +1,5 @@
+from rest_framework.fields import SerializerMethodField
+
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWBlogHighlightedPost,
     AWBlogLatestPost,
@@ -16,6 +18,10 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFooter,
     AWFooterLink,
     AWFooterLinkItem,
+    AWHeader,
+    AWHeaderAction,
+    AWHeaderLink,
+    AWHeaderLinkThrough,
     AWHero,
     AWHeroAction,
     AWHeroImage,
@@ -157,16 +163,44 @@ class AWFeature3Serializer(AWBaseSerializer):
         model = AWFeature3
 
 
-class AWFooterLinkSerializer(AWBaseSerializer):
+class AWHeaderLinkThroughSerializer(AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
-        model = AWFooterLink
+        model = AWHeaderLinkThrough
+
+
+class AWHeaderLinkSerializer(AWBaseSerializer):
+    links = SerializerMethodField()
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWHeaderLink
+
+    def get_links(self, obj):
+        return AWHeaderLinkSerializer(obj.links.all(), many=True).data
+
+
+class AWHeaderActionSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWHeaderAction
+
+
+class AWHeaderSerializer(AWBaseSerializer):
+    links = AWHeaderLinkSerializer(read_only=True, many=True)
+    actions = AWHeaderActionSerializer(read_only=True, many=True)
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWHeader
 
 
 class AWFooterLinkItemSerializer(AWBaseSerializer):
-    footer_links = AWFooterLinkSerializer(read_only=True)
-
     class Meta(AWBaseSerializer.Meta):
         model = AWFooterLinkItem
+
+
+class AWFooterLinkSerializer(AWBaseSerializer):
+    links = AWFooterLinkItemSerializer(read_only=True, many=True)
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWFooterLink
 
 
 class AWFooterSerializer(AWBaseSerializer):

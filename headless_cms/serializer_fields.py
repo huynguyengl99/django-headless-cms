@@ -13,7 +13,7 @@ class UrlField(CharField):
 
     def to_representation(self, value):
         value: str = super().to_representation(value)
-        if not value.startswith(("/", "#")) or value.startswith(LANGUAGE_PREFIXES):
+        if not value.startswith("/") or value.startswith(LANGUAGE_PREFIXES):
             return value
 
         language_code = translation.get_language() or settings.LANGUAGE_CODE

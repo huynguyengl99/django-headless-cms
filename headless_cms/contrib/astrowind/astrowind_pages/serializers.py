@@ -1,10 +1,12 @@
-from headless_cms.contrib.astrowind.astrowind_pages.models import AWIndexPage
+from headless_cms.contrib.astrowind.astrowind_pages.models import AWIndexPage, AWSite
 from headless_cms.contrib.astrowind.astrowind_widgets.serializers import (
     AWCallToActionSerializer,
     AWContentSerializer,
     AWFaqSerializer,
     AWFeature2Serializer,
     AWFeatureSerializer,
+    AWFooterSerializer,
+    AWHeaderSerializer,
     AWHeroSerializer,
     AWStatSerializer,
     AWStepSerializer,
@@ -24,3 +26,11 @@ class AWIndexPageSerializer(AWBaseSerializer):
 
     class Meta(AWBaseSerializer.Meta):
         model = AWIndexPage
+
+
+class AWSiteSerializer(AWBaseSerializer):
+    header = AWHeaderSerializer(read_only=True)
+    footer = AWFooterSerializer(read_only=True)
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWSite

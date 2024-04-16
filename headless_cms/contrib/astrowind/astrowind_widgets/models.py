@@ -382,7 +382,7 @@ class AWFooterLink(LocalizedPublicationModel):
 @reversion.register(exclude=("published_version",))
 class AWFooterLinkItem(AWBaseLinkItem):
     footer_links = models.ForeignKey(
-        AWFooterLink, on_delete=models.SET, null=True, blank=True
+        AWFooterLink, on_delete=models.SET, null=True, blank=True, related_name="links"
     )
 
     position = models.PositiveIntegerField(default=0)
