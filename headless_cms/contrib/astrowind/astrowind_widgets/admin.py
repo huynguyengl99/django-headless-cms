@@ -27,6 +27,9 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFooter,
     AWFooterLink,
     AWFooterLinkItem,
+    AWHeader,
+    AWHeaderAction,
+    AWHeaderLink,
     AWHero,
     AWHeroAction,
     AWHeroImage,
@@ -252,6 +255,54 @@ class AWFeature3Admin(AWSectionAdmin):
     history_latest_first = True
 
 
+class AWHeaderLinkSelfInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWHeaderLink.links.through
+    fk_name = "parent_link"
+    extra = 0
+
+
+@admin.register(AWHeaderLink)
+class AWHeaderLinkAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [AWHeaderLinkSelfInline]
+
+
+@admin.register(AWHeaderAction)
+class AWHeaderActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
+class AWHeaderLinkInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWHeader.links.through
+    extra = 0
+
+
+class AWHeaderActionInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWHeader.actions.through
+
+    extra = 0
+
+
+@admin.register(AWHeader)
+class AWHeaderAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+    inlines = [AWHeaderLinkInline, AWHeaderActionInline]
+
+
 @admin.register(AWFooterLinkItem)
 class AWFooterLinkItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
@@ -310,7 +361,6 @@ class AWFooterAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
         AWFooterSecondaryLinksInline,
         AWFooterSocialLinksInline,
     ]
-    exclude = ["links", "secondary_links", "social_links"]
 
 
 @admin.register(AWHeroTextAction)

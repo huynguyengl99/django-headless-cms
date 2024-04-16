@@ -44,11 +44,14 @@ class PublishStatusInlineMixin:
             fields = obj._meta.get_fields()
             for field in fields:
                 rel_model = field.related_model
-                if (
-                    rel_model
-                    and issubclass(rel_model, PublicationModel)
-                    and rel_model != self.parent_model
-                ):
+                if not rel_model or not issubclass(rel_model, PublicationModel):
+                    continue
+                if self.fk_name:
+                    if field.name == self.fk_name:
+                        continue
+                    else:
+                        return self._get_publish_status(getattr(obj, field.name))
+                elif rel_model != self.parent_model:
                     published_state = self._get_publish_status(getattr(obj, field.name))
         else:
             published_state = self._get_publish_status(obj)

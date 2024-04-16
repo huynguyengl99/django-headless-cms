@@ -314,6 +314,67 @@ class AWBaseLinkItem(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
+class AWHeaderLink(AWBaseLinkItem):
+    links = models.ManyToManyField(
+        "self", through="AWHeaderLinkSelfThrough", symmetrical=False
+    )
+
+
+class AWHeaderLinkSelfThrough(ThroughTableMixin, models.Model):
+    position = models.PositiveIntegerField(default=0)
+    parent_link = models.ForeignKey(
+        AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_parents"
+    )
+    child_link = models.ForeignKey(
+        AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_children"
+    )
+
+    class Meta:
+        ordering = ["position"]
+
+
+@reversion.register(exclude=("published_version",))
+class AWHeaderAction(AWAction):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class AWHeader(LocalizedPublicationModel):
+    links = models.ManyToManyField(
+        AWHeaderLink,
+        related_name="links_headers",
+        blank=True,
+        through="AWHeaderLinkThrough",
+    )
+    actions = models.ManyToManyField(
+        AWHeaderAction,
+        related_name="actions_headers",
+        blank=True,
+        through="AWHeaderActionThrough",
+    )
+
+
+class AWHeaderLinkThrough(ThroughTableMixin, models.Model):
+    position = models.PositiveIntegerField(default=0)
+    header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
+    header_link = models.ForeignKey(AWHeaderLink, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        ordering = ["position"]
+
+
+class AWHeaderActionThrough(ThroughTableMixin, models.Model):
+    position = models.PositiveIntegerField(default=0)
+    header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
+    header_action = models.ForeignKey(
+        AWHeaderAction, on_delete=models.SET_NULL, null=True
+    )
+
+    class Meta:
+        ordering = ["position"]
+
+
+@reversion.register(exclude=("published_version",))
 class AWFooterLink(LocalizedPublicationModel):
     title = LocalizedTextField(default=dict, blank=True, null=True, required=False)
 
@@ -354,7 +415,6 @@ class AWFooter(LocalizedPublicationModel):
 
 
 class AWFooterLinkBaseThough(ThroughTableMixin, models.Model):
-
     position = models.PositiveIntegerField(default=0)
     footer = models.ForeignKey(AWFooter, on_delete=models.CASCADE, null=True)
     footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
