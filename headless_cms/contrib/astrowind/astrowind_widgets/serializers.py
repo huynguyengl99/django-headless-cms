@@ -1,3 +1,4 @@
+from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
@@ -41,13 +42,27 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
 from headless_cms.contrib.astrowind.shared.serializers import AWBaseSerializer
 
 
+class AWBaseImageSerializer(AWBaseSerializer):
+    src = serializers.SerializerMethodField()
+
+    def get_src(self, obj):
+        if obj.src:
+            return self.context["request"].build_absolute_uri(obj.src.url)
+        elif obj.src_url:
+            return obj.src_url
+
+    class Meta:
+        abstract = True
+        exclude = ["src_url"]
+
+
 class AWItemSerializer(AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
         model = AWItem
 
 
-class AWHeroImageSerializer(AWBaseSerializer):
-    class Meta(AWBaseSerializer.Meta):
+class AWHeroImageSerializer(AWBaseImageSerializer):
+    class Meta(AWBaseImageSerializer.Meta):
         model = AWHeroImage
 
 

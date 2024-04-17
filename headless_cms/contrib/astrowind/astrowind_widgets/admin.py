@@ -138,19 +138,11 @@ class AWHeroImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWHeroImageInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWHeroImage
-    extra = 0
-
-
 @admin.register(AWHero)
 class AWHeroAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
-    inlines = [AWHeroActionInline, AWHeroImageInline]
+    inlines = [AWHeroActionInline]
 
 
 @admin.register(AWItem)

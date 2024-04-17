@@ -51,7 +51,8 @@ class AWGenericBaseModel(models.Model):
 
 
 class AWImage(LocalizedPublicationModel):
-    src = models.FileField()
+    src = models.FileField(blank=True, null=True)
+    src_url = models.CharField(default="", blank=True)
     alt = LocalizedTextField(blank=True, null=True, required=False)
 
     class Meta:
@@ -148,21 +149,27 @@ class AWSection(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
+class AWHeroImage(AWImage):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
 class AWHero(AWFragment):
     content = LocalizedTextField(blank=True, null=True, required=False)
+
+    image = models.ForeignKey(
+        AWHeroImage,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="aw_heroes",
+    )
 
 
 @reversion.register(exclude=("published_version",))
 class AWHeroAction(AWAction):
     hero = models.ForeignKey(
         AWHero, blank=True, null=True, on_delete=models.SET_NULL, related_name="actions"
-    )
-
-
-@reversion.register(exclude=("published_version",))
-class AWHeroImage(AWImage):
-    hero = models.OneToOneField(
-        AWHero, blank=True, null=True, on_delete=models.SET_NULL, related_name="image"
     )
 
 
