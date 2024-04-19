@@ -35,7 +35,6 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHeroImage,
     AWHeroText,
     AWHeroTextAction,
-    AWHeroTextAction2,
     AWInput,
     AWItem,
     AWPriceItem,
@@ -156,18 +155,9 @@ class AWStepImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWStepImageInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWStepImage
-    extra = 0
-
-
 @admin.register(AWStep)
 class AWStepAdmin(AWSectionAdmin):
     history_latest_first = True
-    inlines = AWSectionAdmin.inlines + [AWStepImageInline]
 
 
 @admin.register(AWBlogHighlightedPost)
@@ -210,31 +200,14 @@ class AWContentActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWContentActionInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWContentAction
-    extra = 0
-
-
 @admin.register(AWContentImage)
 class AWContentImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWContentImageInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWContentImage
-    extra = 0
-
-
 @admin.register(AWContent)
 class AWContentAdmin(AWSectionAdmin):
     history_latest_first = True
-    inlines = AWSectionAdmin.inlines + [AWContentActionInline, AWContentImageInline]
 
 
 @admin.register(AWFeature2)
@@ -360,32 +333,9 @@ class AWHeroTextActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWHeroTextActionInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWHeroTextAction
-    extra = 0
-
-
-@admin.register(AWHeroTextAction2)
-class AWHeroTextAction2Admin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
-class AWHeroTextAction2Inline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWHeroTextAction2
-    extra = 0
-
-
 @admin.register(AWHeroText)
 class AWHeroTextAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
-
-    inlines = [AWHeroTextActionInline, AWHeroTextAction2Inline]
 
 
 @admin.register(AWInput)
@@ -398,18 +348,9 @@ class AWPriceItemActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWPriceItemActionInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWPriceItemAction
-    extra = 0
-
-
 @admin.register(AWPriceItem)
 class AWPriceItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
-    inlines = [AWPriceItemActionInline]
 
 
 @admin.register(AWPricing)
@@ -434,18 +375,9 @@ class AWStep2ActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWStep2ActionInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWStep2Action
-    extra = 0
-
-
 @admin.register(AWStep2)
-class AWStep2Admin(EnhancedLocalizedVersionAdmin):
+class AWStep2Admin(AWSectionAdmin):
     history_latest_first = True
-    inlines = [AWStep2ActionInline]
 
 
 @admin.register(AWTextArea)
@@ -458,26 +390,9 @@ class AWTestimonialItemImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWTestimonialItemImageInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWTestimonialItemImage
-    extra = 0
-
-
 @admin.register(AWTestimonialItem)
 class AWTestimonialItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
-    inlines = [AWTestimonialItemImageInline]
-
-
-class AWTestimonialItemInline(
-    PublishStatusInlineMixin,
-    SortableStackedInline,
-):
-    model = AWTestimonialItem
-    fields = ["id"]
 
 
 @admin.register(AWTestimonialAction)
@@ -485,15 +400,6 @@ class AWTestimonialActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-class AWTestimonialActionInline(
-    PublishStatusInlineMixin,
-    StackedInline,
-):
-    model = AWTestimonialAction
-    extra = 0
-
-
 @admin.register(AWTestimonial)
 class AWTestimonialAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
-    inlines = [AWTestimonialActionInline, AWTestimonialItemInline]

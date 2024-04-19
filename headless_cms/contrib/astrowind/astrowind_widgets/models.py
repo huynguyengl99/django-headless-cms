@@ -66,7 +66,9 @@ class AWAction(LocalizedPublicationModel):
         TERTIARY = "tertiary", _("Tertiary")
         LINK = "link", _("Link")
 
-    variant = models.CharField(choices=CTAVariants.choices, default=CTAVariants.PRIMARY)
+    variant = models.CharField(
+        choices=CTAVariants.choices, default=CTAVariants.SECONDARY
+    )
     target = models.CharField(default="", blank=True)
     text = LocalizedCharField(blank=True, null=True, required=False)
     href = AutoLanguageUrlField(default="", blank=True)
@@ -240,6 +242,16 @@ class AWContact(AWFragment, AWForm):
 
 
 @reversion.register(exclude=("published_version",))
+class AWContentAction(AWAction):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class AWContentImage(AWImage):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
 class AWContent(AWSection, AWGenericBaseModel):
     limit = Q(app_label="astrowind_pages")
 
@@ -251,6 +263,20 @@ class AWContent(AWSection, AWGenericBaseModel):
         null=True,
     )
 
+    call_to_action = models.ForeignKey(
+        AWContentAction,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="aw_contents",
+    )
+    image = models.ForeignKey(
+        AWContentImage,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="aw_contents",
+    )
     object_id = models.PositiveIntegerField(blank=True, null=True)
 
     content = LocalizedTextField(blank=True, null=True, required=False)
@@ -262,28 +288,6 @@ class AWContent(AWSection, AWGenericBaseModel):
 
     class Meta:
         ordering = ["position"]
-
-
-@reversion.register(exclude=("published_version",))
-class AWContentAction(AWAction):
-    content = models.OneToOneField(
-        AWContent,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="call_to_action",
-    )
-
-
-@reversion.register(exclude=("published_version",))
-class AWContentImage(AWImage):
-    content = models.OneToOneField(
-        AWContent,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="image",
-    )
 
 
 class AWBaseFeature(AWSection):
@@ -444,34 +448,36 @@ class AWFooterSocialLinksThrough(AWFooterLinkBaseThough):
 
 
 @reversion.register(exclude=("published_version",))
+class AWHeroTextAction(AWAction):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
 class AWHeroText(AWFragment):
     content = LocalizedTextField(blank=True, null=True, required=False)
-
-
-@reversion.register(exclude=("published_version",))
-class AWHeroTextAction(AWAction):
-    hero_text = models.OneToOneField(
-        AWHeroText,
+    call_to_action = models.ForeignKey(
+        AWHeroTextAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="call_to_action",
+        related_name="aw_cta1_hero_texts",
     )
-
-
-@reversion.register(exclude=("published_version",))
-class AWHeroTextAction2(AWAction):
-    hero_text = models.OneToOneField(
-        AWHeroText,
+    call_to_action2 = models.ForeignKey(
+        AWHeroTextAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="call_to_action2",
+        related_name="aw_cta2_hero_texts",
     )
 
 
 @reversion.register(exclude=("published_version",))
 class AWPricing(AWFragment):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class AWPriceItemAction(AWAction):
     pass
 
 
@@ -484,6 +490,14 @@ class AWPriceItem(LocalizedPublicationModel):
     has_ribbon = models.BooleanField(default=False)
     ribbon_title = LocalizedCharField(blank=True, null=True, required=False)
 
+    call_to_action = models.ForeignKey(
+        AWPriceItemAction,
+        null=True,
+        on_delete=models.SET_NULL,
+        blank=True,
+        related_name="price_items",
+    )
+
     items = GenericRelation(AWItem)
 
     pricing = models.ForeignKey(
@@ -492,17 +506,6 @@ class AWPriceItem(LocalizedPublicationModel):
         null=True,
         blank=True,
         related_name="prices",
-    )
-
-
-@reversion.register(exclude=("published_version",))
-class AWPriceItemAction(AWAction):
-    price_item = models.OneToOneField(
-        AWPriceItem,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="call_to_action",
     )
 
 
@@ -528,47 +531,58 @@ class AWStatItem(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWStep(AWSection):
-    is_reversed = models.BooleanField(default=False)
+class AWStepImage(AWImage):
+    pass
 
 
 @reversion.register(exclude=("published_version",))
-class AWStepImage(AWImage):
-    step = models.OneToOneField(
-        AWStep, blank=True, null=True, on_delete=models.SET_NULL, related_name="image"
+class AWStep(AWSection):
+    is_reversed = models.BooleanField(default=False)
+    image = models.ForeignKey(
+        AWStepImage,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="steps",
     )
+
+
+@reversion.register(exclude=("published_version",))
+class AWStep2Action(AWAction):
+    pass
 
 
 @reversion.register(exclude=("published_version",))
 class AWStep2(AWSection):
     is_reversed = models.BooleanField(default=False)
-
-
-@reversion.register(exclude=("published_version",))
-class AWStep2Action(AWAction):
-    step2 = models.OneToOneField(
-        AWStep2,
+    call_to_action = models.ForeignKey(
+        AWStep2Action,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="call_to_action",
+        related_name="step2s",
     )
-
-
-@reversion.register(exclude=("published_version",))
-class AWTestimonial(AWFragment):
-    pass
 
 
 @reversion.register(exclude=("published_version",))
 class AWTestimonialAction(AWAction):
-    testimonial = models.OneToOneField(
-        AWTestimonial,
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class AWTestimonial(AWFragment):
+    call_to_action = models.ForeignKey(
+        AWTestimonialAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="call_to_action",
+        related_name="testimonials",
     )
+
+
+@reversion.register(exclude=("published_version",))
+class AWTestimonialItemImage(AWImage):
+    pass
 
 
 @reversion.register(exclude=("published_version",))
@@ -577,6 +591,14 @@ class AWTestimonialItem(LocalizedPublicationModel):
     testimonial = LocalizedCharField(blank=True, null=True, required=False)
     name = LocalizedCharField(blank=True, null=True, required=False)
     job = LocalizedCharField(blank=True, null=True, required=False)
+
+    image = models.ForeignKey(
+        AWTestimonialItemImage,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="testimonial_items",
+    )
 
     testimonial_group = models.ForeignKey(
         AWTestimonial,
@@ -590,14 +612,3 @@ class AWTestimonialItem(LocalizedPublicationModel):
 
     class Meta:
         ordering = ["position"]
-
-
-@reversion.register(exclude=("published_version",))
-class AWTestimonialItemImage(AWImage):
-    testimonial_item = models.OneToOneField(
-        AWTestimonialItem,
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="image",
-    )

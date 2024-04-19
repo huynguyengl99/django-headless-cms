@@ -18,6 +18,8 @@ def calculate_prefetch_relation(
             not rel_model
             or rel_model in fetched_models
             or not issubclass(rel_model, PublicationModel)
+            or f.auto_created
+            and not f.related_name
         ):
             continue
         f_name = f.name
