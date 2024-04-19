@@ -87,11 +87,11 @@ class AWAboutPage(LocalizedPublicationModel, LocalizedSingletonModel):
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
     stat = models.ForeignKey(AWStat, blank=True, null=True, on_delete=models.SET_NULL)
 
-    feature3 = models.ManyToManyField(
+    feature3s = models.ManyToManyField(
         AWFeature3, blank=True, through=AWAboutFeature3Through
     )
-    step2 = models.ManyToManyField(AWStep2, blank=True, through=AWAboutStep2Through)
+    step2s = models.ManyToManyField(AWStep2, blank=True, through=AWAboutStep2Through)
 
-    feature2 = models.ManyToManyField(
+    feature2s = models.ManyToManyField(
         AWFeature2, blank=True, through=AWAboutFeature2Through
     )

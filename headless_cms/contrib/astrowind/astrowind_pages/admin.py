@@ -31,7 +31,7 @@ class AWAboutFeature3Inline(
     SortableInlineAdminMixin,
     StackedInline,
 ):
-    model = AWAboutPage.feature3.through
+    model = AWAboutPage.feature3s.through
     extra = 0
 
 
@@ -40,7 +40,7 @@ class AWAboutFeature2Inline(
     SortableInlineAdminMixin,
     StackedInline,
 ):
-    model = AWAboutPage.feature2.through
+    model = AWAboutPage.feature2s.through
     extra = 0
 
 
@@ -49,7 +49,7 @@ class AWAboutStep2Inline(
     SortableInlineAdminMixin,
     StackedInline,
 ):
-    model = AWAboutPage.step2.through
+    model = AWAboutPage.step2s.through
     extra = 0
 
 

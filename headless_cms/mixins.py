@@ -1,0 +1,2 @@
+class CMSSchemaMixin:
+    pass
