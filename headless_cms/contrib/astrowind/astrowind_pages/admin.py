@@ -7,6 +7,7 @@ from headless_cms.admin import EnhancedLocalizedVersionAdmin, PublishStatusInlin
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
     AWIndexPage,
+    AWPricingPage,
     AWSite,
 )
 from headless_cms.contrib.astrowind.astrowind_widgets.admin import AWContentInline
@@ -60,3 +61,8 @@ class AWAboutPageAdmin(
     history_latest_first = True
 
     inlines = [AWAboutFeature3Inline, AWAboutStep2Inline, AWAboutFeature2Inline]
+
+
+@admin.register(AWPricingPage)
+class AWPricingPageAdmin(EnhancedLocalizedVersionAdmin, SingletonModelAdmin):
+    history_latest_first = True

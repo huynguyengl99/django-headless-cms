@@ -1,6 +1,7 @@
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
     AWIndexPage,
+    AWPricingPage,
     AWSite,
 )
 from headless_cms.contrib.astrowind.astrowind_widgets.serializers import (
@@ -8,10 +9,13 @@ from headless_cms.contrib.astrowind.astrowind_widgets.serializers import (
     AWContentSerializer,
     AWFaqSerializer,
     AWFeature2Serializer,
+    AWFeature3Serializer,
     AWFeatureSerializer,
     AWFooterSerializer,
     AWHeaderSerializer,
     AWHeroSerializer,
+    AWHeroTextSerializer,
+    AWPricingSerializer,
     AWStatSerializer,
     AWStep2Serializer,
     AWStepSerializer,
@@ -45,9 +49,22 @@ class AWAboutPageSerializer(AWBaseSerializer):
     hero = AWHeroSerializer(read_only=True)
     stat = AWStatSerializer(read_only=True)
 
-    feature3s = AWFeatureSerializer(read_only=True, many=True)
+    feature3s = AWFeature3Serializer(read_only=True, many=True)
     step2s = AWStep2Serializer(read_only=True, many=True)
     feature2s = AWFeature2Serializer(read_only=True, many=True)
 
     class Meta(AWBaseSerializer.Meta):
         model = AWAboutPage
+
+
+class AWPricingPageSerializer(AWBaseSerializer):
+    hero_text = AWHeroTextSerializer(read_only=True)
+    prices = AWPricingSerializer(read_only=True)
+
+    feature3 = AWFeature3Serializer(read_only=True)
+    step = AWStepSerializer(read_only=True)
+    faq = AWFaqSerializer(read_only=True)
+    cta = AWCallToActionSerializer(read_only=True)
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWPricingPage

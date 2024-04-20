@@ -4,44 +4,44 @@ from rest_framework.generics import RetrieveAPIView
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
     AWIndexPage,
+    AWPricingPage,
     AWSite,
 )
 from headless_cms.contrib.astrowind.astrowind_pages.serializers import (
     AWAboutPageSerializer,
     AWIndexPageSerializer,
+    AWPricingPageSerializer,
     AWSiteSerializer,
 )
 from headless_cms.mixins import CMSSchemaMixin
 
 
-class AWIndexPageCMSView(CMSSchemaMixin, RetrieveAPIView):
+class AWPageView(CMSSchemaMixin, RetrieveAPIView):
+    model = None
+
+    def get_object(self):
+        obj = self.model.published_objects.published(auto_prefetch=True).first()
+        if not obj:
+            raise Http404
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+
+class AWIndexPageView(AWPageView):
     serializer_class = AWIndexPageSerializer
-
-    def get_object(self):
-        obj = AWIndexPage.published_objects.published(auto_prefetch=True).first()
-        if not obj:
-            raise Http404
-        self.check_object_permissions(self.request, obj)
-        return obj
+    model = AWIndexPage
 
 
-class AWSiteCMSView(CMSSchemaMixin, RetrieveAPIView):
+class AWSiteView(AWPageView):
     serializer_class = AWSiteSerializer
-
-    def get_object(self):
-        obj = AWSite.published_objects.published(auto_prefetch=True).first()
-        if not obj:
-            raise Http404
-        self.check_object_permissions(self.request, obj)
-        return obj
+    model = AWSite
 
 
-class AWAboutPageCMSView(CMSSchemaMixin, RetrieveAPIView):
+class AWAboutPageView(AWPageView):
     serializer_class = AWAboutPageSerializer
+    model = AWAboutPage
 
-    def get_object(self):
-        obj = AWAboutPage.published_objects.published(auto_prefetch=True).first()
-        if not obj:
-            raise Http404
-        self.check_object_permissions(self.request, obj)
-        return obj
+
+class AWPricingPageView(AWPageView):
+    serializer_class = AWPricingPageSerializer
+    model = AWPricingPage

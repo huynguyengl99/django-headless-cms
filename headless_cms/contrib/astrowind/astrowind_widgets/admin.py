@@ -349,13 +349,26 @@ class AWPriceItemActionAdmin(EnhancedLocalizedVersionAdmin):
 
 
 @admin.register(AWPriceItem)
-class AWPriceItemAdmin(EnhancedLocalizedVersionAdmin):
+class AWPriceItemAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+    inlines = [AWItemInline]
+
+
+class AWPriceItemInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWPricing.prices.through
+    extra = 0
 
 
 @admin.register(AWPricing)
-class AWPricingAdmin(EnhancedLocalizedVersionAdmin):
+class AWPricingAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+    inlines = [AWPriceItemInline]
 
 
 @admin.register(AWStatItem)

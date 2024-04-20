@@ -457,11 +457,6 @@ class AWHeroText(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPricing(AWFragment):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWPriceItemAction(AWAction):
     pass
 
@@ -485,13 +480,20 @@ class AWPriceItem(LocalizedPublicationModel):
 
     items = GenericRelation(AWItem)
 
-    pricing = models.ForeignKey(
-        AWPricing,
-        on_delete=models.SET_NULL,
-        null=True,
+
+@reversion.register(exclude=("published_version",))
+class AWPricing(AWFragment):
+    prices = models.ManyToManyField(
+        AWPriceItem,
+        related_name="aw_pricing",
         blank=True,
-        related_name="prices",
+        through="AWPriceItemThrough",
     )
+
+
+class AWPriceItemThrough(M2MSortedOrderThrough):
+    pricing = models.ForeignKey(AWPricing, on_delete=models.SET_NULL, null=True)
+    price_item = models.ForeignKey(AWPriceItem, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))

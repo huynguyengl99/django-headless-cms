@@ -13,6 +13,8 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFooter,
     AWHeader,
     AWHero,
+    AWHeroText,
+    AWPricing,
     AWStat,
     AWStep,
     AWStep2,
@@ -85,4 +87,24 @@ class AWAboutPage(LocalizedPublicationModel, LocalizedSingletonModel):
 
     feature2s = models.ManyToManyField(
         AWFeature2, blank=True, through=AWAboutFeature2Through
+    )
+
+
+@reversion.register(exclude=("published_version",))
+class AWPricingPage(LocalizedPublicationModel, LocalizedSingletonModel):
+    title = LocalizedTextField(default=dict, blank=True, null=True)
+
+    hero_text = models.ForeignKey(
+        AWHeroText, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    prices = models.ForeignKey(
+        AWPricing, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    feature3 = models.ForeignKey(
+        AWFeature3, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    step = models.ForeignKey(AWStep, blank=True, null=True, on_delete=models.SET_NULL)
+    faq = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
+    cta = models.ForeignKey(
+        AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
     )

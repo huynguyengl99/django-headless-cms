@@ -27,6 +27,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHeroAction,
     AWHeroImage,
     AWHeroText,
+    AWHeroTextAction,
     AWItem,
     AWPriceItem,
     AWPricing,
@@ -86,8 +87,8 @@ class AWFeatureSerializer(AWBaseSerializer):
         model = AWFeature
 
 
-class AWStepImageSerializer(AWBaseSerializer):
-    class Meta(AWBaseSerializer.Meta):
+class AWStepImageSerializer(AWBaseImageSerializer):
+    class Meta(AWBaseImageSerializer.Meta):
         model = AWStepImage
 
 
@@ -227,16 +228,26 @@ class AWFooterSerializer(AWBaseSerializer):
         model = AWFooter
 
 
+class AWHeroTextActionSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWHeroTextAction
+
+
+class AWPriceItemActionSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWHeroTextAction
+
+
 class AWHeroTextSerializer(AWBaseSerializer):
-    call_to_action = AWCallToActionSerializer(read_only=True)
-    call_to_action2 = AWCallToActionSerializer(read_only=True)
+    call_to_action = AWHeroTextActionSerializer(read_only=True)
+    call_to_action2 = AWHeroTextActionSerializer(read_only=True)
 
     class Meta(AWBaseSerializer.Meta):
         model = AWHeroText
 
 
 class AWPriceItemSerializer(AWBaseSerializer):
-    call_to_action = AWCallToActionSerializer(read_only=True)
+    call_to_action = AWPriceItemActionSerializer(read_only=True)
     items = AWItemSerializer(read_only=True, many=True)
 
     class Meta(AWBaseSerializer.Meta):
