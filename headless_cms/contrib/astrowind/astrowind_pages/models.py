@@ -3,7 +3,6 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from localized_fields.fields import LocalizedTextField
 
-from headless_cms.admin import ThroughTableMixin
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
     AWContent,
@@ -18,7 +17,11 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStep,
     AWStep2,
 )
-from headless_cms.models import LocalizedPublicationModel, LocalizedSingletonModel
+from headless_cms.models import (
+    LocalizedPublicationModel,
+    LocalizedSingletonModel,
+    M2MSortedOrderThrough,
+)
 
 
 @reversion.register(exclude=("published_version",))
@@ -53,31 +56,19 @@ class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
     )
 
 
-class AWAboutFeature3Through(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWAboutFeature3Through(M2MSortedOrderThrough):
     about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
     feature3 = models.ForeignKey(AWFeature3, on_delete=models.SET_NULL, null=True)
 
-    class Meta:
-        ordering = ["position"]
 
-
-class AWAboutFeature2Through(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWAboutFeature2Through(M2MSortedOrderThrough):
     about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
     feature2 = models.ForeignKey(AWFeature2, on_delete=models.SET_NULL, null=True)
 
-    class Meta:
-        ordering = ["position"]
 
-
-class AWAboutStep2Through(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWAboutStep2Through(M2MSortedOrderThrough):
     about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
     step2 = models.ForeignKey(AWStep2, on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        ordering = ["position"]
 
 
 @reversion.register(exclude=("published_version",))

@@ -10,6 +10,15 @@ from reversion.models import Version
 from solo.models import SingletonModel
 
 
+class M2MSortedOrderThrough(models.Model):
+    is_through_table = True
+    position = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["position"]
+        abstract = True
+
+
 class PublishedQuerySet(models.QuerySet):
     @cached_property
     def prefetch_relation_list(self):

@@ -8,6 +8,8 @@ from django.db import migrations, models
 
 import headless_cms.admin
 import headless_cms.fields.url_field
+import headless_cms.mixins
+import headless_cms.models
 
 
 class Migration(migrations.Migration):
@@ -170,7 +172,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["position"],
             },
-            bases=(headless_cms.admin.ThroughTableMixin, models.Model),
+            bases=(headless_cms.models.M2MSortedOrderThrough, models.Model),
         ),
         migrations.CreateModel(
             name="AWHeaderLinkSelfThrough",
@@ -207,7 +209,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["position"],
             },
-            bases=(headless_cms.admin.ThroughTableMixin, models.Model),
+            bases=(headless_cms.models.M2MSortedOrderThrough, models.Model),
         ),
         migrations.AddField(
             model_name="awheaderlink",

@@ -19,10 +19,6 @@ from headless_cms.models import PublicationModel
 from headless_cms.settings import headless_cms_settings
 
 
-class ThroughTableMixin:
-    is_through_table = True
-
-
 class PublishStatusInlineMixin:
     show_change_link = True
 

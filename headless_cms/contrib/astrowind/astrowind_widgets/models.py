@@ -10,9 +10,8 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
-from headless_cms.admin import ThroughTableMixin
 from headless_cms.fields.url_field import AutoLanguageUrlField
-from headless_cms.models import LocalizedPublicationModel
+from headless_cms.models import LocalizedPublicationModel, M2MSortedOrderThrough
 
 
 class AWGenericBaseModel(models.Model):
@@ -331,17 +330,13 @@ class AWHeaderLink(AWBaseLinkItem):
     )
 
 
-class AWHeaderLinkSelfThrough(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWHeaderLinkSelfThrough(M2MSortedOrderThrough):
     parent_link = models.ForeignKey(
         AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_parents"
     )
     child_link = models.ForeignKey(
         AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_children"
     )
-
-    class Meta:
-        ordering = ["position"]
 
 
 @reversion.register(exclude=("published_version",))
@@ -365,24 +360,16 @@ class AWHeader(LocalizedPublicationModel):
     )
 
 
-class AWHeaderLinkThrough(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWHeaderLinkThrough(M2MSortedOrderThrough):
     header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
     header_link = models.ForeignKey(AWHeaderLink, on_delete=models.SET_NULL, null=True)
 
-    class Meta:
-        ordering = ["position"]
 
-
-class AWHeaderActionThrough(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWHeaderActionThrough(M2MSortedOrderThrough):
     header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
     header_action = models.ForeignKey(
         AWHeaderAction, on_delete=models.SET_NULL, null=True
     )
-
-    class Meta:
-        ordering = ["position"]
 
 
 @reversion.register(exclude=("published_version",))
@@ -425,13 +412,11 @@ class AWFooter(LocalizedPublicationModel):
     foot_note = LocalizedTextField(blank=True, null=True, required=False)
 
 
-class AWFooterLinkBaseThough(ThroughTableMixin, models.Model):
-    position = models.PositiveIntegerField(default=0)
+class AWFooterLinkBaseThough(M2MSortedOrderThrough):
     footer = models.ForeignKey(AWFooter, on_delete=models.CASCADE, null=True)
     footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
 
-    class Meta:
-        ordering = ["position"]
+    class Meta(M2MSortedOrderThrough.Meta):
         abstract = True
 
 

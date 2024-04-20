@@ -1,6 +1,14 @@
-from headless_cms.models import PublicationModel
+from django.db.models import Prefetch
+
+from headless_cms.models import M2MSortedOrderThrough, PublicationModel
 
 calculated_models = {}
+
+
+class CumulativePrefetch(Prefetch):
+    def __radd__(self, other: str):
+        self.add_prefix(other.replace("__", ""))
+        return self
 
 
 def calculate_prefetch_relation(
@@ -19,12 +27,26 @@ def calculate_prefetch_relation(
             or rel_model in fetched_models
             or not issubclass(rel_model, PublicationModel)
             or f.auto_created
-            and not f.related_name
         ):
             continue
         f_name = f.name
         if f.many_to_many or f.one_to_many:
-            prefetch_relations.append(f_name)
+            if f.many_to_many and issubclass(
+                f.remote_field.through, M2MSortedOrderThrough
+            ):
+                thr = f.remote_field.through
+                tfs = thr._meta.get_fields()
+                rlt_field = next(
+                    obj.remote_field
+                    for obj in tfs
+                    if obj.is_relation and obj.related_model != model
+                )
+                rlt_name = rlt_field.related_name or rlt_field.name
+                queryset = rlt_field.model.objects.order_by(rlt_name + "__position")
+
+                prefetch_relations.append(CumulativePrefetch(f_name, queryset))
+            else:
+                prefetch_relations.append(f_name)
             prefetches, selects = calculate_prefetch_relation(rel_model, fetched_models)
             prefetch_relations.extend(
                 [

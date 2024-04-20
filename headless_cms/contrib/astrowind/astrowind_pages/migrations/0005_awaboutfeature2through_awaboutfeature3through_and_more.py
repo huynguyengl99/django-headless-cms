@@ -7,6 +7,8 @@ import psqlextra.manager.manager
 from django.db import migrations, models
 
 import headless_cms.admin
+import headless_cms.mixins
+import headless_cms.models
 
 
 class Migration(migrations.Migration):
@@ -35,7 +37,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["position"],
             },
-            bases=(headless_cms.admin.ThroughTableMixin, models.Model),
+            bases=(headless_cms.models.M2MSortedOrderThrough, models.Model),
         ),
         migrations.CreateModel(
             name="AWAboutFeature3Through",
@@ -54,7 +56,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["position"],
             },
-            bases=(headless_cms.admin.ThroughTableMixin, models.Model),
+            bases=(headless_cms.models.M2MSortedOrderThrough, models.Model),
         ),
         migrations.CreateModel(
             name="AWAboutPage",
@@ -159,7 +161,7 @@ class Migration(migrations.Migration):
             options={
                 "ordering": ["position"],
             },
-            bases=(headless_cms.admin.ThroughTableMixin, models.Model),
+            bases=(headless_cms.models.M2MSortedOrderThrough, models.Model),
         ),
         migrations.AddField(
             model_name="awaboutpage",
