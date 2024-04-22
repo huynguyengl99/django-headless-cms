@@ -20,6 +20,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWContentAction,
     AWContentImage,
     AWCtaAction,
+    AWDisclaimer,
     AWFaq,
     AWFeature,
     AWFeature2,
@@ -65,6 +66,10 @@ class BaseSortablePublishGenericAdmin(
 
 class AWItemInline(BaseSortablePublishGenericAdmin):
     model = AWItem
+
+
+class AWInputInline(BaseSortablePublishGenericAdmin):
+    model = AWInput
 
 
 class AWContentInline(BaseSortablePublishGenericAdmin):
@@ -191,8 +196,10 @@ class AWBrandAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
 
 
 @admin.register(AWContact)
-class AWContactAdmin(EnhancedLocalizedVersionAdmin):
+class AWContactAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
+
+    inlines = [AWInputInline]
 
 
 @admin.register(AWContentAction)
@@ -390,6 +397,11 @@ class AWStep2ActionAdmin(EnhancedLocalizedVersionAdmin):
 
 @admin.register(AWStep2)
 class AWStep2Admin(AWSectionAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWDisclaimer)
+class AWDisclaimerAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 

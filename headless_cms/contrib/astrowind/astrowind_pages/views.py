@@ -3,12 +3,14 @@ from rest_framework.generics import RetrieveAPIView
 
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
+    AWContactPage,
     AWIndexPage,
     AWPricingPage,
     AWSite,
 )
 from headless_cms.contrib.astrowind.astrowind_pages.serializers import (
     AWAboutPageSerializer,
+    AWContactPageSerializer,
     AWIndexPageSerializer,
     AWPricingPageSerializer,
     AWSiteSerializer,
@@ -45,3 +47,8 @@ class AWAboutPageView(AWPageView):
 class AWPricingPageView(AWPageView):
     serializer_class = AWPricingPageSerializer
     model = AWPricingPage
+
+
+class AWContactPageView(AWPageView):
+    serializer_class = AWContactPageSerializer
+    model = AWContactPage

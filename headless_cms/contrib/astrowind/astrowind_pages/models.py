@@ -5,6 +5,7 @@ from localized_fields.fields import LocalizedTextField
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
+    AWContact,
     AWContent,
     AWFaq,
     AWFeature,
@@ -107,4 +108,19 @@ class AWPricingPage(LocalizedPublicationModel, LocalizedSingletonModel):
     faq = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
     cta = models.ForeignKey(
         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
+    )
+
+
+@reversion.register(exclude=("published_version",))
+class AWContactPage(LocalizedPublicationModel, LocalizedSingletonModel):
+    title = LocalizedTextField(default=dict, blank=True, null=True)
+
+    hero_text = models.ForeignKey(
+        AWHeroText, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    contact_us = models.ForeignKey(
+        AWContact, blank=True, null=True, on_delete=models.SET_NULL
+    )
+    feature2 = models.ForeignKey(
+        AWFeature2, blank=True, null=True, on_delete=models.SET_NULL
     )

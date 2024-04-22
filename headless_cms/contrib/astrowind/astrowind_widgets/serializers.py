@@ -12,6 +12,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWContentAction,
     AWContentImage,
     AWCtaAction,
+    AWDisclaimer,
     AWFaq,
     AWFeature,
     AWFeature2,
@@ -28,6 +29,7 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHeroImage,
     AWHeroText,
     AWHeroTextAction,
+    AWInput,
     AWItem,
     AWPriceItem,
     AWPricing,
@@ -39,8 +41,10 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWTestimonial,
     AWTestimonialItem,
     AWTestimonialItemImage,
+    AWTextArea,
 )
 from headless_cms.contrib.astrowind.shared.serializers import AWBaseSerializer
+from headless_cms.serializers import LocalizedModelSerializer
 
 
 class AWBaseImageSerializer(AWBaseSerializer):
@@ -60,6 +64,27 @@ class AWBaseImageSerializer(AWBaseSerializer):
 class AWItemSerializer(AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
         model = AWItem
+
+
+class AWInputSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWInput
+
+
+class AWTextAreaSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWTextArea
+
+
+class AWDisclaimerSerializer(AWBaseSerializer):
+    class Meta(AWBaseSerializer.Meta):
+        model = AWDisclaimer
+
+
+class AWBaseFormSerializer(LocalizedModelSerializer):
+    inputs = AWInputSerializer(read_only=True, many=True)
+    textarea = AWTextAreaSerializer(read_only=True)
+    disclaimer = AWDisclaimerSerializer(read_only=True)
 
 
 class AWHeroImageSerializer(AWBaseImageSerializer):
@@ -141,7 +166,7 @@ class AWBrandSerializer(AWBaseSerializer):
         model = AWBrand
 
 
-class AWContactSerializer(AWBaseSerializer):
+class AWContactSerializer(AWBaseFormSerializer, AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
         model = AWContact
 

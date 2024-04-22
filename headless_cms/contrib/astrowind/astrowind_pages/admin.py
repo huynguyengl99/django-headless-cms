@@ -6,6 +6,7 @@ from solo.admin import SingletonModelAdmin
 from headless_cms.admin import EnhancedLocalizedVersionAdmin, PublishStatusInlineMixin
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
+    AWContactPage,
     AWIndexPage,
     AWPricingPage,
     AWSite,
@@ -65,4 +66,9 @@ class AWAboutPageAdmin(
 
 @admin.register(AWPricingPage)
 class AWPricingPageAdmin(EnhancedLocalizedVersionAdmin, SingletonModelAdmin):
+    history_latest_first = True
+
+
+@admin.register(AWContactPage)
+class AWContactPageAdmin(EnhancedLocalizedVersionAdmin, SingletonModelAdmin):
     history_latest_first = True

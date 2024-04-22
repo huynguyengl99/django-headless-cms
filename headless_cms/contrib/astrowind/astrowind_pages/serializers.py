@@ -1,11 +1,13 @@
 from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
+    AWContactPage,
     AWIndexPage,
     AWPricingPage,
     AWSite,
 )
 from headless_cms.contrib.astrowind.astrowind_widgets.serializers import (
     AWCallToActionSerializer,
+    AWContactSerializer,
     AWContentSerializer,
     AWFaqSerializer,
     AWFeature2Serializer,
@@ -68,3 +70,12 @@ class AWPricingPageSerializer(AWBaseSerializer):
 
     class Meta(AWBaseSerializer.Meta):
         model = AWPricingPage
+
+
+class AWContactPageSerializer(AWBaseSerializer):
+    hero_text = AWHeroTextSerializer(read_only=True)
+    feature2 = AWFeature2Serializer(read_only=True)
+    contact_us = AWContactSerializer(read_only=True)
+
+    class Meta(AWBaseSerializer.Meta):
+        model = AWContactPage

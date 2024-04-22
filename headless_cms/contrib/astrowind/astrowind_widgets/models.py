@@ -92,29 +92,36 @@ class AWItem(LocalizedPublicationModel, AWGenericBaseModel):
         ordering = ["position"]
 
 
-@reversion.register(exclude=("published_version",))
-class AWInput(LocalizedPublicationModel, AWGenericBaseModel):
+class AWBaseInput(LocalizedPublicationModel):
     type = CharField(default="text", blank=True)
     name = CharField()
     label = LocalizedCharField(blank=True, null=True, required=False)
     autocomplete = CharField(default="on", blank=True)
     placeholder = LocalizedCharField(blank=True, null=True, required=False)
-    position = models.PositiveIntegerField(default=0)
 
     class Meta:
-        ordering = ["position"]
+        abstract = True
 
 
 @reversion.register(exclude=("published_version",))
-class AWTextArea(LocalizedPublicationModel, AWGenericBaseModel):
-    name = CharField()
-    label = LocalizedCharField(blank=True, null=True, required=False)
-    rows = IntegerField(default=4)
-    placeholder = LocalizedCharField(blank=True, null=True, required=False)
+class AWInput(AWBaseInput, AWGenericBaseModel):
     position = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ["position"]
+
+
+@reversion.register(exclude=("published_version"))
+class AWDisclaimer(LocalizedPublicationModel):
+    label = LocalizedCharField(blank=True, null=True, required=False)
+
+
+@reversion.register(exclude=("published_version",))
+class AWTextArea(LocalizedPublicationModel):
+    name = CharField(default="message")
+    label = LocalizedCharField(blank=True, null=True, required=False)
+    rows = IntegerField(default=4)
+    placeholder = LocalizedCharField(blank=True, null=True, required=False)
 
 
 class AWFragment(LocalizedPublicationModel):
@@ -127,16 +134,21 @@ class AWFragment(LocalizedPublicationModel):
         abstract = True
 
 
+@reversion.register(exclude=("published_version",))
 class AWForm(LocalizedPublicationModel):
-    inputs = models.ManyToManyField(AWInput, related_name="aw_form_inputs")
+    inputs = GenericRelation(AWInput)
     textarea = models.ForeignKey(
         AWTextArea, on_delete=models.SET_NULL, null=True, blank=True
     )
     disclaimer = models.ForeignKey(
-        AWInput, on_delete=models.SET_NULL, null=True, blank=True
+        AWDisclaimer,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
     )
     button = LocalizedCharField(blank=True, null=True, required=False)
     description = LocalizedTextField(blank=True, null=True, required=False)
+    submit_url = LocalizedCharField(default=dict, blank=True, null=True, required=False)
 
     class Meta:
         abstract = True
