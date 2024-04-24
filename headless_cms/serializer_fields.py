@@ -3,6 +3,7 @@ from django.utils import translation
 from rest_framework.fields import (
     CharField,
 )
+from rest_framework.relations import SlugRelatedField
 
 LANGUAGE_PREFIXES = tuple(f"/{lang}/" for lang in settings.LANGUAGES)
 
@@ -19,3 +20,9 @@ class UrlField(CharField):
         language_code = translation.get_language() or settings.LANGUAGE_CODE
 
         return f"/{language_code}" + value
+
+
+class LocalizedSlugRelatedField(SlugRelatedField):
+    def to_representation(self, obj):
+        res = super().to_representation(obj)
+        return str(res)

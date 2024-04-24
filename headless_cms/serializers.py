@@ -31,7 +31,17 @@ class LocalizedModelSerializer(ModelSerializer):
         if not data:
             return None
 
+        field_list = instance._meta.get_fields()
+
+        rel_fields = {
+            field.attname
+            for field in field_list
+            if field.is_relation and not field.auto_created
+        }
+
         for k, v in data.items():
+            if k in rel_fields:
+                continue
             setattr(instance, k, v)
 
         return super().to_representation(instance)

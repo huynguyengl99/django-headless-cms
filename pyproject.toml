@@ -33,6 +33,7 @@ dependencies = [
   "Django>=4",
   "django-admin-interface",
   "django-admin-sortable2",
+  "django-filter",
   "django-jsonform",
   "django-localized-fields",
   "django-reversion",

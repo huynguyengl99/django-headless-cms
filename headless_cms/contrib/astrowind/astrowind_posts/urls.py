@@ -1,7 +1,8 @@
-from rest_framework.routers import DefaultRouter
+from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 
 from .views import AWPostCMSViewSet
 
-router = DefaultRouter()
-router.register(r"", AWPostCMSViewSet, basename="posts")
-urlpatterns = router.urls
+router = SimpleRouter()
+router.register(r"", AWPostCMSViewSet)
+urlpatterns = [path("", include(router.urls))]

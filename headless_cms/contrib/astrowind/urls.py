@@ -9,13 +9,13 @@ from headless_cms.contrib.astrowind.astrowind_pages.views import (
 )
 
 urlpatterns = [
-    path("index", AWIndexPageView.as_view(), name="index"),
-    path("about", AWAboutPageView.as_view(), name="about"),
-    path("site", AWSiteView.as_view(), name="site"),
-    path("pricing", AWPricingPageView.as_view(), name="pricing"),
-    path("contact", AWContactPageView.as_view(), name="contact"),
+    path("index/", AWIndexPageView.as_view(), name="index"),
+    path("about/", AWAboutPageView.as_view(), name="about"),
+    path("site/", AWSiteView.as_view(), name="site"),
+    path("pricing/", AWPricingPageView.as_view(), name="pricing"),
+    path("contact/", AWContactPageView.as_view(), name="contact"),
     path(
-        "posts",
-        include(("headless_cms.contrib.astrowind.astrowind_posts.urls", "posts")),
+        "posts/",
+        include("headless_cms.contrib.astrowind.astrowind_posts.urls"),
     ),
 ]
