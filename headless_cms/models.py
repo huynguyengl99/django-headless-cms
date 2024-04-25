@@ -83,6 +83,18 @@ class PublicationModel(models.Model):
             self.published_version = last_ver
             self.save()
 
+    def unpublish(self, user=None):
+        with reversion.create_revision():
+            reversion.set_comment("Unpublish")
+            if user:
+                reversion.set_user(user)
+
+            self.save()
+
+        with reversion.create_revision(manage_manually=True):
+            self.published_version = None
+            self.save()
+
     @admin.display
     def published_state(self):
         state = self.AdminPublishedStateHtml.UNPUBLISHED

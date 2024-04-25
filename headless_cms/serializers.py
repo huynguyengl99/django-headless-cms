@@ -36,7 +36,7 @@ class LocalizedModelSerializer(ModelSerializer):
         rel_fields = {
             field.attname
             for field in field_list
-            if field.is_relation and not field.auto_created
+            if field.is_relation and not field.auto_created and field.related_model
         }
 
         for k, v in data.items():

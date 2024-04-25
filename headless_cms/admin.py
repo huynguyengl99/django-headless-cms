@@ -60,8 +60,14 @@ def publish(modeladmin, request, queryset):
         obj.publish(request.user)
 
 
+@admin.action(description="Unpublish selected")
+def unpublish(modeladmin, request, queryset):
+    for obj in queryset.all():
+        obj.unpublish(request.user)
+
+
 class EnhancedLocalizedVersionAdmin(LocalizedFieldsAdminMixin, VersionAdmin):
-    actions = [publish]
+    actions = [publish, unpublish]
     formfield_overrides = {
         models.TextField: {"widget": AdminMartorWidget},
     }
