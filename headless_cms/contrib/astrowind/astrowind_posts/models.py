@@ -1,12 +1,14 @@
 import reversion
 from django.db import models
 from django.db.models import DateTimeField, F
-from localized_fields.fields import LocalizedCharField, LocalizedTextField
+from localized_fields.fields import (
+    LocalizedCharField,
+    LocalizedTextField,
+)
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import AWImage
 from headless_cms.fields.martor_field import LocalizedMartorField
-from headless_cms.fields.slug_field import LocalizedSlugField
-from headless_cms.models import LocalizedPublicationModel
+from headless_cms.models import LocalizedPublicationModel, LocalizedTitleSlugModel
 
 
 @reversion.register(exclude=("published_version",))
@@ -59,16 +61,10 @@ class AWPost(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWCategory(LocalizedPublicationModel):
-    title = LocalizedTextField(blank=True, null=True, required=False)
-
-    def __str__(self):
-        return str(self.title)
+class AWCategory(LocalizedTitleSlugModel):
+    pass
 
 
 @reversion.register(exclude=("published_version",))
-class AWPostTag(LocalizedPublicationModel):
-    value = LocalizedSlugField(default=dict, blank=True, null=True)
-
-    def __str__(self):
-        return str(self.value)
+class AWPostTag(LocalizedTitleSlugModel):
+    pass

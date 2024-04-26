@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import format_html
+from localized_fields.fields import LocalizedTextField, LocalizedUniqueSlugField
 from localized_fields.models import LocalizedModel
 from reversion.models import Version
 from solo.models import SingletonModel
@@ -122,6 +123,19 @@ class LocalizedSingletonModel(SingletonModel):
         if not obj.published_version_id:
             return None
         return obj
+
+    class Meta:
+        abstract = True
+
+
+class LocalizedTitleSlugModel(LocalizedPublicationModel):
+    title = LocalizedTextField(blank=True, null=True, required=False)
+    slug = LocalizedUniqueSlugField(
+        populate_from="title", blank=True, null=True, required=False
+    )
+
+    def __str__(self):
+        return str(self.title)
 
     class Meta:
         abstract = True

@@ -7,7 +7,6 @@ from headless_cms.contrib.astrowind.astrowind_posts.models import (
     AWPostTag,
 )
 from headless_cms.contrib.astrowind.shared.serializers import AWBaseSerializer
-from headless_cms.serializer_fields import LocalizedSlugRelatedField
 
 
 class AWPostMetadataSerializer(AWBaseSerializer):
@@ -38,10 +37,10 @@ class AWCategorySerializer(AWBaseSerializer):
 
 class AWPostSerializer(AWBaseSerializer):
     metadata = AWPostMetadataSerializer(read_only=True)
-    category = LocalizedSlugRelatedField(read_only=True, slug_field="title")
+    category = AWCategorySerializer(read_only=True)
     image = AWPostImageSerializer(read_only=True)
 
-    tags = LocalizedSlugRelatedField(many=True, read_only=True, slug_field="value")
+    tags = AWPostTagSerializer(many=True, read_only=True)
 
     class Meta(AWBaseSerializer.Meta):
         model = AWPost

@@ -26,22 +26,19 @@ class AWPostPaginator(PageNumberPagination):
 class PostFilter(django_filters.FilterSet):
     category = extend_schema_field(OpenApiTypes.STR)(
         django_filters.AllValuesFilter(
-            field_name="category__title",
-            method="filter_category",
+            field_name="category__slug",
+            method="filter_slug",
         )
     )
     tag = extend_schema_field(OpenApiTypes.STR)(
         django_filters.AllValuesFilter(
-            field_name="tags__value",
-            method="filter_tag",
+            field_name="tags__slug",
+            method="filter_slug",
         )
     )
 
-    def filter_category(self, queryset, name, value):
-        return queryset.filter(Q(**{name: value}))
-
-    def filter_tag(self, queryset, name, value):
-        return queryset.filter(Q(**{name: value}))
+    def filter_slug(self, queryset, name, value):
+        return queryset.filter(Q(**{name + "__iexact": value}))
 
     class Meta:
         model = AWPost
