@@ -9,6 +9,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
 from django.utils.translation import gettext as _
+from import_export.admin import ImportExportActionModelAdmin
 from localized_fields.admin import LocalizedFieldsAdminMixin
 from martor.widgets import AdminMartorWidget
 from rest_framework import status
@@ -17,6 +18,7 @@ from reversion.models import Version
 
 from headless_cms.models import PublicationModel
 from headless_cms.settings import headless_cms_settings
+from headless_cms.utils.custom_import_export import override_modelresource_factory
 
 
 class PublishStatusInlineMixin:
@@ -66,7 +68,9 @@ def unpublish(modeladmin, request, queryset):
         obj.unpublish(request.user)
 
 
-class EnhancedLocalizedVersionAdmin(LocalizedFieldsAdminMixin, VersionAdmin):
+class EnhancedLocalizedVersionAdmin(
+    ImportExportActionModelAdmin, LocalizedFieldsAdminMixin, VersionAdmin
+):
     actions = [publish, unpublish]
     formfield_overrides = {
         models.TextField: {"widget": AdminMartorWidget},
@@ -227,3 +231,8 @@ class EnhancedLocalizedVersionAdmin(LocalizedFieldsAdminMixin, VersionAdmin):
                     version.object.save()
 
         return res
+
+    def get_resource_classes(self):
+        if not self.resource_classes and not self.resource_class:
+            return [override_modelresource_factory(self.model)]
+        return super().get_resource_classes()
