@@ -5,10 +5,12 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import format_html
-from localized_fields.fields import LocalizedTextField, LocalizedUniqueSlugField
+from localized_fields.fields import LocalizedTextField
 from localized_fields.models import LocalizedModel
 from reversion.models import Version
 from solo.models import SingletonModel
+
+from headless_cms.fields.slug_field import LocalizedUniqueNormalizedSlugField
 
 
 class M2MSortedOrderThrough(models.Model):
@@ -130,7 +132,7 @@ class LocalizedSingletonModel(SingletonModel):
 
 class LocalizedTitleSlugModel(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
-    slug = LocalizedUniqueSlugField(
+    slug = LocalizedUniqueNormalizedSlugField(
         populate_from="title", blank=True, null=True, required=False
     )
 

@@ -31,6 +31,7 @@ classifiers = [
 ]
 dependencies = [
   "Django>=4",
+  "Unidecode",
   "django-admin-interface",
   "django-admin-sortable2",
   "django-filter",
