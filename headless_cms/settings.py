@@ -8,6 +8,7 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
     "CMS_DRF_SPECTACULAR_PREPROCESSING_HOOKS": [
         "headless_cms.schema.preprocessing_hooks.preprocessing_filter_spec"
     ],
+    "AUTO_TRANSLATE_IGNORES": [],
 }
 
 IMPORT_STRINGS = [

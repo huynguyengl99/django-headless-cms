@@ -32,7 +32,7 @@ class TestBaseTranslate(BaseTestCase):
         self.translate.translate = MagicMock(side_effect=lambda lang, text: text[::-1])
         self.translate.batch_translate = MagicMock(return_value=["Hello, World!"])
 
-        self.translate.can_batch_translate = True
+        self.translate.can_translate_object = True
         self.translate.process()
 
         self.translate.translate.assert_not_called()
@@ -90,7 +90,7 @@ class TestBaseTranslate(BaseTestCase):
         self.translate.translate = MagicMock(side_effect=lambda lang, text: text[::-1])
         self.translate.batch_translate = MagicMock(return_value=["Hello, World!"])
 
-        self.translate.can_batch_translate = True
+        self.translate.can_translate_object = True
         self.translate.process()
 
         self.translate.batch_translate.assert_called_with([], "value")
@@ -106,7 +106,7 @@ class TestBaseTranslate(BaseTestCase):
         self.translate.translate = MagicMock(side_effect=lambda lang, text: text[::-1])
         self.translate.batch_translate = MagicMock(return_value=["Hello, World!"])
 
-        self.translate.can_batch_translate = True
+        self.translate.can_translate_object = True
         self.translate.process(force=True)
 
         self.translate.batch_translate.assert_called_with(["ro", "vi"], "value")

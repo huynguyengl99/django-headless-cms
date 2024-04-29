@@ -68,10 +68,24 @@ def unpublish(modeladmin, request, queryset):
         obj.unpublish(request.user)
 
 
+@admin.action(description="Translate untranslated contents")
+def translate_missing(modeladmin, request, queryset):
+    for obj in queryset.all():
+        headless_cms_settings.AUTO_TRANSLATE_CLASS(obj, user=request.user).process()
+
+
+@admin.action(description="Force translate (override old translation)")
+def force_translate(modeladmin, request, queryset):
+    for obj in queryset.all():
+        headless_cms_settings.AUTO_TRANSLATE_CLASS(obj, user=request.user).process(
+            force=True
+        )
+
+
 class EnhancedLocalizedVersionAdmin(
     ImportExportActionModelAdmin, LocalizedFieldsAdminMixin, VersionAdmin
 ):
-    actions = [publish, unpublish]
+    actions = [publish, unpublish, translate_missing, force_translate]
     formfield_overrides = {
         models.TextField: {"widget": AdminMartorWidget},
     }
@@ -171,9 +185,10 @@ class EnhancedLocalizedVersionAdmin(
             return HttpResponseRedirect(redirect_url)
         elif "_translate" in request.POST or "_force_translate" in request.POST:
             force = "_force_translate" in request.POST
-            reversion.set_comment(f"Object translated{' (forced)' if force else ''}.")
 
-            translator = headless_cms_settings.AUTO_TRANSLATE_CLASS(obj)
+            translator = headless_cms_settings.AUTO_TRANSLATE_CLASS(
+                obj, user=request.user
+            )
             translator.process(force=force)
 
             msg = format_html(

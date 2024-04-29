@@ -51,6 +51,10 @@ name = "django-headless-cms"
 readme = "README.md"
 requires-python = ">=3.9"
 
+[project.optional-dependencies]
+full = ["openai>=1"]
+openai = ["openai>=1"]
+
 [project.urls]
 Documentation = "https://django-headless-cms.readthedocs.io/"
 Homepage = "https://github.com/huynguyengl99/django-headless-cms"
