@@ -6,9 +6,12 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
-from headless_cms.contrib.astrowind.astrowind_widgets.models import AWImage
 from headless_cms.fields.martor_field import LocalizedMartorField
-from headless_cms.models import LocalizedPublicationModel, LocalizedTitleSlugModel
+from headless_cms.models import (
+    LocalizedDynamicFileModel,
+    LocalizedPublicationModel,
+    LocalizedTitleSlugModel,
+)
 
 
 @reversion.register(exclude=("published_version",))
@@ -19,7 +22,7 @@ class AWPostMetadata(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPostImage(AWImage):
+class AWPostImage(LocalizedDynamicFileModel):
     pass
 
 

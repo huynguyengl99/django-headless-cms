@@ -1,5 +1,4 @@
 import reversion
-from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from localized_fields.fields import LocalizedTextField
 
@@ -40,13 +39,23 @@ class AWIndexPage(LocalizedPublicationModel, LocalizedSingletonModel):
     )
     step = models.ForeignKey(AWStep, blank=True, null=True, on_delete=models.SET_NULL)
 
-    contents = GenericRelation(AWContent)
+    contents = models.ManyToManyField(
+        AWContent,
+        related_name="index_page",
+        blank=True,
+        through="AWIndexPageContentThrough",
+    )
 
     faq = models.ForeignKey(AWFaq, blank=True, null=True, on_delete=models.SET_NULL)
     stat = models.ForeignKey(AWStat, blank=True, null=True, on_delete=models.SET_NULL)
     cta = models.ForeignKey(
         AWCallToAction, blank=True, null=True, on_delete=models.SET_NULL
     )
+
+
+class AWIndexPageContentThrough(M2MSortedOrderThrough):
+    index_page = models.ForeignKey(AWIndexPage, on_delete=models.SET_NULL, null=True)
+    content = models.ForeignKey(AWContent, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))

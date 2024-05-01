@@ -5,7 +5,11 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils.html import format_html
-from localized_fields.fields import LocalizedTextField
+from localized_fields.fields import (
+    LocalizedCharField,
+    LocalizedFileField,
+    LocalizedTextField,
+)
 from localized_fields.models import LocalizedModel
 from reversion.models import Version
 from solo.models import SingletonModel
@@ -138,6 +142,15 @@ class LocalizedTitleSlugModel(LocalizedPublicationModel):
 
     def __str__(self):
         return str(self.title)
+
+    class Meta:
+        abstract = True
+
+
+class LocalizedDynamicFileModel(LocalizedPublicationModel):
+    src_file = LocalizedFileField(default=dict, blank=True, null=True, required=False)
+    src_url = LocalizedCharField(default=dict, blank=True, null=True, required=False)
+    alt = LocalizedTextField(blank=True, null=True, required=False)
 
     class Meta:
         abstract = True

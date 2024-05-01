@@ -5,12 +5,10 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWBlogHighlightedPost,
     AWBlogLatestPost,
     AWBrand,
-    AWBrandImage,
     AWCallToAction,
     AWContact,
     AWContent,
     AWContentAction,
-    AWContentImage,
     AWCtaAction,
     AWDisclaimer,
     AWFaq,
@@ -26,7 +24,6 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHeaderLinkThrough,
     AWHero,
     AWHeroAction,
-    AWHeroImage,
     AWHeroText,
     AWHeroTextAction,
     AWInput,
@@ -37,10 +34,8 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStatItem,
     AWStep,
     AWStep2,
-    AWStepImage,
     AWTestimonial,
     AWTestimonialItem,
-    AWTestimonialItemImage,
     AWTextArea,
 )
 from headless_cms.contrib.astrowind.shared.serializers import AWBaseSerializer
@@ -87,18 +82,12 @@ class AWBaseFormSerializer(LocalizedModelSerializer):
     disclaimer = AWDisclaimerSerializer(read_only=True)
 
 
-class AWHeroImageSerializer(AWBaseImageSerializer):
-    class Meta(AWBaseImageSerializer.Meta):
-        model = AWHeroImage
-
-
 class AWHeroActionSerializer(AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
         model = AWHeroAction
 
 
 class AWHeroSerializer(AWBaseSerializer):
-    image = AWHeroImageSerializer(read_only=True)
     actions = AWHeroActionSerializer(read_only=True, many=True)
 
     class Meta(AWBaseSerializer.Meta):
@@ -112,13 +101,7 @@ class AWFeatureSerializer(AWBaseSerializer):
         model = AWFeature
 
 
-class AWStepImageSerializer(AWBaseImageSerializer):
-    class Meta(AWBaseImageSerializer.Meta):
-        model = AWStepImage
-
-
 class AWStepSerializer(AWBaseSerializer):
-    image = AWStepImageSerializer(read_only=True)
     items = AWItemSerializer(read_only=True, many=True)
 
     class Meta(AWBaseSerializer.Meta):
@@ -154,14 +137,7 @@ class AWBlogLatestPostSerializer(AWBaseSerializer):
         model = AWBlogLatestPost
 
 
-class AWBrandImageSerializer(AWBaseSerializer):
-    class Meta(AWBaseSerializer.Meta):
-        model = AWBrandImage
-
-
 class AWBrandSerializer(AWBaseSerializer):
-    images = AWBrandImageSerializer(read_only=True, many=True)
-
     class Meta(AWBaseSerializer.Meta):
         model = AWBrand
 
@@ -171,18 +147,12 @@ class AWContactSerializer(AWBaseFormSerializer, AWBaseSerializer):
         model = AWContact
 
 
-class AWContentImageSerializer(AWBaseSerializer):
-    class Meta(AWBaseSerializer.Meta):
-        model = AWContentImage
-
-
 class AWContentActionSerializer(AWBaseSerializer):
     class Meta(AWBaseSerializer.Meta):
         model = AWContentAction
 
 
 class AWContentSerializer(AWBaseSerializer):
-    image = AWContentImageSerializer(read_only=True)
     call_to_action = AWContentActionSerializer(read_only=True)
     items = AWItemSerializer(read_only=True, many=True)
 
@@ -216,7 +186,7 @@ class AWHeaderLinkSerializer(AWBaseSerializer):
         model = AWHeaderLink
 
     def get_links(self, obj):
-        return AWHeaderLinkSerializer(obj.links.all(), many=True).data
+        return self.__class__(obj.links.all(), many=True).data
 
 
 class AWHeaderActionSerializer(AWBaseSerializer):
@@ -306,14 +276,7 @@ class AWStep2Serializer(AWBaseSerializer):
         model = AWStep2
 
 
-class AWTestimonialItemImageSerializer(AWBaseSerializer):
-    class Meta(AWBaseSerializer.Meta):
-        model = AWTestimonialItemImage
-
-
 class AWTestimonialItemSerializer(AWBaseSerializer):
-    image = AWTestimonialItemImageSerializer(read_only=True)
-
     class Meta(AWBaseSerializer.Meta):
         model = AWTestimonialItem
 

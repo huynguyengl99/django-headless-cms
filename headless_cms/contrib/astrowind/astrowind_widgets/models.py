@@ -11,7 +11,11 @@ from localized_fields.fields import (
 )
 
 from headless_cms.fields.url_field import AutoLanguageUrlField
-from headless_cms.models import LocalizedPublicationModel, M2MSortedOrderThrough
+from headless_cms.models import (
+    LocalizedDynamicFileModel,
+    LocalizedPublicationModel,
+    M2MSortedOrderThrough,
+)
 
 
 class AWGenericBaseModel(models.Model):
@@ -49,13 +53,8 @@ class AWGenericBaseModel(models.Model):
         return self._content_type.model_class()
 
 
-class AWImage(LocalizedPublicationModel):
-    src = models.FileField(blank=True, null=True)
-    src_url = models.CharField(default="", blank=True)
-    alt = LocalizedTextField(blank=True, null=True, required=False)
-
-    class Meta:
-        abstract = True
+class AWImage(LocalizedDynamicFileModel):
+    pass
 
 
 class AWAction(LocalizedPublicationModel):
@@ -111,7 +110,7 @@ class AWInput(AWBaseInput, AWGenericBaseModel):
         ordering = ["position"]
 
 
-@reversion.register(exclude=("published_version"))
+@reversion.register(exclude=("published_version",))
 class AWDisclaimer(LocalizedPublicationModel):
     label = LocalizedCharField(blank=True, null=True, required=False)
 
@@ -162,16 +161,11 @@ class AWSection(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWHeroImage(AWImage):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWHero(AWFragment):
     content = LocalizedTextField(blank=True, null=True, required=False)
 
     image = models.ForeignKey(
-        AWHeroImage,
+        AWImage,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -232,19 +226,17 @@ class AWBlogLatestPost(BlogPostsBase):
 
 @reversion.register(exclude=("published_version",))
 class AWBrand(AWFragment):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
-class AWBrandImage(AWImage):
-    brand = models.ForeignKey(
-        AWBrand, related_name="images", on_delete=models.SET_NULL, null=True
+    images = models.ManyToManyField(
+        AWImage,
+        related_name="brands",
+        blank=True,
+        through="AWBrandImageThrough",
     )
 
-    position = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        ordering = ["position"]
+class AWBrandImageThrough(M2MSortedOrderThrough):
+    brand = models.ForeignKey(AWBrand, on_delete=models.SET_NULL, null=True)
+    image = models.ForeignKey(AWImage, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))
@@ -258,22 +250,7 @@ class AWContentAction(AWAction):
 
 
 @reversion.register(exclude=("published_version",))
-class AWContentImage(AWImage):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
-class AWContent(AWSection, AWGenericBaseModel):
-    limit = Q(app_label="astrowind_pages")
-
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE,
-        limit_choices_to=limit,
-        blank=True,
-        null=True,
-    )
-
+class AWContent(AWSection):
     call_to_action = models.ForeignKey(
         AWContentAction,
         null=True,
@@ -282,23 +259,19 @@ class AWContent(AWSection, AWGenericBaseModel):
         related_name="aw_contents",
     )
     image = models.ForeignKey(
-        AWContentImage,
+        AWImage,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="aw_contents",
     )
-    object_id = models.PositiveIntegerField(blank=True, null=True)
 
     content = LocalizedTextField(blank=True, null=True, required=False)
     columns = models.IntegerField()
     is_reversed = models.BooleanField(default=False)
     is_after_content = models.BooleanField(default=False)
 
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
+    items = GenericRelation(AWItem)
 
 
 class AWBaseFeature(AWSection):
@@ -387,18 +360,24 @@ class AWHeaderActionThrough(M2MSortedOrderThrough):
 @reversion.register(exclude=("published_version",))
 class AWFooterLink(LocalizedPublicationModel):
     title = LocalizedTextField(default=dict, blank=True, null=True, required=False)
+    links = models.ManyToManyField(
+        "AWFooterLinkItem",
+        through="AWFooterLinkThrough",
+        related_name="links_footers",
+        blank=True,
+    )
 
 
 @reversion.register(exclude=("published_version",))
 class AWFooterLinkItem(AWBaseLinkItem):
-    footer_links = models.ForeignKey(
-        AWFooterLink, on_delete=models.SET, null=True, blank=True, related_name="links"
+    pass
+
+
+class AWFooterLinkThrough(M2MSortedOrderThrough):
+    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
+    footer_link_item = models.ForeignKey(
+        AWFooterLinkItem, on_delete=models.SET_NULL, null=True
     )
-
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
 
 
 @reversion.register(exclude=("published_version",))
@@ -510,7 +489,12 @@ class AWPriceItemThrough(M2MSortedOrderThrough):
 
 @reversion.register(exclude=("published_version",))
 class AWStat(AWFragment):
-    pass
+    stats = models.ManyToManyField(
+        "AWStatItem",
+        related_name="stat_groups",
+        blank=True,
+        through="AWStatItemThrough",
+    )
 
 
 @reversion.register(exclude=("published_version",))
@@ -519,26 +503,17 @@ class AWStatItem(LocalizedPublicationModel):
     amount = LocalizedCharField(blank=True, null=True, required=False)
     icon = CharField(default="", blank=True)
 
-    stat_group = models.ForeignKey(
-        AWStat, on_delete=models.SET_NULL, null=True, blank=True, related_name="stats"
-    )
 
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
-
-
-@reversion.register(exclude=("published_version",))
-class AWStepImage(AWImage):
-    pass
+class AWStatItemThrough(M2MSortedOrderThrough):
+    stat = models.ForeignKey(AWStat, on_delete=models.SET_NULL, null=True)
+    stat_item = models.ForeignKey(AWStatItem, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))
 class AWStep(AWSection):
     is_reversed = models.BooleanField(default=False)
     image = models.ForeignKey(
-        AWStepImage,
+        AWImage,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
@@ -580,11 +555,6 @@ class AWTestimonial(AWFragment):
 
 
 @reversion.register(exclude=("published_version",))
-class AWTestimonialItemImage(AWImage):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWTestimonialItem(LocalizedPublicationModel):
     title = LocalizedCharField(blank=True, null=True, required=False)
     testimonial = LocalizedCharField(blank=True, null=True, required=False)
@@ -592,7 +562,7 @@ class AWTestimonialItem(LocalizedPublicationModel):
     job = LocalizedCharField(blank=True, null=True, required=False)
 
     image = models.ForeignKey(
-        AWTestimonialItemImage,
+        AWImage,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,

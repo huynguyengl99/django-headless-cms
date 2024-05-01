@@ -13,12 +13,10 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWBlogHighlightedPost,
     AWBlogLatestPost,
     AWBrand,
-    AWBrandImage,
     AWCallToAction,
     AWContact,
     AWContent,
     AWContentAction,
-    AWContentImage,
     AWCtaAction,
     AWDisclaimer,
     AWFaq,
@@ -33,9 +31,9 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWHeaderLink,
     AWHero,
     AWHeroAction,
-    AWHeroImage,
     AWHeroText,
     AWHeroTextAction,
+    AWImage,
     AWInput,
     AWItem,
     AWPriceItem,
@@ -46,11 +44,9 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStep,
     AWStep2,
     AWStep2Action,
-    AWStepImage,
     AWTestimonial,
     AWTestimonialAction,
     AWTestimonialItem,
-    AWTestimonialItemImage,
     AWTextArea,
 )
 
@@ -72,16 +68,11 @@ class AWInputInline(BaseSortablePublishGenericAdmin):
     model = AWInput
 
 
-class AWContentInline(BaseSortablePublishGenericAdmin):
-    model = AWContent
-    fields = ["id"]
-
-
 class AWStatItemInline(
     PublishStatusInlineMixin,
     SortableStackedInline,
 ):
-    model = AWStatItem
+    model = AWStat.stats.through
     extra = 0
 
 
@@ -114,6 +105,11 @@ class AWSectionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
         abstract = True
 
 
+@admin.register(AWImage)
+class AWImageAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
 @admin.register(AWFaq)
 class AWFaqsAdmin(AWSectionAdmin):
     history_latest_first = True
@@ -137,11 +133,6 @@ class AWHeroActionInline(
     extra = 0
 
 
-@admin.register(AWHeroImage)
-class AWHeroImageAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWHero)
 class AWHeroAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
@@ -153,11 +144,6 @@ class AWHeroAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
 class AWItemAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
     list_filter = ("content_type",)
-
-
-@admin.register(AWStepImage)
-class AWStepImageAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
 
 
 @admin.register(AWStep)
@@ -175,16 +161,12 @@ class AWBlogLatestPostAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-@admin.register(AWBrandImage)
-class AWBrandImageAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 class AWBrandImageInline(
     PublishStatusInlineMixin,
-    SortableStackedInline,
+    SortableInlineAdminMixin,
+    StackedInline,
 ):
-    model = AWBrandImage
+    model = AWBrand.images.through
     extra = 0
 
 
@@ -207,14 +189,11 @@ class AWContentActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
-@admin.register(AWContentImage)
-class AWContentImageAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWContent)
 class AWContentAdmin(AWSectionAdmin):
     history_latest_first = True
+
+    inlines = [AWItemInline]
 
 
 @admin.register(AWFeature2)
@@ -285,7 +264,7 @@ class AWFooterLinkItemInline(
     SortableInlineAdminMixin,
     StackedInline,
 ):
-    model = AWFooterLinkItem
+    model = AWFooterLink.links.through
     extra = 0
 
 
@@ -407,11 +386,6 @@ class AWDisclaimerAdmin(EnhancedLocalizedVersionAdmin):
 
 @admin.register(AWTextArea)
 class AWTextAreaAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
-@admin.register(AWTestimonialItemImage)
-class AWTestimonialItemImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 

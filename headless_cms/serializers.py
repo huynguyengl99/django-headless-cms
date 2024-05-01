@@ -1,4 +1,11 @@
+from collections.abc import Iterable
+from functools import lru_cache
+
+from django.contrib.contenttypes.fields import GenericRelation
+from django.db import models
+from django.db.models import ForeignKey, ManyToManyField
 from localized_fields import fields
+from rest_framework import serializers
 from rest_framework.fields import (
     BooleanField,
     CharField,
@@ -10,6 +17,7 @@ from rest_framework.fields import (
 from rest_framework.serializers import ModelSerializer
 
 from headless_cms.fields.url_field import AutoLanguageUrlField
+from headless_cms.models import LocalizedDynamicFileModel, LocalizedPublicationModel
 from headless_cms.serializer_fields import UrlField
 
 
@@ -59,3 +67,75 @@ class LocalizedModelSerializer(ModelSerializer):
 
             self.Meta.exclude = list(exclude)
         super().__init__(*args, **kwargs)
+
+
+class LocalizedBaseSerializer(LocalizedModelSerializer):
+    class Meta:
+        extra_exclude = ["id", "position", "content_type", "object_id"]
+        abstract = True
+
+
+class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
+    src = serializers.SerializerMethodField()
+
+    def get_src(self, obj):
+        src_file = obj.src_file.translate()
+        if src_file:
+            return self.context["request"].build_absolute_uri(src_file.url)
+        elif obj.src_url:
+            return obj.src_url.translate()
+
+    class Meta:
+        abstract = True
+        extra_exclude = LocalizedBaseSerializer.Meta.extra_exclude + [
+            "src_url",
+            "src_file",
+        ]
+
+
+@lru_cache(maxsize=0)
+def auto_serializer(
+    model: type[models.Model],
+    ancestors: Iterable | None = None,
+) -> type[serializers.ModelSerializer]:
+    if ancestors is None:
+        ancestors = set()
+    ancestors = set(ancestors)
+
+    model_fields = model._meta.get_fields()
+
+    relations = {}
+
+    if model not in ancestors:
+        ancestors.add(model)
+        for field in model_fields:
+            if isinstance(field, ForeignKey) and issubclass(
+                field.related_model, LocalizedPublicationModel
+            ):
+                serializer = auto_serializer(field.related_model, ancestors)
+                relations.update({field.name: serializer(read_only=True)})
+            elif isinstance(field, ManyToManyField) and field.related_model == model:
+
+                def get_objs(self, obj, my_field=field):
+                    return self.__class__(
+                        getattr(obj, my_field.name).all(), many=True
+                    ).data
+
+                relations.update({f"get_{field.name}": get_objs})
+            elif (isinstance(field, (GenericRelation, ManyToManyField))) and issubclass(
+                field.related_model, LocalizedPublicationModel
+            ):
+                serializer = auto_serializer(field.related_model, ancestors)
+                relations.update({field.name: serializer(many=True, read_only=True)})
+
+    if issubclass(model, LocalizedDynamicFileModel):
+        base_serializer = LocalizedDynamicFileSerializer
+    else:
+        base_serializer = LocalizedBaseSerializer
+
+    meta_class = type("Meta", (base_serializer.Meta,), {})
+    meta_class.model = model
+    result = type(model.__name__ + "Serializer", (base_serializer,), dict(relations))
+    result.Meta = meta_class
+
+    return result

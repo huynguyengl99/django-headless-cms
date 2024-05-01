@@ -11,11 +11,10 @@ from headless_cms.contrib.astrowind.astrowind_pages.models import (
 from headless_cms.contrib.astrowind.astrowind_pages.serializers import (
     AWAboutPageSerializer,
     AWContactPageSerializer,
-    AWIndexPageSerializer,
     AWPricingPageSerializer,
-    AWSiteSerializer,
 )
 from headless_cms.mixins import CMSSchemaMixin
+from headless_cms.serializers import auto_serializer
 
 
 class AWPageView(CMSSchemaMixin, RetrieveAPIView):
@@ -30,12 +29,12 @@ class AWPageView(CMSSchemaMixin, RetrieveAPIView):
 
 
 class AWIndexPageView(AWPageView):
-    serializer_class = AWIndexPageSerializer
+    serializer_class = auto_serializer(AWIndexPage)
     model = AWIndexPage
 
 
 class AWSiteView(AWPageView):
-    serializer_class = AWSiteSerializer
+    serializer_class = auto_serializer(AWSite)
     model = AWSite
 
 

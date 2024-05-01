@@ -11,7 +11,15 @@ from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWPricingPage,
     AWSite,
 )
-from headless_cms.contrib.astrowind.astrowind_widgets.admin import AWContentInline
+
+
+class AWIndexPageContentInline(
+    PublishStatusInlineMixin,
+    SortableInlineAdminMixin,
+    StackedInline,
+):
+    model = AWIndexPage.contents.through
+    extra = 0
 
 
 @admin.register(AWIndexPage)
@@ -20,7 +28,7 @@ class AWIndexPageAdmin(
 ):
     history_latest_first = True
 
-    inlines = [AWContentInline]
+    inlines = [AWIndexPageContentInline]
 
 
 @admin.register(AWSite)
