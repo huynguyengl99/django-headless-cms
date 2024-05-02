@@ -10,14 +10,13 @@ from django.contrib.contenttypes.admin import GenericStackedInline
 
 from headless_cms.admin import EnhancedLocalizedVersionAdmin, PublishStatusInlineMixin
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
+    AWAction,
     AWBlogHighlightedPost,
     AWBlogLatestPost,
     AWBrand,
     AWCallToAction,
     AWContact,
     AWContent,
-    AWContentAction,
-    AWCtaAction,
     AWDisclaimer,
     AWFaq,
     AWFeature,
@@ -27,25 +26,19 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWFooterLink,
     AWFooterLinkItem,
     AWHeader,
-    AWHeaderAction,
     AWHeaderLink,
     AWHero,
-    AWHeroAction,
     AWHeroText,
-    AWHeroTextAction,
     AWImage,
     AWInput,
     AWItem,
     AWPriceItem,
-    AWPriceItemAction,
     AWPricing,
     AWStat,
     AWStatItem,
     AWStep,
     AWStep2,
-    AWStep2Action,
     AWTestimonial,
-    AWTestimonialAction,
     AWTestimonialItem,
     AWTextArea,
 )
@@ -76,16 +69,11 @@ class AWStatItemInline(
     extra = 0
 
 
-@admin.register(AWCtaAction)
-class AWCTAActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 class AWCtaActionInline(
     PublishStatusInlineMixin,
     SortableStackedInline,
 ):
-    model = AWCtaAction
+    model = AWCallToAction.actions.through
     extra = 0
 
 
@@ -105,6 +93,11 @@ class AWSectionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
         abstract = True
 
 
+@admin.register(AWAction)
+class AWActionAdmin(EnhancedLocalizedVersionAdmin):
+    history_latest_first = True
+
+
 @admin.register(AWImage)
 class AWImageAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
@@ -120,16 +113,11 @@ class AWFeatureAdmin(AWSectionAdmin):
     history_latest_first = True
 
 
-@admin.register(AWHeroAction)
-class AWHeroActionActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 class AWHeroActionInline(
     PublishStatusInlineMixin,
     SortableStackedInline,
 ):
-    model = AWHeroAction
+    model = AWHero.actions.through
     extra = 0
 
 
@@ -184,11 +172,6 @@ class AWContactAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     inlines = [AWInputInline]
 
 
-@admin.register(AWContentAction)
-class AWContentActionAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWContent)
 class AWContentAdmin(AWSectionAdmin):
     history_latest_first = True
@@ -221,11 +204,6 @@ class AWHeaderLinkAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
     inlines = [AWHeaderLinkSelfInline]
-
-
-@admin.register(AWHeaderAction)
-class AWHeaderActionAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
 
 
 class AWHeaderLinkInline(
@@ -314,11 +292,6 @@ class AWFooterAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     ]
 
 
-@admin.register(AWHeroTextAction)
-class AWHeroTextActionAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWHeroText)
 class AWHeroTextAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
@@ -326,11 +299,6 @@ class AWHeroTextAdmin(EnhancedLocalizedVersionAdmin):
 
 @admin.register(AWInput)
 class AWInputAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
-@admin.register(AWPriceItemAction)
-class AWPriceItemActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 
@@ -369,11 +337,6 @@ class AWStatAdmin(SortableAdminBase, EnhancedLocalizedVersionAdmin):
     inlines = [AWStatItemInline]
 
 
-@admin.register(AWStep2Action)
-class AWStep2ActionAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
 @admin.register(AWStep2)
 class AWStep2Admin(AWSectionAdmin):
     history_latest_first = True
@@ -391,11 +354,6 @@ class AWTextAreaAdmin(EnhancedLocalizedVersionAdmin):
 
 @admin.register(AWTestimonialItem)
 class AWTestimonialItemAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
-
-
-@admin.register(AWTestimonialAction)
-class AWTestimonialActionAdmin(EnhancedLocalizedVersionAdmin):
     history_latest_first = True
 
 

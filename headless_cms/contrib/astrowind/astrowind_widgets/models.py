@@ -72,12 +72,6 @@ class AWAction(LocalizedPublicationModel):
     href = AutoLanguageUrlField(default="", blank=True)
     icon = CharField(default="", blank=True)
 
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
-        abstract = True
-
 
 @reversion.register(exclude=("published_version",))
 class AWItem(LocalizedPublicationModel, AWGenericBaseModel):
@@ -171,13 +165,17 @@ class AWHero(AWFragment):
         on_delete=models.SET_NULL,
         related_name="aw_heroes",
     )
-
-
-@reversion.register(exclude=("published_version",))
-class AWHeroAction(AWAction):
-    hero = models.ForeignKey(
-        AWHero, blank=True, null=True, on_delete=models.SET_NULL, related_name="actions"
+    actions = models.ManyToManyField(
+        AWAction,
+        related_name="heroes",
+        blank=True,
+        through="AWHeroActionThrough",
     )
+
+
+class AWHeroActionThrough(M2MSortedOrderThrough):
+    hero = models.ForeignKey(AWHero, on_delete=models.SET_NULL, null=True)
+    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))
@@ -191,17 +189,17 @@ class AWCallToAction(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     subtitle = LocalizedTextField(blank=True, null=True, required=False)
     tagline = LocalizedTextField(blank=True, null=True, required=False)
-
-
-@reversion.register(exclude=("published_version",))
-class AWCtaAction(AWAction):
-    cta = models.ForeignKey(
-        AWCallToAction,
+    actions = models.ManyToManyField(
+        AWAction,
+        related_name="ctas",
         blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="actions",
+        through="AWCTAActionThrough",
     )
+
+
+class AWCTAActionThrough(M2MSortedOrderThrough):
+    cta = models.ForeignKey(AWCallToAction, on_delete=models.SET_NULL, null=True)
+    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
 
 
 class BlogPostsBase(LocalizedPublicationModel):
@@ -245,14 +243,9 @@ class AWContact(AWFragment, AWForm):
 
 
 @reversion.register(exclude=("published_version",))
-class AWContentAction(AWAction):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWContent(AWSection):
     call_to_action = models.ForeignKey(
-        AWContentAction,
+        AWAction,
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -325,11 +318,6 @@ class AWHeaderLinkSelfThrough(M2MSortedOrderThrough):
 
 
 @reversion.register(exclude=("published_version",))
-class AWHeaderAction(AWAction):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWHeader(LocalizedPublicationModel):
     links = models.ManyToManyField(
         AWHeaderLink,
@@ -338,7 +326,7 @@ class AWHeader(LocalizedPublicationModel):
         through="AWHeaderLinkThrough",
     )
     actions = models.ManyToManyField(
-        AWHeaderAction,
+        AWAction,
         related_name="actions_headers",
         blank=True,
         through="AWHeaderActionThrough",
@@ -352,9 +340,7 @@ class AWHeaderLinkThrough(M2MSortedOrderThrough):
 
 class AWHeaderActionThrough(M2MSortedOrderThrough):
     header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
-    header_action = models.ForeignKey(
-        AWHeaderAction, on_delete=models.SET_NULL, null=True
-    )
+    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
 
 
 @reversion.register(exclude=("published_version",))
@@ -424,32 +410,22 @@ class AWFooterSocialLinksThrough(AWFooterLinkBaseThough):
 
 
 @reversion.register(exclude=("published_version",))
-class AWHeroTextAction(AWAction):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWHeroText(AWFragment):
     content = LocalizedTextField(blank=True, null=True, required=False)
     call_to_action = models.ForeignKey(
-        AWHeroTextAction,
+        AWAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name="aw_cta1_hero_texts",
     )
     call_to_action2 = models.ForeignKey(
-        AWHeroTextAction,
+        AWAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
         related_name="aw_cta2_hero_texts",
     )
-
-
-@reversion.register(exclude=("published_version",))
-class AWPriceItemAction(AWAction):
-    pass
 
 
 @reversion.register(exclude=("published_version",))
@@ -462,7 +438,7 @@ class AWPriceItem(LocalizedPublicationModel):
     ribbon_title = LocalizedCharField(blank=True, null=True, required=False)
 
     call_to_action = models.ForeignKey(
-        AWPriceItemAction,
+        AWAction,
         null=True,
         on_delete=models.SET_NULL,
         blank=True,
@@ -522,15 +498,10 @@ class AWStep(AWSection):
 
 
 @reversion.register(exclude=("published_version",))
-class AWStep2Action(AWAction):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWStep2(AWSection):
     is_reversed = models.BooleanField(default=False)
     call_to_action = models.ForeignKey(
-        AWStep2Action,
+        AWAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,
@@ -539,14 +510,9 @@ class AWStep2(AWSection):
 
 
 @reversion.register(exclude=("published_version",))
-class AWTestimonialAction(AWAction):
-    pass
-
-
-@reversion.register(exclude=("published_version",))
 class AWTestimonial(AWFragment):
     call_to_action = models.ForeignKey(
-        AWTestimonialAction,
+        AWAction,
         blank=True,
         null=True,
         on_delete=models.SET_NULL,

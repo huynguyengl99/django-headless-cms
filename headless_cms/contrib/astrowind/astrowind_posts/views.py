@@ -10,10 +10,6 @@ from headless_cms.contrib.astrowind.astrowind_posts.models import (
     AWPost,
     AWPostTag,
 )
-from headless_cms.contrib.astrowind.astrowind_posts.serializers import (
-    AWCategorySerializer,
-    AWPostTagSerializer,
-)
 from headless_cms.mixins import CMSSchemaMixin
 from headless_cms.serializers import auto_serializer
 
@@ -54,11 +50,11 @@ class AWPostCMSViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
 
 class AWPostTagViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
     queryset = AWPostTag.published_objects.published()
-    serializer_class = AWPostTagSerializer
+    serializer_class = auto_serializer(AWPostTag)
     pagination_class = None
 
 
 class AWCategoryViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
     queryset = AWCategory.published_objects.published()
-    serializer_class = AWCategorySerializer
+    serializer_class = auto_serializer(AWCategory)
     pagination_class = None
