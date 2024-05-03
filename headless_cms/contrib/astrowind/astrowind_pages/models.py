@@ -54,8 +54,8 @@ class AWIndexPage(LocalizedPublicationModel, LocalizedSingletonModel):
 
 
 class AWIndexPageContentThrough(M2MSortedOrderThrough):
-    index_page = models.ForeignKey(AWIndexPage, on_delete=models.SET_NULL, null=True)
-    content = models.ForeignKey(AWContent, on_delete=models.SET_NULL, null=True)
+    index_page = models.ForeignKey(AWIndexPage, on_delete=models.CASCADE)
+    content = models.ForeignKey(AWContent, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -69,18 +69,18 @@ class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
 
 
 class AWAboutFeature3Through(M2MSortedOrderThrough):
-    about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
-    feature3 = models.ForeignKey(AWFeature3, on_delete=models.SET_NULL, null=True)
+    about_page = models.ForeignKey("AWAboutPage", on_delete=models.CASCADE)
+    feature3 = models.ForeignKey(AWFeature3, on_delete=models.CASCADE)
 
 
 class AWAboutFeature2Through(M2MSortedOrderThrough):
-    about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
-    feature2 = models.ForeignKey(AWFeature2, on_delete=models.SET_NULL, null=True)
+    about_page = models.ForeignKey("AWAboutPage", on_delete=models.CASCADE)
+    feature2 = models.ForeignKey(AWFeature2, on_delete=models.CASCADE)
 
 
 class AWAboutStep2Through(M2MSortedOrderThrough):
-    about_page = models.ForeignKey("AWAboutPage", on_delete=models.SET_NULL, null=True)
-    step2 = models.ForeignKey(AWStep2, on_delete=models.SET_NULL, null=True)
+    about_page = models.ForeignKey("AWAboutPage", on_delete=models.CASCADE)
+    step2 = models.ForeignKey(AWStep2, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))

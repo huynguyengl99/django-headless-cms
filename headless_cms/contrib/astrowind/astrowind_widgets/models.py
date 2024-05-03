@@ -139,8 +139,8 @@ class AWHero(AWFragment):
 
 
 class AWHeroActionThrough(M2MSortedOrderThrough):
-    hero = models.ForeignKey(AWHero, on_delete=models.SET_NULL, null=True)
-    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
+    hero = models.ForeignKey(AWHero, on_delete=models.CASCADE)
+    action = models.ForeignKey(AWAction, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -163,8 +163,8 @@ class AWCallToAction(LocalizedPublicationModel):
 
 
 class AWCTAActionThrough(M2MSortedOrderThrough):
-    cta = models.ForeignKey(AWCallToAction, on_delete=models.SET_NULL, null=True)
-    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
+    cta = models.ForeignKey(AWCallToAction, on_delete=models.CASCADE)
+    action = models.ForeignKey(AWAction, on_delete=models.CASCADE)
 
 
 class BlogPostsBase(LocalizedPublicationModel):
@@ -198,8 +198,8 @@ class AWBrand(AWFragment):
 
 
 class AWBrandImageThrough(M2MSortedOrderThrough):
-    brand = models.ForeignKey(AWBrand, on_delete=models.SET_NULL, null=True)
-    image = models.ForeignKey(AWImage, on_delete=models.SET_NULL, null=True)
+    brand = models.ForeignKey(AWBrand, on_delete=models.CASCADE)
+    image = models.ForeignKey(AWImage, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -275,10 +275,10 @@ class AWHeaderLink(AWBaseLinkItem):
 
 class AWHeaderLinkSelfThrough(M2MSortedOrderThrough):
     parent_link = models.ForeignKey(
-        AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_parents"
+        AWHeaderLink, on_delete=models.CASCADE, related_name="link_parents"
     )
     child_link = models.ForeignKey(
-        AWHeaderLink, on_delete=models.SET_NULL, null=True, related_name="link_children"
+        AWHeaderLink, on_delete=models.CASCADE, related_name="link_children"
     )
 
 
@@ -299,13 +299,13 @@ class AWHeader(LocalizedPublicationModel):
 
 
 class AWHeaderLinkThrough(M2MSortedOrderThrough):
-    header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
-    header_link = models.ForeignKey(AWHeaderLink, on_delete=models.SET_NULL, null=True)
+    header = models.ForeignKey(AWHeader, on_delete=models.CASCADE)
+    header_link = models.ForeignKey(AWHeaderLink, on_delete=models.CASCADE)
 
 
 class AWHeaderActionThrough(M2MSortedOrderThrough):
-    header = models.ForeignKey(AWHeader, on_delete=models.SET_NULL, null=True)
-    action = models.ForeignKey(AWAction, on_delete=models.SET_NULL, null=True)
+    header = models.ForeignKey(AWHeader, on_delete=models.CASCADE)
+    action = models.ForeignKey(AWAction, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -325,10 +325,8 @@ class AWFooterLinkItem(AWBaseLinkItem):
 
 
 class AWFooterLinkThrough(M2MSortedOrderThrough):
-    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
-    footer_link_item = models.ForeignKey(
-        AWFooterLinkItem, on_delete=models.SET_NULL, null=True
-    )
+    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.CASCADE)
+    footer_link_item = models.ForeignKey(AWFooterLinkItem, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -355,8 +353,8 @@ class AWFooter(LocalizedPublicationModel):
 
 
 class AWFooterLinkBaseThough(M2MSortedOrderThrough):
-    footer = models.ForeignKey(AWFooter, on_delete=models.CASCADE, null=True)
-    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.SET_NULL, null=True)
+    footer = models.ForeignKey(AWFooter, on_delete=models.CASCADE)
+    footer_link = models.ForeignKey(AWFooterLink, on_delete=models.CASCADE)
 
     class Meta(M2MSortedOrderThrough.Meta):
         abstract = True
@@ -424,8 +422,8 @@ class AWPricing(AWFragment):
 
 
 class AWPriceItemThrough(M2MSortedOrderThrough):
-    pricing = models.ForeignKey(AWPricing, on_delete=models.SET_NULL, null=True)
-    price_item = models.ForeignKey(AWPriceItem, on_delete=models.SET_NULL, null=True)
+    pricing = models.ForeignKey(AWPricing, on_delete=models.CASCADE)
+    price_item = models.ForeignKey(AWPriceItem, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
@@ -446,8 +444,8 @@ class AWStatItem(LocalizedPublicationModel):
 
 
 class AWStatItemThrough(M2MSortedOrderThrough):
-    stat = models.ForeignKey(AWStat, on_delete=models.SET_NULL, null=True)
-    stat_item = models.ForeignKey(AWStatItem, on_delete=models.SET_NULL, null=True)
+    stat = models.ForeignKey(AWStat, on_delete=models.CASCADE)
+    stat_item = models.ForeignKey(AWStatItem, on_delete=models.CASCADE)
 
 
 @reversion.register(exclude=("published_version",))
