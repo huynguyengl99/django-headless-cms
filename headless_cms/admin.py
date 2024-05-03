@@ -132,6 +132,13 @@ class EnhancedLocalizedVersionAdmin(
         if obj and not context.get("revert"):
             show_publish = True
             show_unpublish = False
+            show_recursively_publish = any(
+                f.is_relation
+                and not f.auto_created
+                and f.related_model
+                and issubclass(f.related_model, LocalizedPublicationModel)
+                for f in obj._meta.get_fields()
+            )
 
             published_state = "unpublished"
             if obj.published_version:
@@ -148,6 +155,7 @@ class EnhancedLocalizedVersionAdmin(
                     "published_state": published_state,
                     "show_publish": show_publish,
                     "show_unpublish": show_unpublish,
+                    "show_recursively_publish": show_recursively_publish,
                     "show_translate": True,
                 }
             )
@@ -179,6 +187,9 @@ class EnhancedLocalizedVersionAdmin(
                 obj = self.get_object(request, unquote(object_id))
                 obj.published_version = None
                 obj.save()
+        elif "_recursively_publish" in request.POST:
+            obj = self.get_object(request, unquote(object_id))
+            obj.recursively_publish(request.user)
         return res
 
     def response_change(self, request, obj):

@@ -13,6 +13,9 @@
         <div class="submit-row">
             {% if show_publish %}
                 <input class="default" type="submit" value="{% translate 'Publish' %}" name="_publish">{% endif %}
+            {% if show_recursively_publish %}
+                <input class="default" type="submit" value="{% translate 'Recursively Publish' %}"
+                       name="_recursively_publish">{% endif %}
             {% if show_unpublish %}<input style="background-color: var(--delete-button-bg)" type="submit"
                                           value="{% translate 'Unpublish' %}" name="_unpublish">{% endif %}
         </div>

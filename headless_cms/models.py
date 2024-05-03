@@ -92,6 +92,25 @@ class PublicationModel(models.Model):
             self.published_version = last_ver
             self.save()
 
+    def recursively_publish(self, user=None):
+        self.publish(user)
+
+        for f in self._meta.get_fields():
+            if (
+                f.is_relation
+                and not f.auto_created
+                and f.related_model
+                and issubclass(f.related_model, LocalizedPublicationModel)
+            ):
+                if f.many_to_one:
+                    rel_obj = getattr(self, f.name)
+                    if rel_obj:
+                        rel_obj.recursively_publish(user)
+                elif f.many_to_many or f.one_to_many:
+                    rel_objs = getattr(self, f.name).all()
+                    for rel_obj in rel_objs:
+                        rel_obj.recursively_publish(user)
+
     def unpublish(self, user=None):
         with reversion.create_revision():
             reversion.set_comment("Unpublish")
