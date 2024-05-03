@@ -1,10 +1,20 @@
+from functools import lru_cache
 from urllib.parse import quote as urlquote
 
 import reversion
+from adminsortable2.admin import (
+    SortableAdminBase,
+    SortableGenericInlineAdminMixin,
+    SortableStackedInline,
+)
 from django.contrib import admin, messages
+from django.contrib.admin import StackedInline
 from django.contrib.admin.templatetags.admin_urls import add_preserved_filters
 from django.contrib.admin.utils import unquote
+from django.contrib.contenttypes.admin import GenericStackedInline
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
+from django.db.models import ManyToManyField
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.utils.html import format_html
@@ -15,8 +25,15 @@ from martor.widgets import AdminMartorWidget
 from rest_framework import status
 from reversion.admin import VersionAdmin
 from reversion.models import Version
+from solo.admin import SingletonModelAdmin
 
-from headless_cms.models import PublicationModel
+from headless_cms.models import (
+    LocalizedPublicationModel,
+    LocalizedSingletonModel,
+    M2MSortedOrderThrough,
+    PublicationModel,
+    SortableGenericBaseModel,
+)
 from headless_cms.settings import headless_cms_settings
 from headless_cms.utils.custom_import_export import override_modelresource_factory
 
@@ -54,6 +71,21 @@ class PublishStatusInlineMixin:
         else:
             published_state = self._get_publish_status(obj)
         return published_state
+
+
+class BaseGenericAdmin(
+    PublishStatusInlineMixin,
+    GenericStackedInline,
+):
+    extra = 0
+
+
+class BaseSortableGenericAdmin(
+    SortableGenericInlineAdminMixin,
+    SortableStackedInline,
+    BaseGenericAdmin,
+):
+    extra = 0
 
 
 @admin.action(description="Publish selected")
@@ -251,3 +283,75 @@ class EnhancedLocalizedVersionAdmin(
         if not self.resource_classes and not self.resource_class:
             return [override_modelresource_factory(self.model)]
         return super().get_resource_classes()
+
+
+@lru_cache(maxsize=0)
+def create_m2m_inline_admin(model, sortable=False):
+    return type(
+        model.__name__ + "Inline",
+        (
+            PublishStatusInlineMixin,
+            SortableStackedInline if sortable else StackedInline,
+        ),
+        {"extra": 0, "model": model},
+    )
+
+
+@lru_cache(maxsize=0)
+def create_generic_inline_admin(model, sortable=False):
+    return type(
+        model.__name__ + "Inline",
+        (BaseSortableGenericAdmin if sortable else BaseGenericAdmin,),
+        {"model": model},
+    )
+
+
+def auto_admins(
+    model_list: list[type[models.Model]],
+):
+    for model in model_list:
+        admin_attrs = {"history_latest_first": True}
+        inlines = []
+        exclude = []
+        model_fields = model._meta.get_fields()
+        has_sortable_base = False
+        for field in model_fields:
+            if isinstance(field, ManyToManyField) and issubclass(
+                field.related_model, LocalizedPublicationModel
+            ):
+                through = getattr(model, field.name).through
+                exclude.append(field.name)
+
+                can_sort = False
+                if issubclass(through, M2MSortedOrderThrough):
+                    can_sort = True
+                    has_sortable_base = True
+
+                inlines.append(create_m2m_inline_admin(through, can_sort))
+            elif isinstance(field, GenericRelation) and issubclass(
+                field.related_model, LocalizedPublicationModel
+            ):
+                can_sort = False
+                has_sortable_base = True
+
+                if issubclass(field.related_model, SortableGenericBaseModel):
+                    can_sort = True
+
+                inlines.append(
+                    create_generic_inline_admin(field.related_model, can_sort)
+                )
+
+        admin_attrs["inlines"] = inlines
+        admin_attrs["exclude"] = exclude
+
+        base_admin = []
+        if has_sortable_base:
+            base_admin = [SortableAdminBase]
+
+        base_admin.append(EnhancedLocalizedVersionAdmin)
+
+        if issubclass(model, LocalizedSingletonModel):
+            base_admin.append(SingletonModelAdmin)
+
+        admin_model = type(model.__name__ + "Admin", tuple(base_admin), admin_attrs)
+        admin.site.register(model, admin_model)

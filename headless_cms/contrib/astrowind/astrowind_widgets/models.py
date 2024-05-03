@@ -1,9 +1,8 @@
 import reversion
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import CharField, IntegerField, Q
+from django.db.models import CharField, IntegerField
 from django.utils.translation import gettext_lazy as _
 from localized_fields.fields import (
     LocalizedCharField,
@@ -15,42 +14,8 @@ from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedPublicationModel,
     M2MSortedOrderThrough,
+    SortableGenericBaseModel,
 )
-
-
-class AWGenericBaseModel(models.Model):
-    limit = Q(app_label="astrowind_widgets")
-
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE,
-        limit_choices_to=limit,
-        blank=True,
-        null=True,
-    )
-
-    object = GenericForeignKey(
-        ct_field="content_type",
-        fk_field="object_id",
-    )
-
-    object_id = models.PositiveIntegerField(blank=True, null=True)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return f"{self._meta.object_name} - {self.id} for {self.object}"
-
-    @property
-    def _content_type(self):
-        return ContentType.objects.db_manager(self._state.db).get_for_id(
-            self.content_type_id
-        )
-
-    @property
-    def _model(self):
-        return self._content_type.model_class()
 
 
 class AWImage(LocalizedDynamicFileModel):
@@ -74,7 +39,7 @@ class AWAction(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWItem(LocalizedPublicationModel, AWGenericBaseModel):
+class AWItem(LocalizedPublicationModel, SortableGenericBaseModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     description = LocalizedTextField(blank=True, null=True, required=False)
     icon = models.CharField(blank=True, default="")
@@ -97,7 +62,7 @@ class AWBaseInput(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWInput(AWBaseInput, AWGenericBaseModel):
+class AWInput(AWBaseInput, SortableGenericBaseModel):
     position = models.PositiveIntegerField(default=0)
 
     class Meta:

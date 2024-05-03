@@ -2,8 +2,10 @@ from functools import cached_property
 
 import reversion
 from django.contrib import admin
-from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.db.models import Q
 from django.utils.html import format_html
 from localized_fields.fields import (
     LocalizedCharField,
@@ -154,3 +156,38 @@ class LocalizedDynamicFileModel(LocalizedPublicationModel):
 
     class Meta:
         abstract = True
+
+
+class SortableGenericBaseModel(models.Model):
+    limit = Q(app_label="astrowind_widgets")
+
+    content_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to=limit,
+        blank=True,
+        null=True,
+    )
+
+    object = GenericForeignKey(
+        ct_field="content_type",
+        fk_field="object_id",
+    )
+
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"{self._meta.object_name} - {self.id} for {self.object}"
+
+    @property
+    def _content_type(self):
+        return ContentType.objects.db_manager(self._state.db).get_for_id(
+            self.content_type_id
+        )
+
+    @property
+    def _model(self):
+        return self._content_type.model_class()
