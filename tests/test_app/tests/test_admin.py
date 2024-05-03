@@ -7,8 +7,8 @@ from django.shortcuts import resolve_url
 from django.utils import translation
 from reversion.models import Version
 
-from test_app.factories import CommentFactory, PostFactory
-from test_app.models import Comment, Post
+from test_app.factories import PostFactory
+from test_app.models import Post
 from test_utils.base import BaseTestCase
 
 
@@ -203,54 +203,3 @@ class AdminActionTests(BaseTestCase):
         assert obj.published_version_id
         assert obj2.published_version_id
         assert not obj3.published_version_id
-
-
-class AdminInlineMixinTests(BaseTestCase):
-    def test_admin_inline_mixin_unpublished(self):
-        with reversion.create_revision():
-            post: Post = PostFactory()
-        with reversion.create_revision():
-            CommentFactory(post=post)
-
-        res = self.client.get(
-            resolve_url("admin:test_app_postwithcomment_change", post.id)
-        )
-
-        self.assertContains(res, "unpublished", 3)  # post + comment + extra comment
-        self.assertNotContains(res, "published (latest)")
-        self.assertNotContains(res, "published (outdated)")
-
-    def test_admin_inline_latest_published(self):
-        with reversion.create_revision():
-            post: Post = PostFactory()
-
-        with reversion.create_revision():
-            comment2: Comment = CommentFactory(post=post)
-        comment2.publish(self.user)
-
-        res = self.client.get(
-            resolve_url("admin:test_app_postwithcomment_change", post.id)
-        )
-
-        self.assertContains(res, "unpublished", 2)  # post + extra comment
-        self.assertContains(res, "published (latest)")
-        self.assertNotContains(res, "published (outdated)")
-
-    def test_admin_inline_outdated_published(self):
-        with reversion.create_revision():
-            post: Post = PostFactory()
-
-        with reversion.create_revision():
-            comment3: Comment = CommentFactory(post=post)
-        comment3.publish(self.user)
-        with reversion.create_revision():
-            comment3.title = "New title"
-            comment3.save()
-
-        res = self.client.get(
-            resolve_url("admin:test_app_postwithcomment_change", post.id)
-        )
-
-        self.assertContains(res, "unpublished", 2)  # post + extra comment
-        self.assertNotContains(res, "published (latest)")
-        self.assertContains(res, "published (outdated)")

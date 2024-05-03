@@ -1,33 +1,73 @@
 import reversion
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from headless_cms.fields.martor_field import LocalizedMartorField
-from headless_cms.models import LocalizedPublicationModel
+from headless_cms.models import (
+    LocalizedDynamicFileModel,
+    LocalizedPublicationModel,
+    LocalizedTitleSlugModel,
+    M2MSortedOrderThrough,
+    SortableGenericBaseModel,
+)
 from localized_fields.fields import (
-    LocalizedField,
     LocalizedTextField,
 )
 
 
 @reversion.register(exclude=("published_version",))
-class Post(LocalizedPublicationModel):
-    body = LocalizedMartorField(blank=False, null=False, required=False)
-    title = LocalizedField(blank=False, null=False, required=False)
-    description = LocalizedTextField(blank=False, null=False, required=False)
+class Item(SortableGenericBaseModel):
+    title = LocalizedTextField(blank=True, null=True, required=False)
+    description = LocalizedTextField(blank=True, null=True, required=False)
+    icon = models.CharField(blank=True, default="")
+
+
+class News(LocalizedPublicationModel):
+    title = LocalizedTextField(blank=True, null=True, required=False)
+    subtitle = LocalizedTextField(blank=True, null=True, required=False)
+    items = GenericRelation(Item)
+
+    class Meta:
+        abstract = True
 
 
 @reversion.register(exclude=("published_version",))
-class Comment(LocalizedPublicationModel):
-    content = LocalizedMartorField(blank=False, null=False, required=False)
-    title = LocalizedField(blank=False, null=False, required=False)
-    post = models.ForeignKey(
-        "test_app.Post",
-        related_name="comments",
-        on_delete=models.SET_NULL,
-        null=True,
+class Post(News):
+    description = LocalizedTextField(blank=True, null=True, required=False)
+    body = LocalizedMartorField(blank=False, null=False, required=False)
+
+    tags = models.ManyToManyField("PostTag", blank=True, related_name="posts")
+    category = models.ForeignKey(
+        "Category",
         blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="posts",
     )
 
-    position = models.PositiveIntegerField(default=0)
 
-    class Meta:
-        ordering = ["position"]
+@reversion.register(exclude=("published_version",))
+class Category(LocalizedTitleSlugModel):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class PostTag(LocalizedTitleSlugModel):
+    pass
+
+
+@reversion.register(exclude=("published_version",))
+class Article(News):
+    story = LocalizedMartorField(blank=False, null=False, required=False)
+    images = models.ManyToManyField(
+        "ArticleImage",
+    )
+
+
+@reversion.register(exclude=("published_version",))
+class ArticleImage(LocalizedDynamicFileModel):
+    pass
+
+
+class ArticleSectionThrough(M2MSortedOrderThrough):
+    article = models.ForeignKey("Article", on_delete=models.CASCADE)
+    article_image = models.ForeignKey("ArticleImage", on_delete=models.CASCADE)

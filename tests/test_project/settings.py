@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "martor",
     "psqlextra",
     "localized_fields",
+    "import_export",
+    "django_jsonform",
     "drf_spectacular",
     "solo",
     "adminsortable2",
