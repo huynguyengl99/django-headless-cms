@@ -5,7 +5,6 @@ from django.contrib import admin
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
-from django.db.models import Q
 from django.utils.html import format_html
 from localized_fields.fields import (
     LocalizedCharField,
@@ -178,12 +177,9 @@ class LocalizedDynamicFileModel(LocalizedPublicationModel):
 
 
 class SortableGenericBaseModel(models.Model):
-    limit = Q(app_label="astrowind_widgets")
-
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
-        limit_choices_to=limit,
         blank=True,
         null=True,
     )
