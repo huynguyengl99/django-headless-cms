@@ -63,7 +63,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
         # being part of the render chain.
         attributes_to_pass.update(self.attrs)
 
-        template = get_template("martor/%s/editor.html" % get_theme())
+        template = get_template(f"martor/{get_theme()}/editor.html")
         emoji_enabled = MARTOR_ENABLE_CONFIGS.get("emoji") == "true"
         mentions_enabled = MARTOR_ENABLE_CONFIGS.get("mention") == "true"
 
@@ -94,7 +94,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
             "all": (
                 "plugins/css/ace.min.css",
                 "plugins/css/resizable.min.css",
-                "martor/css/martor.%s.min.css" % selected_theme,
+                f"martor/css/martor.{selected_theme}.min.css",
             )
         }
 
@@ -110,7 +110,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
             "plugins/js/highlight.min.js",
             "plugins/js/resizable.min.js",
             "plugins/js/emojis.min.js",
-            "martor/js/martor.%s.js" % selected_theme,
+            f"martor/js/martor.{selected_theme}.js",
         )
 
         # Adding the following scripts to the end
@@ -125,7 +125,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
             css_theme = MARTOR_ALTERNATIVE_CSS_FILE_THEME
             css["all"] = (css_theme,).__add__(css.get("all"))
         else:
-            css_theme = "plugins/css/%s.min.css" % selected_theme
+            css_theme = f"plugins/css/{selected_theme}.min.css"
             css["all"] = (css_theme,).__add__(css.get("all"))
 
         # 2. vendor js theme
@@ -133,7 +133,7 @@ class AdminLocalizedMartorWidget(AdminLocalizedFieldWidget):
             js_theme = MARTOR_ALTERNATIVE_JS_FILE_THEME
             js = (MARTOR_ALTERNATIVE_JS_FILE_THEME,).__add__(js)
         else:
-            js_theme = "plugins/js/%s.min.js" % selected_theme
+            js_theme = f"plugins/js/{selected_theme}.min.js"
             js = (js_theme,).__add__(js)
 
         # 3. vendor jQUery

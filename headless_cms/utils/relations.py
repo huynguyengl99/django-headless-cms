@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.db.models import Prefetch
 
 from headless_cms.models import M2MSortedOrderThrough, PublicationModel
@@ -12,7 +14,7 @@ class CumulativePrefetch(Prefetch):
 
 
 def calculate_prefetch_relation(
-    model: PublicationModel, fetched_models: set | None = None
+    model: PublicationModel, fetched_models: Optional[set] = None
 ):
     if fetched_models is None:
         fetched_models = {model}

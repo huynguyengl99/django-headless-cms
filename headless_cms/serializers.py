@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from functools import lru_cache
+from typing import Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -96,7 +97,7 @@ class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
 @lru_cache(maxsize=0)
 def auto_serializer(
     model: type[models.Model],
-    ancestors: Iterable | None = None,
+    ancestors: Optional[Iterable] = None,
 ) -> type[serializers.ModelSerializer]:
     if ancestors is None:
         ancestors = set()
