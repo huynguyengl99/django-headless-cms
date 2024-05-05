@@ -71,7 +71,7 @@ class LocalizedModelSerializer(ModelSerializer):
 
 class LocalizedBaseSerializer(LocalizedModelSerializer):
     class Meta:
-        extra_exclude = ["id", "position", "content_type", "object_id"]
+        extra_exclude = ["position", "content_type", "object_id"]
         abstract = True
 
 

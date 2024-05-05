@@ -26,7 +26,6 @@ class PostFactory(DjangoModelFactory):
     title = factory.Faker("sentence", nb_words=3)
     description = factory.Faker("paragraph", nb_sentences=3)
     body = factory.Faker("paragraph", nb_sentences=5)
-    category = factory.SubFactory(CategoryFactory)
 
 
 class ArticleFactory(DjangoModelFactory):

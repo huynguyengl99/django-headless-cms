@@ -78,6 +78,7 @@ preview = true
 
 [tool.coverage.run]
 omit = [
+  "headless_cms/contrib/*",
   "headless_cms/utils/martor_custom_upload.py",
   "tests/*"
 ]

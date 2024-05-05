@@ -52,17 +52,18 @@ class AdminChangeViewTests(BaseTestCase):
     def test_render_change_form_view_unpublished(self):
         res = self.client.get(resolve_url("admin:test_app_post_change", self.obj.id))
 
-        self.assertContains(res, "unpublished")
-        self.assertContains(res, "Publish")
-        self.assertNotContains(res, "Unpublish")
+        self.assertContains(res, '"_publish"')
+        self.assertContains(res, '"_recursively_publish"')
+        self.assertNotContains(res, '"_unpublish"')
 
     def test_render_change_form_view_published_latest(self):
         self.obj.publish(self.user)
         res = self.client.get(resolve_url("admin:test_app_post_change", self.obj.id))
 
         self.assertContains(res, "published (latest)")
-        self.assertNotContains(res, "Publish")
-        self.assertContains(res, "Unpublish")
+        self.assertNotContains(res, '"_publish"')
+        self.assertContains(res, '"_recursively_publish"')
+        self.assertContains(res, '"_unpublish"')
 
     def test_render_change_form_view_outdated_published(self):
         self.obj.publish(self.user)
@@ -72,8 +73,9 @@ class AdminChangeViewTests(BaseTestCase):
         res = self.client.get(resolve_url("admin:test_app_post_change", self.obj.id))
 
         self.assertContains(res, "published (outdated)")
-        self.assertContains(res, "Publish")
-        self.assertContains(res, "Unpublish")
+        self.assertContains(res, '"_publish"')
+        self.assertContains(res, '"_recursively_publish"')
+        self.assertContains(res, '"_unpublish"')
 
 
 class AdminPostRequestTests(BaseTestCase):
@@ -82,6 +84,9 @@ class AdminPostRequestTests(BaseTestCase):
         translation.activate(settings.LANGUAGE_CODE)
         dt = factory.build(dict, FACTORY_CLASS=PostFactory)
         self.localized_dt = {f"{k}_0": v for k, v in dt.items()}
+        self.localized_dt.update(
+            {"Post_tags-TOTAL_FORMS": 0, "Post_tags-INITIAL_FORMS": 0}
+        )
         with reversion.create_revision():
             self.obj: Post = PostFactory.create(**dt)
 
@@ -165,13 +170,16 @@ class AdminPostRequestTests(BaseTestCase):
         self.obj.refresh_from_db()
 
         self.assertEqual(res.status_code, 302)  # Check redirect
-        mock_translate.assert_called_with(self.obj)
+        mock_translate.assert_called_with(self.obj, user=self.user)
 
 
 class AdminAddViewTests(BaseTestCase):
     def test_add_view(self):
         dt = factory.build(dict, FACTORY_CLASS=PostFactory)
-        localized_dt = {f"{k}_0": v for k, v in dt.items()}
+        localized_dt = {f"{k}_0": v for k, v in dt.items()} | {
+            "Post_tags-TOTAL_FORMS": 0,
+            "Post_tags-INITIAL_FORMS": 0,
+        }
         self.client.post(resolve_url("admin:test_app_post_add"), localized_dt)
         obj: Post = Post.objects.first()
 

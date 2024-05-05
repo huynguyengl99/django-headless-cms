@@ -1,9 +1,5 @@
-from django.contrib import admin
-from headless_cms.admin import EnhancedLocalizedVersionAdmin
+from headless_cms.admin import auto_admins
 
-from test_app.models import Post
+from test_app.models import Article, ArticleImage, Category, Item, Post, PostTag
 
-
-@admin.register(Post)
-class PostAdmin(EnhancedLocalizedVersionAdmin):
-    history_latest_first = True
+auto_admins([Article, ArticleImage, Category, Item, Post, PostTag])

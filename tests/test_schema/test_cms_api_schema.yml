@@ -3,61 +3,6 @@ info:
   title: ''
   version: 0.0.0
 paths:
-  /api/cms-schema/:
-    get:
-      operationId: api_cms_schema_retrieve
-      description: |-
-        OpenApi3 schema for this API. Format can be selected via content negotiation.
-
-        - YAML: application/vnd.oai.openapi
-        - JSON: application/vnd.oai.openapi+json
-      parameters:
-      - in: header
-        name: accept-language
-        schema:
-          type: string
-        description: Language code parameter.
-      - in: query
-        name: format
-        schema:
-          type: string
-          enum:
-          - json
-          - yaml
-      - in: query
-        name: lang
-        schema:
-          type: string
-          enum:
-          - en
-          - ro
-          - vi
-      tags:
-      - api
-      security:
-      - cookieAuth: []
-      - basicAuth: []
-      - {}
-      responses:
-        '200':
-          content:
-            application/vnd.oai.openapi:
-              schema:
-                type: object
-                additionalProperties: {}
-            application/yaml:
-              schema:
-                type: object
-                additionalProperties: {}
-            application/vnd.oai.openapi+json:
-              schema:
-                type: object
-                additionalProperties: {}
-            application/json:
-              schema:
-                type: object
-                additionalProperties: {}
-          description: ''
   /test-app/:
     get:
       operationId: test_app_list
@@ -112,50 +57,67 @@ paths:
           description: ''
 components:
   schemas:
-    Comment:
+    Category:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
-        content:
-          type: string
         title:
           type: string
-        position:
-          type: integer
-          maximum: 2147483647
-          minimum: 0
-        post:
-          type: integer
           nullable: true
+        slug:
+          type: string
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
       required:
-      - content
       - id
-      - title
     Post:
       type: object
       properties:
         id:
           type: integer
           readOnly: true
-        comments:
+        category:
+          allOf:
+          - $ref: '#/components/schemas/Category'
+          readOnly: true
+        tags:
           type: array
           items:
-            $ref: '#/components/schemas/Comment'
+            $ref: '#/components/schemas/PostTag'
           readOnly: true
-        body:
-          type: string
         title:
           type: string
+          nullable: true
+        subtitle:
+          type: string
+          nullable: true
         description:
+          type: string
+          nullable: true
+        body:
           type: string
       required:
       - body
-      - comments
-      - description
+      - category
       - id
-      - title
+      - tags
+    PostTag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+        slug:
+          type: string
+          nullable: true
+          pattern: ^[-a-zA-Z0-9_]+$
+      required:
+      - id
   securitySchemes:
     basicAuth:
       type: http
