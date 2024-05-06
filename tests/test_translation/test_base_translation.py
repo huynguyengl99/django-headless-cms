@@ -4,9 +4,9 @@ from django.conf import settings
 from headless_cms.auto_translate import BaseTranslate
 from localized_fields.value import LocalizedValue
 
+from helpers.base import BaseTestCase
 from test_app.factories import PostFactory
 from test_app.models import Post
-from test_utils.base import BaseTestCase
 
 
 class TestBaseTranslate(BaseTestCase):

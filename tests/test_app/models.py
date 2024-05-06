@@ -2,6 +2,7 @@ import reversion
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from headless_cms.fields.martor_field import LocalizedMartorField
+from headless_cms.fields.url_field import AutoLanguageUrlField
 from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedPublicationModel,
@@ -12,6 +13,7 @@ from headless_cms.models import (
 from localized_fields.fields import (
     LocalizedTextField,
 )
+from localized_fields.fields.char_field import LocalizedCharField
 
 
 @reversion.register(exclude=("published_version",))
@@ -34,6 +36,8 @@ class News(LocalizedPublicationModel):
 class Post(News):
     description = LocalizedTextField(blank=True, null=True, required=False)
     body = LocalizedMartorField(blank=False, null=False, required=False)
+
+    href = AutoLanguageUrlField(blank=True, null=True)
 
     tags = models.ManyToManyField("PostTag", blank=True, related_name="posts")
     category = models.ForeignKey(
@@ -58,9 +62,7 @@ class PostTag(LocalizedTitleSlugModel):
 @reversion.register(exclude=("published_version",))
 class Article(News):
     story = LocalizedMartorField(blank=False, null=False, required=False)
-    images = models.ManyToManyField(
-        "ArticleImage",
-    )
+    images = models.ManyToManyField("ArticleImage", through="ArticleImageThrough")
 
 
 @reversion.register(exclude=("published_version",))
@@ -68,6 +70,31 @@ class ArticleImage(LocalizedDynamicFileModel):
     pass
 
 
-class ArticleSectionThrough(M2MSortedOrderThrough):
+class ArticleImageThrough(M2MSortedOrderThrough):
     article = models.ForeignKey("Article", on_delete=models.CASCADE)
     article_image = models.ForeignKey("ArticleImage", on_delete=models.CASCADE)
+
+
+@reversion.register(exclude=("published_version",))
+class Blog(LocalizedTitleSlugModel):
+    name = LocalizedCharField()
+    posts = models.ManyToManyField(
+        Post,
+        blank=True,
+    )
+    articles = models.ManyToManyField(
+        Article,
+        blank=True,
+    )
+    domain = models.ForeignKey(
+        "Domain",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="blog",
+    )
+
+
+@reversion.register(exclude=("published_version",))
+class Domain(LocalizedTitleSlugModel):
+    pass

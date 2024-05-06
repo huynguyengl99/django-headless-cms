@@ -2,9 +2,9 @@ import reversion
 from django.utils import translation
 from reversion.models import Version
 
+from helpers.base import BaseTestCase
 from test_app.factories import PostFactory
 from test_app.models import Post
-from test_utils.base import BaseTestCase
 
 
 class TestPublicationModel(BaseTestCase):

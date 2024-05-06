@@ -1,8 +1,11 @@
 import factory
 from django.contrib.contenttypes.models import ContentType
 from factory.django import DjangoModelFactory
+from faker import Faker
 
 from test_app.models import Article, ArticleImage, Category, Item, Post, PostTag
+
+f = Faker()
 
 
 class CategoryFactory(DjangoModelFactory):
@@ -26,6 +29,8 @@ class PostFactory(DjangoModelFactory):
     title = factory.Faker("sentence", nb_words=3)
     description = factory.Faker("paragraph", nb_sentences=3)
     body = factory.Faker("paragraph", nb_sentences=5)
+
+    href = factory.LazyAttribute(lambda o: f"/{f.slug()}")
 
 
 class ArticleFactory(DjangoModelFactory):

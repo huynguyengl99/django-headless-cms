@@ -2,14 +2,12 @@ from unittest.mock import patch
 
 import factory
 import reversion
-from django.conf import settings
 from django.shortcuts import resolve_url
-from django.utils import translation
 from reversion.models import Version
 
+from helpers.base import BaseTestCase
 from test_app.factories import PostFactory
 from test_app.models import Post
-from test_utils.base import BaseTestCase
 
 
 class AdminChangeListViewTests(BaseTestCase):
@@ -35,6 +33,18 @@ class AdminChangeListViewTests(BaseTestCase):
             post.save()
         res = self.client.get(resolve_url("admin:test_app_post_changelist"))
         self.assertContains(res, Post.AdminPublishedStateHtml.PUBLISHED_OUTDATED)
+
+
+class AdminImportExportViewTests(BaseTestCase):
+    def test_render_import_view_with_auto_fields_post(self):
+        with reversion.create_revision():
+            PostFactory.create()
+        res = self.client.get(resolve_url("admin:test_app_post_import"))
+
+        subtitle = (
+            "<code>id, title, subtitle, description, body, href, tags, category</code>"
+        )
+        self.assertContains(res, subtitle)
 
 
 class AdminChangeViewTests(BaseTestCase):
@@ -81,9 +91,8 @@ class AdminChangeViewTests(BaseTestCase):
 class AdminPostRequestTests(BaseTestCase):
     def setUp(self):
         super().setUp()
-        translation.activate(settings.LANGUAGE_CODE)
         dt = factory.build(dict, FACTORY_CLASS=PostFactory)
-        self.localized_dt = {f"{k}_0": v for k, v in dt.items()}
+        self.localized_dt = {f"{k}_0": v for k, v in dt.items()} | dt
         self.localized_dt.update(
             {"Post_tags-TOTAL_FORMS": 0, "Post_tags-INITIAL_FORMS": 0}
         )
@@ -176,10 +185,14 @@ class AdminPostRequestTests(BaseTestCase):
 class AdminAddViewTests(BaseTestCase):
     def test_add_view(self):
         dt = factory.build(dict, FACTORY_CLASS=PostFactory)
-        localized_dt = {f"{k}_0": v for k, v in dt.items()} | {
-            "Post_tags-TOTAL_FORMS": 0,
-            "Post_tags-INITIAL_FORMS": 0,
-        }
+        localized_dt = (
+            dt
+            | {f"{k}_0": v for k, v in dt.items()}
+            | {
+                "Post_tags-TOTAL_FORMS": 0,
+                "Post_tags-INITIAL_FORMS": 0,
+            }
+        )
         self.client.post(resolve_url("admin:test_app_post_add"), localized_dt)
         obj: Post = Post.objects.first()
 

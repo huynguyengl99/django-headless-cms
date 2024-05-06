@@ -14,7 +14,7 @@ class CumulativePrefetch(Prefetch):
 
 
 def calculate_prefetch_relation(
-    model: PublicationModel, fetched_models: Optional[set] = None
+    model: type[PublicationModel], fetched_models: Optional[set] = None
 ):
     if fetched_models is None:
         fetched_models = {model}

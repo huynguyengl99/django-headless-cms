@@ -98,6 +98,9 @@ components:
           nullable: true
         body:
           type: string
+        href:
+          type: string
+          nullable: true
       required:
       - body
       - category

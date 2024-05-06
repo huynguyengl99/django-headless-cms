@@ -290,10 +290,10 @@ class EnhancedLocalizedVersionAdmin(
 
         return res
 
-    def get_resource_classes(self):
-        if not self.resource_classes and not self.resource_class:
+    def get_resource_classes(self, *args, **kwargs):
+        if not self.resource_classes:
             return [override_modelresource_factory(self.model)]
-        return super().get_resource_classes()
+        return super().get_resource_classes(*args, **kwargs)
 
 
 @lru_cache(maxsize=0)
