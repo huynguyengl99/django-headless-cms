@@ -148,6 +148,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
+MEDIA_URL = "media-test/"
+MEDIA_ROOT = f"{BASE_DIR}/../media-test/"
+
 # Rest framework
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [

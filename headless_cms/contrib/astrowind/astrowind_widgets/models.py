@@ -39,15 +39,10 @@ class AWAction(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWItem(LocalizedPublicationModel, SortableGenericBaseModel):
+class AWItem(SortableGenericBaseModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     description = LocalizedTextField(blank=True, null=True, required=False)
     icon = models.CharField(blank=True, default="")
-
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
 
 
 class AWBaseInput(LocalizedPublicationModel):
@@ -62,11 +57,8 @@ class AWBaseInput(LocalizedPublicationModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWInput(AWBaseInput, SortableGenericBaseModel):
-    position = models.PositiveIntegerField(default=0)
-
-    class Meta:
-        ordering = ["position"]
+class AWInput(SortableGenericBaseModel, AWBaseInput):
+    pass
 
 
 @reversion.register(exclude=("published_version",))

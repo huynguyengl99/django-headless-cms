@@ -72,6 +72,22 @@ components:
           pattern: ^[-a-zA-Z0-9_]+$
       required:
       - id
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        icon:
+          type: string
+      required:
+      - id
     Post:
       type: object
       properties:
@@ -86,6 +102,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PostTag'
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
           readOnly: true
         title:
           type: string
@@ -105,6 +126,7 @@ components:
       - body
       - category
       - id
+      - items
       - tags
     PostTag:
       type: object

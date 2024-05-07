@@ -6,8 +6,20 @@ from django.shortcuts import resolve_url
 from reversion.models import Version
 
 from helpers.base import BaseTestCase
-from test_app.factories import PostFactory
-from test_app.models import Post
+from test_app.factories import (
+    ArticleFactory,
+    ArticleImageFactory,
+    PostFactory,
+    PostItemFactory,
+    PostTagFactory,
+)
+from test_app.models import (
+    Article,
+    ArticleImage,
+    ArticleImageThrough,
+    Item,
+    Post,
+)
 
 
 class AdminChangeListViewTests(BaseTestCase):
@@ -94,7 +106,12 @@ class AdminPostRequestTests(BaseTestCase):
         dt = factory.build(dict, FACTORY_CLASS=PostFactory)
         self.localized_dt = {f"{k}_0": v for k, v in dt.items()} | dt
         self.localized_dt.update(
-            {"Post_tags-TOTAL_FORMS": 0, "Post_tags-INITIAL_FORMS": 0}
+            {
+                "Post_tags-TOTAL_FORMS": 0,
+                "Post_tags-INITIAL_FORMS": 0,
+                "test_app-item-content_type-object_id-TOTAL_FORMS": 0,
+                "test_app-item-content_type-object_id-INITIAL_FORMS": 0,
+            }
         )
         with reversion.create_revision():
             self.obj: Post = PostFactory.create(**dt)
@@ -191,6 +208,8 @@ class AdminAddViewTests(BaseTestCase):
             | {
                 "Post_tags-TOTAL_FORMS": 0,
                 "Post_tags-INITIAL_FORMS": 0,
+                "test_app-item-content_type-object_id-TOTAL_FORMS": 0,
+                "test_app-item-content_type-object_id-INITIAL_FORMS": 0,
             }
         )
         self.client.post(resolve_url("admin:test_app_post_add"), localized_dt)
@@ -224,3 +243,82 @@ class AdminActionTests(BaseTestCase):
         assert obj.published_version_id
         assert obj2.published_version_id
         assert not obj3.published_version_id
+
+
+class AdminWithRelationsTests(BaseTestCase):
+    def test_many_to_many_relations(self):
+        with reversion.create_revision():
+            self.post: Post = PostFactory.create()
+
+        with reversion.create_revision():
+            self.post_tag = PostTagFactory.create()
+            self.post.tags.add(self.post_tag)
+
+        self.post_tag.publish()
+
+        with reversion.create_revision():
+            self.post_tag2 = PostTagFactory.create()
+            self.post.tags.add(self.post_tag2)
+
+        with reversion.create_revision():
+            self.post_tag3 = PostTagFactory.create()
+            self.post.tags.add(self.post_tag3)
+
+        self.post_tag3.publish()
+        with reversion.create_revision():
+            self.post_tag3.save()
+
+        self.post.publish()
+
+        res = self.client.get(resolve_url("admin:test_app_post_change", self.post.id))
+
+        self.assertContains(res, "published (latest)", 2)
+        self.assertContains(res, "published (outdated)", 1)
+        self.assertContains(res, "unpublished", 2)
+
+    def test_sortable_many_to_many_relations(self):
+        with reversion.create_revision():
+            self.article: Article = ArticleFactory.create()
+        with reversion.create_revision():
+            self.article_image: ArticleImage = ArticleImageFactory.create()
+            ArticleImageThrough.objects.create(
+                article=self.article, article_image=self.article_image, position=0
+            )
+        with reversion.create_revision():
+            self.article_image2: ArticleImage = ArticleImageFactory.create()
+            ArticleImageThrough.objects.create(
+                article=self.article, article_image=self.article_image2, position=1
+            )
+
+        self.article_image.publish()
+
+        res = self.client.get(
+            resolve_url("admin:test_app_article_change", self.article.id)
+        )
+
+        self.assertContains(res, "published (latest)", 1)
+        self.assertContains(res, "unpublished", 3)
+
+    def test_generic_relations(self):
+        with reversion.create_revision():
+            self.post: Post = PostFactory.create()
+
+        with reversion.create_revision():
+            self.item: Item = PostItemFactory.create(content_object=self.post)
+        self.item.publish()
+
+        with reversion.create_revision():
+            self.item2: Item = PostItemFactory.create(content_object=self.post)
+        self.item2.publish()
+        with reversion.create_revision():
+            self.item2.save()
+
+        self.item3 = PostItemFactory.create(content_object=self.post)
+
+        self.post.publish()
+
+        res = self.client.get(resolve_url("admin:test_app_post_change", self.post.id))
+
+        self.assertContains(res, "published (latest)", 2)
+        self.assertContains(res, "published (outdated)", 1)
+        self.assertContains(res, "unpublished", 2)

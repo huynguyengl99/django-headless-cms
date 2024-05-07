@@ -1,4 +1,5 @@
 import factory
+from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from factory.django import DjangoModelFactory
 from faker import Faker
@@ -46,7 +47,11 @@ class ArticleImageFactory(DjangoModelFactory):
     class Meta:
         model = ArticleImage
 
-    src_file = factory.django.ImageField(color="blue")
+    src_file = {
+        settings.LANGUAGE_CODE: factory.django.ImageField(color="blue").evaluate(
+            None, None, {}
+        )
+    }
     src_url = factory.Faker("image_url")
     alt = factory.Faker("sentence", nb_words=3)
 

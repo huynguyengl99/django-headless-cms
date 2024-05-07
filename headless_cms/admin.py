@@ -53,7 +53,7 @@ class PublishStatusInlineMixin:
                 published_state = "published (outdated)"
         return published_state
 
-    def publish_status(self, obj):
+    def publish_status(self, obj):  # noqa: C901
         published_state = "unpublished"
         if hasattr(obj, "is_through_table") and obj.is_through_table:
             fields = obj._meta.get_fields()
@@ -68,6 +68,15 @@ class PublishStatusInlineMixin:
                         return self._get_publish_status(getattr(obj, field.name))
                 elif rel_model != self.parent_model:
                     published_state = self._get_publish_status(getattr(obj, field.name))
+        elif obj._meta.auto_created:
+            parent_model = obj._meta.auto_created
+            fields = obj._meta.get_fields()
+            for field in fields:
+                rel_model = field.related_model
+                if not rel_model or not issubclass(rel_model, PublicationModel):
+                    continue
+                if field.related_model != parent_model:
+                    return self._get_publish_status(getattr(obj, field.name))
         else:
             published_state = self._get_publish_status(obj)
         return published_state

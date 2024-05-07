@@ -26,7 +26,7 @@ class Item(SortableGenericBaseModel):
 class News(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     subtitle = LocalizedTextField(blank=True, null=True, required=False)
-    items = GenericRelation(Item)
+    items = GenericRelation(Item, blank=True)
 
     class Meta:
         abstract = True

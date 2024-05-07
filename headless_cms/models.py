@@ -176,7 +176,7 @@ class LocalizedDynamicFileModel(LocalizedPublicationModel):
         abstract = True
 
 
-class SortableGenericBaseModel(models.Model):
+class SortableGenericBaseModel(LocalizedPublicationModel):
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
@@ -190,8 +190,10 @@ class SortableGenericBaseModel(models.Model):
     )
 
     object_id = models.PositiveIntegerField(blank=True, null=True)
+    position = models.PositiveIntegerField(default=0)
 
     class Meta:
+        ordering = ["position"]
         abstract = True
 
     def __str__(self):
