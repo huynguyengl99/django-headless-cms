@@ -2,6 +2,7 @@ from unittest.mock import patch
 
 import factory
 import reversion
+from django.conf import settings
 from django.shortcuts import resolve_url
 from reversion.models import Version
 
@@ -183,8 +184,7 @@ class AdminPostRequestTests(BaseTestCase):
         assert "Reverted to previous version" in version.revision.comment
         assert self.obj.published_version_id == published_version_id
 
-    @patch("headless_cms.auto_translate.BaseTranslate")
-    def test_translate_post(self, mock_translate):
+    def test_translate_post(self):
         res = self.client.post(
             resolve_url("admin:test_app_post_change", self.obj.id),
             {
@@ -196,7 +196,6 @@ class AdminPostRequestTests(BaseTestCase):
         self.obj.refresh_from_db()
 
         self.assertEqual(res.status_code, 302)  # Check redirect
-        mock_translate.assert_called_with(self.obj, user=self.user)
 
 
 class AdminAddViewTests(BaseTestCase):
@@ -243,6 +242,66 @@ class AdminActionTests(BaseTestCase):
         assert obj.published_version_id
         assert obj2.published_version_id
         assert not obj3.published_version_id
+
+    def test_unpublish_action(self):
+        with reversion.create_revision():
+            obj: Post = PostFactory.create()
+        obj.publish()
+
+        assert obj.published_version_id
+
+        data = {"action": "unpublish", "_selected_action": [obj.id]}
+        self.client.post(resolve_url("admin:test_app_post_changelist"), data)
+
+        obj.refresh_from_db()
+
+        assert not obj.published_version_id
+
+    def test_translate_missing_action(self):
+        with reversion.create_revision():
+            obj: Post = PostFactory.create()
+
+        base_lang = settings.LANGUAGE_CODE
+        for lang, _code in settings.LANGUAGES:
+            if lang == base_lang:
+                continue
+            assert not getattr(obj.title, lang)
+
+        data = {"action": "translate_missing", "_selected_action": [obj.id]}
+        self.client.post(resolve_url("admin:test_app_post_changelist"), data)
+
+        obj.refresh_from_db()
+
+        base_lang = settings.LANGUAGE_CODE
+        for lang, _code in settings.LANGUAGES:
+            if lang == base_lang:
+                continue
+            assert getattr(obj.title, lang)
+
+    @patch(
+        "headless_cms.auto_translate.base_translate.BaseTranslate.translate",
+        return_value="force translated",
+    )
+    def test_force_translate_action(self, mock_translate):
+        with reversion.create_revision():
+            obj: Post = PostFactory.create(
+                title={
+                    "en": "Title",
+                    "vi": "Vi title",
+                    "ro": "Ro title",
+                }
+            )
+
+        data = {"action": "force_translate", "_selected_action": [obj.id]}
+        self.client.post(resolve_url("admin:test_app_post_changelist"), data)
+
+        obj.refresh_from_db()
+
+        base_lang = settings.LANGUAGE_CODE
+        for lang, _code in settings.LANGUAGES:
+            if lang == base_lang:
+                continue
+            assert getattr(obj.title, lang) == "force translated"
 
 
 class AdminWithRelationsTests(BaseTestCase):

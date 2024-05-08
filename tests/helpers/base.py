@@ -1,3 +1,4 @@
+import pytest
 from django.contrib.auth.models import User
 from django.test import SimpleTestCase, TransactionTestCase
 from django.test.utils import override_settings
@@ -28,7 +29,9 @@ class LoginMixin(UserMixin):
 
 
 class BaseTestCase(LoginMixin, TestBaseTransaction):
-    pass
+    @pytest.fixture(autouse=True)
+    def __inject_fixtures(self, mocker):
+        self.mocker = mocker
 
 
 class BaseAPITestCase(LoginMixin, TestBaseTransaction, APITransactionTestCase):

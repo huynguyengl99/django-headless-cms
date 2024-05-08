@@ -30,6 +30,7 @@ class TestPublicationModel(BaseTestCase):
         assert obj.published_data
         assert obj.published_data["title"] == "Init title"
         assert obj.published_state() == Post.AdminPublishedStateHtml.PUBLISHED_LATEST
+        translation.deactivate()
 
     def test_outdated_published_model(self):
         translation.activate("en")
@@ -47,6 +48,7 @@ class TestPublicationModel(BaseTestCase):
         assert obj.published_data
         assert obj.published_data["title"] == "Init title"
         assert obj.published_state() == Post.AdminPublishedStateHtml.PUBLISHED_OUTDATED
+        translation.deactivate()
 
     def test_published_queryset(self):
         with reversion.create_revision():

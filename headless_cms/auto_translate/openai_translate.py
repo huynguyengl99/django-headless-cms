@@ -1,15 +1,12 @@
 import json
 
-from django.conf import settings
+from localized_fields.models import LocalizedModel
 from openai import OpenAI
 
 from headless_cms.auto_translate.base_translate import BaseTranslate
 from headless_cms.settings import headless_cms_settings
 
-client = OpenAI(
-    api_key=settings.OPENAI_API_KEY,
-    organization=settings.OPENAI_ORG,
-)
+client = OpenAI()
 
 system_prompt = f"""
 You are a professional translator. Please translate and paraphrase (if needed) this content into {{lang}} language \
@@ -31,12 +28,16 @@ Here is your json object:
 class OpenAITranslate(BaseTranslate):
     can_translate_object = True
 
+    def __init__(self, instance: LocalizedModel, openai_client=client):
+        super().__init__(instance)
+        self.openai_client = openai_client
+
     def translate(self, language, text):
         prompts = [
             {"role": "system", "content": system_prompt.replace("{lang}", language)},
             {"role": "user", "content": text},
         ]
-        res = client.chat.completions.create(
+        res = self.openai_client.chat.completions.create(
             model="gpt-4-turbo-preview",
             temperature=0.3,
             messages=prompts,
@@ -53,7 +54,7 @@ class OpenAITranslate(BaseTranslate):
             {"role": "user", "content": json.dumps(obj_to_translate)},
         ]
 
-        res = client.chat.completions.create(
+        res = self.openai_client.chat.completions.create(
             model="gpt-4-turbo",
             temperature=0.7,
             messages=prompts,
