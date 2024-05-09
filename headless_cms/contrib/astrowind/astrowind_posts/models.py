@@ -27,8 +27,7 @@ class AWPostImage(LocalizedDynamicFileModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPost(LocalizedPublicationModel):
-    title = LocalizedTextField(blank=True, null=True, required=False)
+class AWPost(LocalizedTitleSlugModel):
     excerpt = LocalizedTextField(blank=True, null=True, required=False)
     image = models.ForeignKey(
         AWPostImage,
