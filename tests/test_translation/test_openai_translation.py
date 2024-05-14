@@ -19,6 +19,14 @@ class TestOpenAITranslate(BaseTestCase):
         self.instance: Post = PostFactory()
         self.translator = OpenAITranslate(self.instance)
 
+        def batch_translate(raw):
+            res = {}
+            for language, obj_to_trans in raw.items():
+                res[language] = {k: language + "-" + v for k, v in obj_to_trans.items()}
+            return res
+
+        self.batch_translate = batch_translate
+
     @patch("openai.resources.chat.completions.Completions.create")
     def test_openai_translate(self, mock_openai_create):
         translated_content = "Translated content"
@@ -68,8 +76,12 @@ class TestOpenAITranslate(BaseTestCase):
             "description": "description",
             "body": "body",
         }
-        result = self.translator.batch_translate("en", obj_to_translate)
-        assert result == translated_obj
+        batches = {
+            "ro": obj_to_translate,
+            "vi": obj_to_translate,
+        }
+        result = self.translator.batch_translate(batches)
+        assert result == {"vi": translated_obj, "ro": translated_obj}
 
     @patch("openai.resources.chat.completions.Completions.create")
     def test_process(self, mock_openai_create):

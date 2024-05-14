@@ -9,6 +9,7 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
         "headless_cms.schema.preprocessing_hooks.preprocessing_filter_spec"
     ],
     "AUTO_TRANSLATE_IGNORES": [],
+    "OPENAI_CHAT_MODEL": "",
 }
 
 IMPORT_STRINGS = [

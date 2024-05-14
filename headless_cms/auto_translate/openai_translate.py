@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from localized_fields.models import LocalizedModel
@@ -26,10 +27,10 @@ Here is your json object:
 
 
 class OpenAITranslate(BaseTranslate):
-    can_translate_object = True
+    can_batch_translate = True
 
-    def __init__(self, instance: LocalizedModel, openai_client=client):
-        super().__init__(instance)
+    def __init__(self, instance: LocalizedModel, user=None, openai_client=client):
+        super().__init__(instance, user)
         self.openai_client = openai_client
 
     def translate(self, language, text):
@@ -38,27 +39,51 @@ class OpenAITranslate(BaseTranslate):
             {"role": "user", "content": text},
         ]
         res = self.openai_client.chat.completions.create(
-            model="gpt-4-turbo-preview",
+            model=headless_cms_settings.OPENAI_CHAT_MODEL,
             temperature=0.3,
             messages=prompts,
         )
         translated_content = res.choices[0].message.content
         return translated_content
 
-    def batch_translate(self, language: str, obj_to_translate: dict):
-        prompts = [
-            {
-                "role": "system",
-                "content": system_batch_translate_prompt.replace("{lang}", language),
-            },
-            {"role": "user", "content": json.dumps(obj_to_translate)},
-        ]
-
+    def chat_gpt_translate(self, prompt):
         res = self.openai_client.chat.completions.create(
-            model="gpt-4-turbo",
+            model=headless_cms_settings.OPENAI_CHAT_MODEL,
             temperature=0.7,
-            messages=prompts,
+            messages=prompt,
             response_format={"type": "json_object"},
         )
         translated_content = res.choices[0].message.content
         return json.loads(translated_content)
+
+    async def _async_translate(self, prompt_list):
+        loop = asyncio.get_event_loop()
+        futures = [
+            loop.run_in_executor(None, self.chat_gpt_translate, prompt)
+            for prompt in prompt_list
+        ]
+        result = await asyncio.gather(*futures)
+        return result
+
+    def batch_translate(self, batches: dict[str, dict]):
+        langs = []
+        prompt_list = []
+        for language, obj_to_translate in batches.items():
+            langs.append(language)
+            prompt_list.append(
+                [
+                    {
+                        "role": "system",
+                        "content": system_batch_translate_prompt.replace(
+                            "{lang}", language
+                        ),
+                    },
+                    {"role": "user", "content": json.dumps(obj_to_translate)},
+                ]
+            )
+
+        translated_objs = asyncio.run(self._async_translate(prompt_list))
+
+        res = {lang: translated_objs[idx] for idx, lang in enumerate(langs)}
+
+        return res
