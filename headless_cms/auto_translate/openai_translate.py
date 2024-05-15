@@ -12,7 +12,8 @@ client = OpenAI()
 system_prompt = f"""
 You are a professional translator. Please translate and paraphrase (if needed) this content into {{lang}} language \
 with friendly tone, concise and easy to understand. Just translate the content only, keep the HTML or markdown \
-tag as it is. You just response me with translated content only, do not add any additional comment or explanation.
+tag as it is, and keep the proper nouns as it is, too. You just response me with translated content only, do not \
+add any additional comment or explanation.
 Additionally, keep these term as it is: {str(headless_cms_settings.AUTO_TRANSLATE_IGNORES)}.
 Here is your content:
 """
@@ -20,7 +21,8 @@ Here is your content:
 system_batch_translate_prompt = f"""
 You are a professional translator. Please translate and paraphrase (if needed) this json object into {{lang}} language \
 with friendly tone, concise and easy to understand. Just translate the content only, keep the HTML or markdown \
-tag as it is. You just response me with translated json object only, do not add any additional comment or explanation.
+tag as it is, and keep the proper nouns as it is, too. You just response me with translated json object only, do not \
+add any additional comment or explanation.
 Additionally, keep these term as it is: {str(headless_cms_settings.AUTO_TRANSLATE_IGNORES)}.
 Here is your json object:
 """
