@@ -1,4 +1,4 @@
--e .[extra]
+-e .[full]
 black
 coverage[toml]
 django-environ
