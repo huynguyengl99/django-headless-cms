@@ -1,4 +1,3 @@
-import reversion
 from django.conf import settings
 from localized_fields.fields import LocalizedField
 from localized_fields.models import LocalizedModel
@@ -15,10 +14,9 @@ class BaseTranslate:
 
     can_batch_translate = False
 
-    def __init__(self, instance: LocalizedModel, user=None):
+    def __init__(self, instance: LocalizedModel):
         self.instance = instance
         self.fields = instance._meta.get_fields()
-        self.user = user
 
     def translate(self, language: str, text: str):
         """Override this function to translate text to a single language"""
@@ -102,10 +100,4 @@ class BaseTranslate:
             force: whether to force retranslation for all localized fields(even
                 the fields are already translated).
         """
-        with reversion.create_revision():
-            reversion.set_comment(f"Object translated{' (forced)' if force else ''}.")
-
-            if self.user:
-                reversion.set_user(self.user)
-
-            self._process_translation(force)
+        self._process_translation(force)

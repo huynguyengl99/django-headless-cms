@@ -34,7 +34,6 @@ from headless_cms.models import (
     PublicationModel,
     SortableGenericBaseModel,
 )
-from headless_cms.settings import headless_cms_settings
 from headless_cms.utils.custom_import_export import override_modelresource_factory
 
 
@@ -99,28 +98,39 @@ class BaseSortableGenericAdmin(
 
 @admin.action(description="Publish selected")
 def publish(modeladmin, request, queryset):
+    obj: LocalizedPublicationModel
+
     for obj in queryset.all():
         obj.publish(request.user)
 
 
 @admin.action(description="Unpublish selected")
 def unpublish(modeladmin, request, queryset):
+    obj: LocalizedPublicationModel
+
     for obj in queryset.all():
         obj.unpublish(request.user)
 
 
 @admin.action(description="Translate untranslated contents")
 def translate_missing(modeladmin, request, queryset):
+    obj: LocalizedPublicationModel
+
     for obj in queryset.all():
-        headless_cms_settings.AUTO_TRANSLATE_CLASS(obj, user=request.user).process()
+        obj.translate(request.user)
 
 
 @admin.action(description="Force translate (override old translation)")
 def force_translate(modeladmin, request, queryset):
+    obj: LocalizedPublicationModel
+
     for obj in queryset.all():
-        headless_cms_settings.AUTO_TRANSLATE_CLASS(obj, user=request.user).process(
-            force=True
-        )
+        obj.translate(request.user, force=True)
+
+
+FORCE_TRANSLATE = {"_force_translate", "_recursively_force_translate"}
+RECURSIVELY_TRANSLATE = {"_recursively_translate", "_recursively_force_translate"}
+TRANSLATE_ACTIONS = {"_translate"} | FORCE_TRANSLATE | RECURSIVELY_TRANSLATE
 
 
 class EnhancedLocalizedVersionAdmin(
@@ -184,21 +194,22 @@ class EnhancedLocalizedVersionAdmin(
     def change_view(self, request, object_id, form_url="", extra_context=None):
         res = super().change_view(request, object_id, form_url, extra_context)
 
-        if "_publish" in request.POST:
-            with reversion.create_revision(manage_manually=True):
-                obj = self.get_object(request, unquote(object_id))
-                last_ver = Version.objects.get_for_object(obj).first()
+        obj: LocalizedPublicationModel = self.get_object(request, unquote(object_id))
 
-                obj.published_version = last_ver
-                obj.save()
-        elif "_unpublish" in request.POST:
-            with reversion.create_revision(manage_manually=True):
-                obj = self.get_object(request, unquote(object_id))
-                obj.published_version = None
-                obj.save()
-        elif "_recursively_publish" in request.POST:
-            obj = self.get_object(request, unquote(object_id))
+        request_post_keys = set(request.POST.keys())
+        if "_unpublish" in request_post_keys:
+            obj.unpublish(request.user)
+        elif "_publish" in request_post_keys:
+            obj.publish(request.user)
+        elif "_recursively_publish" in request_post_keys:
             obj.recursively_publish(request.user)
+        elif not TRANSLATE_ACTIONS.isdisjoint(request_post_keys):
+            force = not FORCE_TRANSLATE.isdisjoint(request_post_keys)
+            recursively = not RECURSIVELY_TRANSLATE.isdisjoint(request_post_keys)
+            if recursively:
+                obj.recursively_translate(request.user, force)
+            else:
+                obj.translate(request.user, force)
         return res
 
     def response_change(self, request, obj):
@@ -209,55 +220,50 @@ class EnhancedLocalizedVersionAdmin(
             "name": opts.verbose_name,
             "obj": format_html('<a href="{}">{}</a>', urlquote(request.path), obj),
         }
-        if "_publish" in request.POST:
-            reversion.set_comment("Publish")
 
+        custom_actions = {
+            "_publish",
+            "_unpublish",
+            "_recursively_publish",
+        } | TRANSLATE_ACTIONS
+
+        request_post_keys = set(request.POST.keys())
+
+        if custom_actions.isdisjoint(request_post_keys):
+            # Default behavior
+            return super().response_change(request, obj)
+
+        if "_publish" in request_post_keys:
             msg = format_html(
                 _("The {name} “{obj}” was published successfully."),
                 **msg_dict,
             )
-            self.message_user(request, msg, messages.SUCCESS)
-            redirect_url = request.path
-            redirect_url = add_preserved_filters(
-                {"preserved_filters": preserved_filters, "opts": opts}, redirect_url
-            )
-            return HttpResponseRedirect(redirect_url)
-        elif "_unpublish" in request.POST:
-            reversion.set_comment("Unpublished")
-
+        elif "_unpublish" in request_post_keys:
             msg = format_html(
                 _("The {name} “{obj}” was unpublished."),
                 **msg_dict,
             )
-            self.message_user(request, msg, messages.SUCCESS)
-            redirect_url = request.path
-            redirect_url = add_preserved_filters(
-                {"preserved_filters": preserved_filters, "opts": opts}, redirect_url
-            )
-            return HttpResponseRedirect(redirect_url)
-        elif "_translate" in request.POST or "_force_translate" in request.POST:
-            force = "_force_translate" in request.POST
+        elif not TRANSLATE_ACTIONS.isdisjoint(request_post_keys):
+            force = not FORCE_TRANSLATE.isdisjoint(request_post_keys)
+            recursively = not RECURSIVELY_TRANSLATE.isdisjoint(request_post_keys)
 
-            translator = headless_cms_settings.AUTO_TRANSLATE_CLASS(
-                obj, user=request.user
-            )
-            translator.process(force=force)
+            recursively_text = " recursively" if recursively else ""
+            force_text = " (forced)" if force else ""
 
             msg = format_html(
                 _(
-                    f"The {{name}} “{{obj}}” was translated{' (forced)' if force else ''}."
+                    f"The {{name}} “{{obj}}” was{recursively_text} translated{force_text}."
                 ),
                 **msg_dict,
             )
-            self.message_user(request, msg, messages.SUCCESS)
-            redirect_url = request.path
-            redirect_url = add_preserved_filters(
-                {"preserved_filters": preserved_filters, "opts": opts}, redirect_url
-            )
-            return HttpResponseRedirect(redirect_url)
         else:
-            # Otherwise, use default behavior
-            return super().response_change(request, obj)
+            msg = _("Invalid action")
+        self.message_user(request, msg, messages.SUCCESS)
+        redirect_url = request.path
+        redirect_url = add_preserved_filters(
+            {"preserved_filters": preserved_filters, "opts": opts}, redirect_url
+        )
+        return HttpResponseRedirect(redirect_url)
 
     def revision_view(self, request, object_id, version_id, extra_context=None):
         """Displays the contents of the given revision."""

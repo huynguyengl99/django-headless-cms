@@ -29,8 +29,8 @@ Here is your json object:
 class OpenAITranslate(BaseTranslate):
     can_batch_translate = True
 
-    def __init__(self, instance: LocalizedModel, user=None, openai_client=client):
-        super().__init__(instance, user)
+    def __init__(self, instance: LocalizedModel, openai_client=client):
+        super().__init__(instance)
         self.openai_client = openai_client
 
     def translate(self, language, text):
@@ -82,7 +82,9 @@ class OpenAITranslate(BaseTranslate):
                 ]
             )
 
-        translated_objs = asyncio.run(self._async_translate(prompt_list))
+        translated_objs = asyncio.get_event_loop().run_until_complete(
+            self._async_translate(prompt_list)
+        )
 
         res = {lang: translated_objs[idx] for idx, lang in enumerate(langs)}
 

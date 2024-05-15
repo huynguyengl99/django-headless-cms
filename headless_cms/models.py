@@ -16,6 +16,7 @@ from reversion.models import Version
 from solo.models import SingletonModel
 
 from headless_cms.fields.slug_field import LocalizedUniqueNormalizedSlugField
+from headless_cms.settings import headless_cms_settings
 
 
 class M2MSortedOrderThrough(models.Model):
@@ -91,8 +92,8 @@ class PublicationModel(models.Model):
             self.published_version = last_ver
             self.save()
 
-    def recursively_publish(self, user=None):
-        self.publish(user)
+    def recursive_action(self, action, *args, **kwargs):
+        action(self, *args, **kwargs)
 
         for f in self._meta.get_fields():
             if (
@@ -104,11 +105,14 @@ class PublicationModel(models.Model):
                 if f.many_to_one:
                     rel_obj = getattr(self, f.name)
                     if rel_obj:
-                        rel_obj.recursively_publish(user)
+                        rel_obj.recursive_action(action, *args, **kwargs)
                 elif f.many_to_many or f.one_to_many:
                     rel_objs = getattr(self, f.name).all()
                     for rel_obj in rel_objs:
-                        rel_obj.recursively_publish(user)
+                        rel_obj.recursive_action(action, *args, **kwargs)
+
+    def recursively_publish(self, user=None):
+        self.recursive_action(self.__class__.publish, user)
 
     def unpublish(self, user=None):
         with reversion.create_revision():
@@ -121,6 +125,18 @@ class PublicationModel(models.Model):
         with reversion.create_revision(manage_manually=True):
             self.published_version = None
             self.save()
+
+    def translate(self, user=None, force=False):
+        with reversion.create_revision():
+            reversion.set_comment(f"Object translated{' (forced)' if force else ''}.")
+
+            if user:
+                reversion.set_user(user)
+            translator = headless_cms_settings.AUTO_TRANSLATE_CLASS(self)
+            translator.process(force=force)
+
+    def recursively_translate(self, user=None, force=False):
+        self.recursive_action(self.__class__.translate, user, force=force)
 
     @admin.display
     def published_state(self):
