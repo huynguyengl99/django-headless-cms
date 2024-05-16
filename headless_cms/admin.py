@@ -312,14 +312,17 @@ class EnhancedLocalizedVersionAdmin(
 
 
 @lru_cache(maxsize=0)
-def create_m2m_inline_admin(model, sortable=False):
+def create_m2m_inline_admin(model, sortable=False, fk_name=None):
+    body = {"extra": 0, "model": model}
+    if fk_name is not None:
+        body["fk_name"] = fk_name
     return type(
         model.__name__ + "Inline",
         (
             PublishStatusInlineMixin,
             SortableStackedInline if sortable else StackedInline,
         ),
-        {"extra": 0, "model": model},
+        body,
     )
 
 
@@ -353,7 +356,9 @@ def auto_admins(
                     can_sort = True
                     has_sortable_base = True
 
-                inlines.append(create_m2m_inline_admin(through, can_sort))
+                fk_name = getattr(through, "fk_name", None)
+
+                inlines.append(create_m2m_inline_admin(through, can_sort, fk_name))
             elif isinstance(field, GenericRelation) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):

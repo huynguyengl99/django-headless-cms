@@ -95,12 +95,15 @@ class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
 
 
 @lru_cache(maxsize=0)
-def auto_serializer(
+def auto_serializer(  # noqa: C901
     model: type[models.Model],
     ancestors: Optional[Iterable] = None,
+    override_model_serializer_fields: Optional[dict] = None,
 ) -> type[serializers.ModelSerializer]:
     if ancestors is None:
         ancestors = set()
+    if override_model_serializer_fields is None:
+        override_model_serializer_fields = {}
     ancestors = set(ancestors)
 
     model_fields = model._meta.get_fields()
@@ -113,7 +116,9 @@ def auto_serializer(
             if isinstance(field, ForeignKey) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
-                serializer = auto_serializer(field.related_model, ancestors)
+                serializer = auto_serializer(
+                    field.related_model, ancestors, override_model_serializer_fields
+                )
                 relations.update({field.name: serializer(read_only=True)})
             elif isinstance(field, ManyToManyField) and field.related_model == model:
 
@@ -126,8 +131,13 @@ def auto_serializer(
             elif (isinstance(field, (GenericRelation, ManyToManyField))) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
-                serializer = auto_serializer(field.related_model, ancestors)
+                serializer = auto_serializer(
+                    field.related_model, ancestors, override_model_serializer_fields
+                )
                 relations.update({field.name: serializer(many=True, read_only=True)})
+
+    if override_model_serializer_fields.get(model):
+        relations.update(override_model_serializer_fields[model])
 
     if issubclass(model, LocalizedDynamicFileModel):
         base_serializer = LocalizedDynamicFileSerializer

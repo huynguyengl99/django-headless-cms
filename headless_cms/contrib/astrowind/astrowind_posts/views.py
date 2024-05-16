@@ -10,6 +10,9 @@ from headless_cms.contrib.astrowind.astrowind_posts.models import (
     AWPost,
     AWPostTag,
 )
+from headless_cms.contrib.astrowind.astrowind_posts.serializers import (
+    RelatedPostSerializer,
+)
 from headless_cms.mixins import CMSSchemaMixin
 from headless_cms.serializers import auto_serializer
 
@@ -43,7 +46,12 @@ class PostFilter(django_filters.FilterSet):
 
 class AWPostCMSViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
     queryset = AWPost.published_objects.published(auto_prefetch=True)
-    serializer_class = auto_serializer(AWPost)
+    serializer_class = auto_serializer(
+        AWPost,
+        override_model_serializer_fields={
+            AWPost: {"related_posts": RelatedPostSerializer(read_only=True, many=True)}
+        },
+    )
     filterset_class = PostFilter
     pagination_class = AWPostPaginator
 

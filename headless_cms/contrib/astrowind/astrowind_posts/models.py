@@ -11,6 +11,7 @@ from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedPublicationModel,
     LocalizedTitleSlugModel,
+    M2MSortedOrderThrough,
 )
 
 
@@ -53,6 +54,13 @@ class AWPost(LocalizedTitleSlugModel):
         AWPostMetadata, blank=True, null=True, on_delete=models.SET_NULL
     )
 
+    related_posts = models.ManyToManyField(
+        "self",
+        blank=True,
+        through="AWRelatedPost",
+        symmetrical=False,
+    )
+
     publish_date = DateTimeField(blank=True, null=True)
     updated_date = DateTimeField(auto_now=True)
     created_date = DateTimeField(auto_now_add=True)
@@ -60,6 +68,17 @@ class AWPost(LocalizedTitleSlugModel):
     class Meta:
         ordering = [F("publish_date").desc(nulls_first=True), "-created_date"]
         index_together = ["publish_date", "created_date"]
+
+
+class AWRelatedPost(M2MSortedOrderThrough):
+    fk_name = "source_post"
+
+    source_post = models.ForeignKey(
+        AWPost, on_delete=models.CASCADE, related_name="source_through"
+    )
+    related_post = models.ForeignKey(
+        AWPost, on_delete=models.CASCADE, related_name="related_through"
+    )
 
 
 @reversion.register(exclude=("published_version",))
