@@ -10,11 +10,10 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
     ],
     "AUTO_TRANSLATE_IGNORES": [],
     "OPENAI_CHAT_MODEL": "",
+    "OPENAI_CLIENT": "openai.OpenAI",
 }
 
-IMPORT_STRINGS = [
-    "AUTO_TRANSLATE_CLASS",
-]
+IMPORT_STRINGS = ["AUTO_TRANSLATE_CLASS", "OPENAI_CLIENT"]
 
 
 class HeadlessCMSSettings(APISettings):

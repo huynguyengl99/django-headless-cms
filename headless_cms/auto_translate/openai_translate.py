@@ -1,13 +1,14 @@
 import asyncio
 import json
+from inspect import isclass
 
 from localized_fields.models import LocalizedModel
-from openai import OpenAI
 
 from headless_cms.auto_translate.base_translate import BaseTranslate
 from headless_cms.settings import headless_cms_settings
 
-client = OpenAI()
+_openai_client = headless_cms_settings.OPENAI_CLIENT
+openai_client = _openai_client() if isclass(_openai_client) else _openai_client
 
 system_prompt = f"""
 You are a professional translator. Please translate and paraphrase (if needed) this content into {{lang}} language \
@@ -31,16 +32,15 @@ Here is your json object:
 class OpenAITranslate(BaseTranslate):
     can_batch_translate = True
 
-    def __init__(self, instance: LocalizedModel, openai_client=client):
+    def __init__(self, instance: LocalizedModel):
         super().__init__(instance)
-        self.openai_client = openai_client
 
     def translate(self, language, text):
         prompts = [
             {"role": "system", "content": system_prompt.replace("{lang}", language)},
             {"role": "user", "content": text},
         ]
-        res = self.openai_client.chat.completions.create(
+        res = openai_client.chat.completions.create(
             model=headless_cms_settings.OPENAI_CHAT_MODEL,
             temperature=0.3,
             messages=prompts,
@@ -49,7 +49,7 @@ class OpenAITranslate(BaseTranslate):
         return translated_content
 
     def chat_gpt_translate(self, prompt):
-        res = self.openai_client.chat.completions.create(
+        res = openai_client.chat.completions.create(
             model=headless_cms_settings.OPENAI_CHAT_MODEL,
             temperature=0.7,
             messages=prompt,
@@ -84,9 +84,7 @@ class OpenAITranslate(BaseTranslate):
                 ]
             )
 
-        translated_objs = asyncio.get_event_loop().run_until_complete(
-            self._async_translate(prompt_list)
-        )
+        translated_objs = asyncio.run(self._async_translate(prompt_list))
 
         res = {lang: translated_objs[idx] for idx, lang in enumerate(langs)}
 
