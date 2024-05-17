@@ -66,6 +66,13 @@ class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
     footer = models.ForeignKey(
         AWFooter, blank=True, null=True, on_delete=models.SET_NULL
     )
+    announcement = LocalizedTextField(
+        default=dict, blank=True, null=True, required=False
+    )
+    philosophy_text = LocalizedCharField(
+        default=dict, blank=True, null=True, required=False
+    )
+    philosophy = LocalizedTextField(default=dict, blank=True, null=True, required=False)
 
 
 class AWAboutFeature3Through(M2MSortedOrderThrough):
