@@ -1,5 +1,6 @@
 from django.conf import settings
 from localized_fields.fields import LocalizedField
+from localized_fields.fields.file_field import LocalizedFileField
 from localized_fields.models import LocalizedModel
 from localized_fields.value import LocalizedValue
 
@@ -39,7 +40,9 @@ class BaseTranslate:
             obj_to_translate = {}
 
             for field in self.fields:
-                if isinstance(field, LocalizedField):
+                if isinstance(field, LocalizedField) and not isinstance(
+                    field, LocalizedFileField
+                ):
                     field_value = getattr(self.instance, field.name)
                     base_value = getattr(field_value, settings.LANGUAGE_CODE)
                     if base_value:
@@ -81,7 +84,9 @@ class BaseTranslate:
 
                 else:
                     for field in self.fields:
-                        if isinstance(field, LocalizedField):
+                        if isinstance(field, LocalizedField) and not isinstance(
+                            field, LocalizedFileField
+                        ):
                             field_value = getattr(self.instance, field.name)
                             base_value = getattr(field_value, settings.LANGUAGE_CODE)
                             if base_value:
