@@ -1,6 +1,6 @@
 import reversion
 from django.db import models
-from localized_fields.fields import LocalizedTextField
+from localized_fields.fields import LocalizedCharField, LocalizedTextField
 
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
@@ -133,3 +133,20 @@ class AWContactPage(LocalizedPublicationModel, LocalizedSingletonModel):
     feature2 = models.ForeignKey(
         AWFeature2, blank=True, null=True, on_delete=models.SET_NULL
     )
+
+
+@reversion.register(exclude=("published_version",))
+class AWPostPage(LocalizedPublicationModel, LocalizedSingletonModel):
+    title = LocalizedTextField(default=dict, blank=True, null=True)
+    subtitle = LocalizedTextField(default=dict, blank=True, null=True)
+
+    tag_text = LocalizedCharField(default=dict, blank=True, null=True)
+    category_text = LocalizedCharField(default=dict, blank=True, null=True)
+    page_text = LocalizedCharField(default=dict, blank=True, null=True)
+    blog_text = LocalizedCharField(default=dict, blank=True, null=True)
+    back_to_blog_text = LocalizedCharField(default=dict, blank=True, null=True)
+    posts_by_tag_text = LocalizedCharField(default=dict, blank=True, null=True)
+    related_posts_text = LocalizedCharField(default=dict, blank=True, null=True)
+    view_all_posts_text = LocalizedCharField(default=dict, blank=True, null=True)
+    prev_text = LocalizedCharField(default=dict, blank=True, null=True)
+    next_text = LocalizedCharField(default=dict, blank=True, null=True)

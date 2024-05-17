@@ -5,6 +5,7 @@ from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWAboutPage,
     AWContactPage,
     AWIndexPage,
+    AWPostPage,
     AWPricingPage,
     AWSite,
 )
@@ -46,3 +47,8 @@ class AWPricingPageView(AWPageView):
 class AWContactPageView(AWPageView):
     serializer_class = auto_serializer(AWContactPage)
     model = AWContactPage
+
+
+class AWPostPageView(AWPageView):
+    serializer_class = auto_serializer(AWPostPage)
+    model = AWPostPage
