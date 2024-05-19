@@ -6,20 +6,13 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
+from headless_cms.contrib.astrowind.astrowind_metadata.models import AWMetadata
 from headless_cms.fields.martor_field import LocalizedMartorField
 from headless_cms.models import (
     LocalizedDynamicFileModel,
-    LocalizedPublicationModel,
     LocalizedTitleSlugModel,
     M2MSortedOrderThrough,
 )
-
-
-@reversion.register(exclude=("published_version",))
-class AWPostMetadata(LocalizedPublicationModel):
-    title = LocalizedTextField(blank=True, null=True, required=False)
-    description = LocalizedTextField(blank=True, null=True, required=False)
-    canonical = LocalizedCharField(blank=True, null=True, required=False)
 
 
 @reversion.register(exclude=("published_version",))
@@ -51,7 +44,7 @@ class AWPost(LocalizedTitleSlugModel):
     content = LocalizedMartorField(default=dict, blank=True, null=True, required=False)
 
     metadata = models.ForeignKey(
-        AWPostMetadata, blank=True, null=True, on_delete=models.SET_NULL
+        AWMetadata, blank=True, null=True, on_delete=models.SET_NULL
     )
 
     related_posts = models.ManyToManyField(

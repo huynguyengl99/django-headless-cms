@@ -9,6 +9,7 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
         "headless_cms.schema.preprocessing_hooks.preprocessing_filter_spec"
     ],
     "AUTO_TRANSLATE_IGNORES": [],
+    "GLOBAL_EXCLUDED_SERIALIZED_FIELDS": [],
     "OPENAI_CHAT_MODEL": "",
     "OPENAI_CLIENT": "openai.OpenAI",
 }

@@ -2,6 +2,7 @@ import reversion
 from django.db import models
 from localized_fields.fields import LocalizedCharField, LocalizedTextField
 
+from headless_cms.contrib.astrowind.astrowind_metadata.models import AWMetadata
 from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWCallToAction,
     AWContact,
@@ -73,6 +74,9 @@ class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
         default=dict, blank=True, null=True, required=False
     )
     philosophy = LocalizedTextField(default=dict, blank=True, null=True, required=False)
+    default_metadata = models.ForeignKey(
+        AWMetadata, on_delete=models.SET_NULL, blank=True, null=True
+    )
 
 
 class AWAboutFeature3Through(M2MSortedOrderThrough):

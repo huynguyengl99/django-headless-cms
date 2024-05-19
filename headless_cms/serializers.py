@@ -20,6 +20,7 @@ from rest_framework.serializers import ModelSerializer
 from headless_cms.fields.url_field import AutoLanguageUrlField
 from headless_cms.models import LocalizedDynamicFileModel, LocalizedPublicationModel
 from headless_cms.serializer_fields import UrlField
+from headless_cms.settings import headless_cms_settings
 
 
 class LocalizedModelSerializer(ModelSerializer):
@@ -72,7 +73,11 @@ class LocalizedModelSerializer(ModelSerializer):
 
 class LocalizedBaseSerializer(LocalizedModelSerializer):
     class Meta:
-        extra_exclude = ["position", "content_type", "object_id"]
+        extra_exclude = [
+            "position",
+            "content_type",
+            "object_id",
+        ] + headless_cms_settings.GLOBAL_EXCLUDED_SERIALIZED_FIELDS
         abstract = True
 
 
