@@ -71,7 +71,9 @@ class Command(BaseRevisionCommand):
             with open(file_to_import) as fh:
                 imported_data = Dataset().load(fh)
 
-            import_model_resource = override_modelresource_factory(model)
+            import_model_resource = override_modelresource_factory(
+                model, exclude_m2m=True
+            )
             import_model = import_model_resource()
 
             import_model.import_data(imported_data, raise_errors=True)

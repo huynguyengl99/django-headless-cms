@@ -22,12 +22,10 @@
       "vi": "Bảo tồn môi trường là rất quan trọng cho sự bền vững của hành tinh chúng ta."
     },
     "href": "{'en': 'https://example.com/en/environmental-conservation', 'ro': 'https://example.com/ro/conservarea-mediului', 'vi': 'https://example.com/vi/bao-ton-moi-truong'}",
-    "tags": "1",
-    "category": 4
   },
   {
-    "id": -1,
-    "title": 10,
+    "id": "abc",
+    "title": "hello",
     "subtitle": {
       "en": "",
       "ro": "",
@@ -44,7 +42,5 @@
       "vi": "Tham gia vào các môn thể thao là một cách tuyệt vời để duy trì sức khỏe thể chất và hình thể."
     },
     "href": "{'en': 'https://example.com/en/top-sports', 'ro': 'https://example.com/ro/sporturi-pentru-forma', 'vi': 'https://example.com/vi/mon-the-thao-giu-dang'}",
-    "tags": "2,10",
-    "category": 20
   }
 ]

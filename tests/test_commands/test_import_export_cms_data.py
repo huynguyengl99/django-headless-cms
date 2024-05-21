@@ -27,6 +27,7 @@ class ExportCMSDataTests(BaseTestCase):
         self.result_dir = self.data_dir / "results"
 
     def tearDown(self):
+        """Comment out this tear down to keep the results for comparison."""
         if self.result_dir.exists():
             shutil.rmtree(self.result_dir)
 

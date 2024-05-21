@@ -62,7 +62,7 @@ class Command(BaseRevisionCommand):
                 through = getattr(model, field.name).through
                 self.export_model(through)
 
-        export_model_resource = override_modelresource_factory(model)
+        export_model_resource = override_modelresource_factory(model, exclude_m2m=True)
         export_model = export_model_resource()
 
         data = export_model.export()

@@ -16,8 +16,6 @@
       "ro": "Perspective Tehnologice",
       "vi": "Nh\u1eadn \u0110\u1ecbnh C\u00f4ng Ngh\u1ec7"
     },
-    "posts": "1,2",
-    "articles": "1,2",
     "domain": 1
   },
   {
@@ -37,8 +35,6 @@
       "ro": "Probleme de S\u0103n\u0103tate",
       "vi": "Nh\u1eefng V\u1ea5n \u0110\u1ec1 S\u1ee9c Kh\u1ecfe"
     },
-    "posts": "2,3",
-    "articles": "2,3",
     "domain": 2
   },
   {
@@ -58,8 +54,6 @@
       "ro": "Alegerea Stilului de Via\u021b\u0103",
       "vi": "L\u1ef1a Ch\u1ecdn Phong C\u00e1ch S\u1ed1ng"
     },
-    "posts": "1,3",
-    "articles": "1,3",
     "domain": 3
   }
 ]

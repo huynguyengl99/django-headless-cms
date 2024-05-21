@@ -1,4 +1,5 @@
 import reversion
+from django.db.models import ManyToManyField
 from django.utils.translation import gettext_lazy as _
 from import_export import widgets
 from import_export.resources import ModelDeclarativeMetaclass, ModelResource
@@ -31,13 +32,22 @@ class LocalizedModelResource(ModelResource):
             super().save_instance(*args, **kwargs)
 
 
-def override_modelresource_factory(model, resource_class=LocalizedModelResource):
+def override_modelresource_factory(
+    model, resource_class=LocalizedModelResource, exclude_m2m=False
+):
     """
     Factory for creating ``ModelResource`` class for given Django model.
     """
+    exclude = ["published_version"]
+    if exclude_m2m:
+        model_fields = model._meta.get_fields()
+        for field in model_fields:
+            if isinstance(field, ManyToManyField):
+                exclude.append(field.name)
+
     attrs = {
         "model": model,
-        "exclude": ["published_version"],
+        "exclude": exclude,
         "use_natural_foreign_keys": True,
         "skip_unchanged": True,
     }
