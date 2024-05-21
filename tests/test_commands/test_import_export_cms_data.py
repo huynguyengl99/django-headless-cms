@@ -1,4 +1,4 @@
-import hashlib
+import json
 import os
 import shutil
 from datetime import datetime
@@ -38,24 +38,18 @@ class ExportCMSDataTests(BaseTestCase):
                 rel_dir = os.path.relpath(path, folder_path)
                 rel_file = os.path.join(rel_dir, name)
                 ful_path = os.path.join(path, name)
-                res[rel_file] = self.get_file_hash(ful_path)
+                res[rel_file] = json.loads(self.get_file_data(ful_path))
 
         return res
 
-    def get_file_hash(self, file_path):
-        with open(file_path, "rb") as f:
-            data = f.read()
-            return hashlib.md5(data).hexdigest()
+    def get_file_data(self, file_path):
+        with open(file_path) as f:
+            return f.read()
 
     def compare_folder(self, folder1, folder2):
         folder_1_contents = self.get_folder_contents(folder1)
         folder_2_contents = self.get_folder_contents(folder2)
         assert folder_1_contents == folder_2_contents
-
-    def compare_zip(self, zip_file1, zip_file2):
-        zip_file1_contents = self.get_file_hash(zip_file1)
-        zip_file2_contents = self.get_file_hash(zip_file2)
-        assert zip_file1_contents == zip_file2_contents
 
     def test_import_export_cms_data(self):
         with freeze_time("2012-01-14 12:00:01"):
