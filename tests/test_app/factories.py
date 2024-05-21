@@ -4,7 +4,16 @@ from django.contrib.contenttypes.models import ContentType
 from factory.django import DjangoModelFactory
 from faker import Faker
 
-from test_app.models import Article, ArticleImage, Category, Item, Post, PostTag
+from test_app.models import (
+    Article,
+    ArticleImage,
+    Blog,
+    Category,
+    Domain,
+    Item,
+    Post,
+    PostTag,
+)
 
 f = Faker()
 
@@ -92,3 +101,19 @@ class ArticleItemFactory(GenericItemFactory):
 
     class Meta:
         model = Item
+
+
+class DomainFactory(DjangoModelFactory):
+    class Meta:
+        model = Domain
+
+    title = factory.Faker("sentence", nb_words=3)
+    slug = factory.Faker("slug")
+
+
+class BlogFactory(DjangoModelFactory):
+    class Meta:
+        model = Blog
+
+    name = factory.Faker("sentence", nb_words=3)
+    domain = factory.SubFactory(DomainFactory)

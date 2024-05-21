@@ -1,0 +1,32 @@
+[
+  {
+    "id": "1",
+    "blog": 1,
+    "article": 1
+  },
+  {
+    "id": "2",
+    "blog": 1,
+    "article": 2
+  },
+  {
+    "id": "3",
+    "blog": 2,
+    "article": 2
+  },
+  {
+    "id": "4",
+    "blog": 2,
+    "article": 3
+  },
+  {
+    "id": "5",
+    "blog": 3,
+    "article": 1
+  },
+  {
+    "id": "6",
+    "blog": 3,
+    "article": 3
+  }
+]

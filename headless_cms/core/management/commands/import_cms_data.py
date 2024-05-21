@@ -3,6 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db import transaction
 from django.db.models import ForeignKey, ManyToManyField
 from reversion.management.commands import BaseRevisionCommand
 from tablib import Dataset
@@ -43,6 +44,8 @@ class Command(BaseRevisionCommand):
             return
         self.imported_models.add(model)
         model_fields = model._meta.get_fields()
+
+        through_models = []
         for field in model_fields:
             if isinstance(field, (GenericRelation, ForeignKey)) and issubclass(
                 field.related_model, LocalizedPublicationModel
@@ -53,7 +56,7 @@ class Command(BaseRevisionCommand):
             ):
                 self.import_model(field.related_model)
                 through = getattr(model, field.name).through
-                self.import_model(through)
+                through_models.append(through)
 
         if self.verbosity >= 1:
             self.stdout.write(f"Import data for {model._meta.object_name}")
@@ -63,35 +66,39 @@ class Command(BaseRevisionCommand):
             / model._meta.app_label
             / f"{model._meta.object_name}.json"
         )
-        with open(file_to_import) as fh:
-            imported_data = Dataset().load(fh)
 
-        import_model_resource = override_modelresource_factory(model)
-        import_model = import_model_resource()
+        if file_to_import.exists():
+            with open(file_to_import) as fh:
+                imported_data = Dataset().load(fh)
 
-        import_model.import_data(imported_data)
+            import_model_resource = override_modelresource_factory(model)
+            import_model = import_model_resource()
+
+            import_model.import_data(imported_data, raise_errors=True)
+
+        for through in through_models:
+            self.import_model(through)
 
     def handle(self, *app_labels, **options):
         self.input_data_path = Path(options["input"])
 
         if self.input_data_path.is_dir():
             self.data_input_dir = Path(self.input_data_path)
-        elif self.input_data_path.is_file():
+        else:
             self.temp_extracted_input_dir = Path("temp-extracted-input")
             self.data_input_dir = (
                 self.temp_extracted_input_dir / datetime.now().strftime("%Y%m%d-%H%M%S")
             )
             self.uncompress_input(options["cf"])
-        else:
-            raise ValueError(f"Invalid input: {self.input_data_path}")
 
         self.verbosity = options["verbosity"]
 
-        for model in self.get_models(options):
-            if not issubclass(model, LocalizedPublicationModel):
-                continue
+        with transaction.atomic():
+            for model in self.get_models(options):
+                if not issubclass(model, LocalizedPublicationModel):
+                    continue
 
-            self.import_model(model)
+                self.import_model(model)
 
         self.clean_up()
 

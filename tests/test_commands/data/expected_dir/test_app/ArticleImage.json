@@ -1,0 +1,56 @@
+[
+  {
+    "id": "1",
+    "src_file": {
+      "en": "",
+      "ro": "",
+      "vi": ""
+    },
+    "src_url": {
+      "en": "https://dummyimage.com/258x543",
+      "ro": "",
+      "vi": ""
+    },
+    "alt": {
+      "en": "Likely result card.",
+      "ro": "",
+      "vi": ""
+    }
+  },
+  {
+    "id": "2",
+    "src_file": {
+      "en": "",
+      "ro": "",
+      "vi": ""
+    },
+    "src_url": {
+      "en": "https://dummyimage.com/112x477",
+      "ro": "",
+      "vi": ""
+    },
+    "alt": {
+      "en": "Why join.",
+      "ro": "",
+      "vi": ""
+    }
+  },
+  {
+    "id": "3",
+    "src_file": {
+      "en": "",
+      "ro": "",
+      "vi": ""
+    },
+    "src_url": {
+      "en": "https://dummyimage.com/511x380",
+      "ro": "",
+      "vi": ""
+    },
+    "alt": {
+      "en": "Computer want.",
+      "ro": "",
+      "vi": ""
+    }
+  }
+]

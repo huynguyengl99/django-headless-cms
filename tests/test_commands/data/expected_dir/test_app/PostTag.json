@@ -1,0 +1,41 @@
+[
+  {
+    "id": "1",
+    "title": {
+      "en": "Django",
+      "ro": "Django",
+      "vi": "Django"
+    },
+    "slug": {
+      "en": "django",
+      "ro": "django",
+      "vi": "django"
+    }
+  },
+  {
+    "id": "2",
+    "title": {
+      "en": "Python",
+      "ro": "Python",
+      "vi": "Python"
+    },
+    "slug": {
+      "en": "python",
+      "ro": "python",
+      "vi": "python"
+    }
+  },
+  {
+    "id": "3",
+    "title": {
+      "en": "Web Development",
+      "ro": "Dezvoltare web",
+      "vi": "Ph\u00e1t tri\u1ec3n web"
+    },
+    "slug": {
+      "en": "web-development",
+      "ro": "dezvoltare-web",
+      "vi": "phat-trien-web"
+    }
+  }
+]

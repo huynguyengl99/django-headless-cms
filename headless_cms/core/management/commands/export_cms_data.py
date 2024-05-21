@@ -88,8 +88,6 @@ class Command(BaseRevisionCommand):
 
         if not self.data_output_dir.exists():
             self.data_output_dir.mkdir(parents=True, exist_ok=True)
-        else:
-            shutil.rmtree(self.data_output_dir)
 
         self.verbosity = options["verbosity"]
 

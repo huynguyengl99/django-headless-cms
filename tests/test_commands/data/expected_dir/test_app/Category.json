@@ -1,0 +1,41 @@
+[
+  {
+    "id": "1",
+    "title": {
+      "en": "Technology",
+      "ro": "Tehnologie",
+      "vi": "C\u00f4ng ngh\u1ec7"
+    },
+    "slug": {
+      "en": "technology",
+      "ro": "tehnologie",
+      "vi": "cong-nghe"
+    }
+  },
+  {
+    "id": "2",
+    "title": {
+      "en": "Health",
+      "ro": "S\u0103n\u0103tate",
+      "vi": "S\u1ee9c kh\u1ecfe"
+    },
+    "slug": {
+      "en": "health",
+      "ro": "sanatate",
+      "vi": "suc-khoe"
+    }
+  },
+  {
+    "id": "3",
+    "title": {
+      "en": "Lifestyle",
+      "ro": "Stil de via\u021b\u0103",
+      "vi": "Phong c\u00e1ch s\u1ed1ng"
+    },
+    "slug": {
+      "en": "lifestyle",
+      "ro": "stil-de-viata",
+      "vi": "phong-cach-song"
+    }
+  }
+]
