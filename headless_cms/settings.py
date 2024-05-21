@@ -12,9 +12,14 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
     "GLOBAL_EXCLUDED_SERIALIZED_FIELDS": [],
     "OPENAI_CHAT_MODEL": "",
     "OPENAI_CLIENT": "openai.OpenAI",
+    "DEFAULT_CMS_PERMISSION_CLASS": "rest_framework.permissions.AllowAny",
 }
 
-IMPORT_STRINGS = ["AUTO_TRANSLATE_CLASS", "OPENAI_CLIENT"]
+IMPORT_STRINGS = [
+    "AUTO_TRANSLATE_CLASS",
+    "OPENAI_CLIENT",
+    "DEFAULT_CMS_PERMISSION_CLASS",
+]
 
 
 class HeadlessCMSSettings(APISettings):
