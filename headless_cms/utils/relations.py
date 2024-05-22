@@ -2,7 +2,7 @@ from typing import Optional
 
 from django.db.models import Prefetch
 
-from headless_cms.models import M2MSortedOrderThrough, PublicationModel
+from headless_cms.models import LocalizedPublicationModel, M2MSortedOrderThrough
 
 calculated_models = {}
 
@@ -14,7 +14,7 @@ class CumulativePrefetch(Prefetch):
 
 
 def calculate_prefetch_relation(
-    model: type[PublicationModel], fetched_models: Optional[set] = None
+    model: type[LocalizedPublicationModel], fetched_models: Optional[set] = None
 ):
     if fetched_models is None:
         fetched_models = {model}
@@ -27,7 +27,7 @@ def calculate_prefetch_relation(
         if (
             not rel_model
             or rel_model in fetched_models
-            or not issubclass(rel_model, PublicationModel)
+            or not issubclass(rel_model, LocalizedPublicationModel)
             or f.auto_created
         ):
             continue

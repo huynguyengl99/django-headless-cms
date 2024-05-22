@@ -31,7 +31,6 @@ from headless_cms.models import (
     LocalizedPublicationModel,
     LocalizedSingletonModel,
     M2MSortedOrderThrough,
-    PublicationModel,
     SortableGenericBaseModel,
 )
 from headless_cms.utils.custom_import_export import override_modelresource_factory
@@ -58,7 +57,9 @@ class PublishStatusInlineMixin:
             fields = obj._meta.get_fields()
             for field in fields:
                 rel_model = field.related_model
-                if not rel_model or not issubclass(rel_model, PublicationModel):
+                if not rel_model or not issubclass(
+                    rel_model, LocalizedPublicationModel
+                ):
                     continue
                 if self.fk_name:
                     if field.name == self.fk_name:
@@ -72,7 +73,9 @@ class PublishStatusInlineMixin:
             fields = obj._meta.get_fields()
             for field in fields:
                 rel_model = field.related_model
-                if not rel_model or not issubclass(rel_model, PublicationModel):
+                if not rel_model or not issubclass(
+                    rel_model, LocalizedPublicationModel
+                ):
                     continue
                 if field.related_model != parent_model:
                     return self._get_publish_status(getattr(obj, field.name))

@@ -2,22 +2,8 @@ import contextlib
 
 from django.utils.functional import keep_lazy_text
 from django.utils.text import slugify
-from localized_fields.fields import LocalizedCharField, LocalizedUniqueSlugField
-from localized_fields.value import LocalizedStringValue
+from localized_fields.fields import LocalizedUniqueSlugField
 from unidecode import unidecode
-
-from ..forms import LocalizedSlugForm
-
-
-class LocalizedSlugField(LocalizedCharField):
-    attr_class = LocalizedStringValue
-
-    def formfield(self, **kwargs):
-        """Gets the form field associated with this field."""
-        defaults = {"form_class": LocalizedSlugForm}
-
-        defaults.update(kwargs)
-        return super().formfield(**defaults)
 
 
 @contextlib.contextmanager

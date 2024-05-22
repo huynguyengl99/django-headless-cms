@@ -56,7 +56,7 @@ class PublishedManager(models.Manager):
         return self.get_queryset().published(auto_prefetch)
 
 
-class PublicationModel(models.Model):
+class LocalizedPublicationModel(LocalizedModel):
     class AdminPublishedStateHtml:
         UNPUBLISHED = '<div style="color:red;">unpublished<div>'
         PUBLISHED_OUTDATED = '<div style="color:orange;">published (outdated)<div>'
@@ -70,7 +70,7 @@ class PublicationModel(models.Model):
     objects = models.Manager()
     published_objects = PublishedManager()
 
-    class Meta:
+    class Meta(LocalizedModel.Meta):
         abstract = True
 
     @property
@@ -151,11 +151,6 @@ class PublicationModel(models.Model):
         return format_html(state)
 
     published_state.allow_tags = True
-
-
-class LocalizedPublicationModel(LocalizedModel, PublicationModel):
-    class Meta:
-        abstract = True
 
 
 class LocalizedSingletonModel(SingletonModel):
