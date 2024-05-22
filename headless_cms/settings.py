@@ -13,6 +13,7 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
     "OPENAI_CHAT_MODEL": "",
     "OPENAI_CLIENT": "openai.OpenAI",
     "DEFAULT_CMS_PERMISSION_CLASS": "rest_framework.permissions.AllowAny",
+    "CMS_HOST": "http://localhost:8000",
 }
 
 IMPORT_STRINGS = [

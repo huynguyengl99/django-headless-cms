@@ -17,9 +17,10 @@ from rest_framework.fields import (
 )
 from rest_framework.serializers import ModelSerializer
 
+from headless_cms import serializer_fields
+from headless_cms.fields.martor_field import LocalizedMartorField
 from headless_cms.fields.url_field import AutoLanguageUrlField
 from headless_cms.models import LocalizedDynamicFileModel, LocalizedPublicationModel
-from headless_cms.serializer_fields import UrlField
 from headless_cms.settings import headless_cms_settings
 
 
@@ -33,7 +34,10 @@ class LocalizedModelSerializer(ModelSerializer):
     serializer_field_mapping[fields.LocalizedFloatField] = FloatField
     serializer_field_mapping[fields.LocalizedBooleanField] = BooleanField
     serializer_field_mapping[fields.LocalizedBooleanField] = BooleanField
-    serializer_field_mapping[AutoLanguageUrlField] = UrlField
+    serializer_field_mapping[AutoLanguageUrlField] = serializer_fields.UrlField
+    serializer_field_mapping[LocalizedMartorField] = (
+        serializer_fields.LocalizedMartorField
+    )
 
     def to_representation(self, instance):
         data = instance.published_data

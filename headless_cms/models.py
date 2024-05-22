@@ -186,6 +186,17 @@ class LocalizedDynamicFileModel(LocalizedPublicationModel):
     class Meta:
         abstract = True
 
+    @property
+    def src_link(self):
+        src_file = self.src_file.translate()
+        if src_file:
+            src_url = src_file.url
+            if src_url.startswith("/"):
+                src_url = f"{headless_cms_settings.CMS_HOST}{src_url}"
+            return src_url
+        elif self.src_url:
+            return self.src_url.translate()
+
 
 class SortableGenericBaseModel(LocalizedPublicationModel):
     content_type = models.ForeignKey(
