@@ -1,6 +1,8 @@
 [build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling >= 1.13.0"]
+build-backend = "poetry.core.masonry.api"
+requires = [
+  "poetry @ git+https://github.com/radoering/poetry.git@pep621-support"  # TODO: update to official poetry later
+]
 
 [project]
 authors = [
@@ -47,13 +49,12 @@ dependencies = [
 ]
 description = "A simple django-based headless CMS."
 dynamic = ["version"]
-license = "MIT"
 name = "django-headless-cms"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<4.0"
+license.file = "LICENSE"
 
 [project.optional-dependencies]
-full = ["openai>=1"]
 openai = ["openai>=1"]
 
 [project.urls]
@@ -84,18 +85,34 @@ omit = [
   "tests/*"
 ]
 
-[tool.hatch.build]
-exclude = [
-  "/.*",
-  "/scripts",
-  "/tests"
+[tool.poetry]
+name = 'headless_cms'
+packages = [
+  {include = "headless_cms"}
 ]
+version = '0.0.4'
 
-[tool.hatch.build.targets.wheel]
-packages = ["headless_cms"]
+[tool.poetry.group.docs.dependencies]
+Sphinx = ">=7.0.0,<8"
+sphinx_rtd_theme = "*"
 
-[tool.hatch.version]
-path = "headless_cms/__init__.py"
+[tool.poetry.group.lint.dependencies]
+black = "*"
+pre-commit = ">=3.4.0,<4.0.0"
+ruff = "*"
+toml-sort = "*"
+
+[tool.poetry.group.test.dependencies]
+coverage = {extras = ['toml'], version = "*"}
+django-environ = "*"
+django-extensions = "*"
+factory-boy = "*"
+freezegun = "*"
+openai = ">=1"
+pytest = "*"
+pytest-cov = "*"
+pytest-django = "*"
+pytest-mock = "*"
 
 [tool.ruff]
 src = ["headless_cms", 'tests']

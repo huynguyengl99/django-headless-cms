@@ -11,18 +11,10 @@ pythin -m venv .venv
 source .venv/bin/activate
 ```
 
-Then we recommend installing the module in editable mode with the `dev` extra requirements:
+Then we recommend installing initial requirements and use poetry install all dev package:
 ```bash
-pip install -e ".[dev]" -r requirements.txt
-```
-
-To check it worked, use:
-```bash
-$ which pip
-```
-Result:
-```console
-some/directory/django-headless-cms/.venv/bin/pip
+pip install requirements-init.txt
+poetry install --all-extras
 ```
 
 ## Validate the changes before creating a pull request

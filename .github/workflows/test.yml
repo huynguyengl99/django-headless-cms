@@ -26,10 +26,13 @@ jobs:
         id: cache
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-tests.txt') }}-lint
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-init.txt') }}-lint
+      - name: Install Initial Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install -r requirements-init.txt
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements-tests.txt
+        run: poetry install --only lint
       - name: Lint
         run: bash scripts/lint.sh
 
@@ -73,10 +76,13 @@ jobs:
         id: cache
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-tests.txt') }}-test
+          key: ${{ runner.os }}-python-${{ env.pythonLocation }}-django-headless-cms-${{ hashFiles('pyproject.toml', 'requirements-init.txt') }}-test
+      - name: Install Initial Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install -r requirements-init.txt
       - name: Install Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements-tests.txt
+        run: poetry install --only test --only main
       - run: mkdir coverage
       - name: Test
         run: coverage run -m pytest tests
