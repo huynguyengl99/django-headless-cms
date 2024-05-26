@@ -34,6 +34,7 @@ repos:
     rev: v0.23.1
     hooks:
     -   id: toml-sort-fix
+        files: 'pyproject.toml'
 ci:
     autofix_commit_msg: 🎨 [pre-commit.ci] Auto format from pre-commit.com hooks
     autoupdate_commit_msg: ⬆ [pre-commit.ci] pre-commit autoupdate
