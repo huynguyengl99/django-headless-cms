@@ -77,6 +77,14 @@ exclude = '''
 line-length = 88
 preview = true
 
+[tool.commitizen]
+major_version_zero = true
+name = "cz_conventional_commits"
+tag_format = "v$version"
+update_changelog_on_bump = true
+version_provider = "poetry"
+version_scheme = "pep440"
+
 [tool.coverage.run]
 omit = [
   "headless_cms/contrib/*",
@@ -91,6 +99,9 @@ packages = [
   {include = "headless_cms"}
 ]
 version = '0.0.4'
+
+[tool.poetry.group.dev.dependencies]
+commitizen = "^3.27.0"
 
 [tool.poetry.group.docs.dependencies]
 Sphinx = ">=7.0.0,<8"
