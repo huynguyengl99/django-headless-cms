@@ -1,3 +1,9 @@
+## v0.1.1 (2024-05-28)
+
+### Refactor
+
+- update pyproject toml for commitizen bump pattern
+
 ## v0.1.0 (2024-05-27)
 
 ### Feat
