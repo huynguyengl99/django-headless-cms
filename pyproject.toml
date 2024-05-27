@@ -85,6 +85,11 @@ update_changelog_on_bump = true
 version_provider = "poetry"
 version_scheme = "pep440"
 
+[tool.commitizen.customize]
+bump_map = {build = "PATCH", ci = "PATCH", feat = "MINOR", fix = "PATCH", perf = "PATCH", refactor = "PATCH"}
+bump_pattern = '^(feat|fix|ci|build|perf|refactor)'
+schema_pattern = '^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump|my_custom_one)(\(\S+\))?\:?\s.*'
+
 [tool.coverage.run]
 omit = [
   "headless_cms/contrib/*",
