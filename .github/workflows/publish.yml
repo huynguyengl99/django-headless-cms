@@ -1,12 +1,25 @@
 name: Publish
 
 on:
-  release:
-    types:
-      - created
+  push:
+    tags:
+      - "v*"
 
 jobs:
+  release:
+    if: "startsWith(github.event.head_commit.message, 'bump:')"
+    runs-on: ubuntu-latest
+    name: "Release to github"
+    steps:
+      - uses: softprops/action-gh-release@v1
+        with:
+          body_path: "body.md"
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish:
+    if: "startsWith(github.event.head_commit.message, 'bump:')"
     runs-on: ubuntu-latest
     permissions:
       id-token: write
