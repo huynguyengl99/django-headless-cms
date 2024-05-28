@@ -24,7 +24,6 @@ class Command(BaseRevisionCommand):
             page_models.extend(
                 app for app in apps.get_app_config(app_name).get_models()
             )
-
         print("Publish Astrowind pages and posts.")
         for page_model in page_models:
             for page in page_model.objects.all():
