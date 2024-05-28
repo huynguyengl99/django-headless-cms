@@ -1,3 +1,9 @@
+## v0.2.1 (2024-05-28)
+
+### Fix
+
+- trigger a new build to update pypi package
+
 ## v0.2.0 (2024-05-28)
 
 ### Feat
