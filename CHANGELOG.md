@@ -1,3 +1,9 @@
+## v0.2.0 (2024-05-28)
+
+### Feat
+
+- populate astrowind data
+
 ## v0.1.1 (2024-05-28)
 
 ### Refactor
