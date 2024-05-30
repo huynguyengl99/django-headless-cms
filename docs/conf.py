@@ -2,11 +2,21 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+import os
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
 from pathlib import Path
+
+import django
+
+sys.path.append(os.path.abspath("."))
+sys.path.append(os.path.abspath(".."))
+sys.path.append(os.path.abspath("../tests"))
+os.environ["DJANGO_SETTINGS_MODULE"] = "test_project.settings"
+
+django.setup()
 
 project = "Django Headless CMS"
 copyright = "2024, Huy Nguyen"

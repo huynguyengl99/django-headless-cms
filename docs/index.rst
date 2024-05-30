@@ -13,3 +13,7 @@ CMS workflow.
 
 Contents
 --------
+
+.. toctree::
+   Home <self>
+   reference/index

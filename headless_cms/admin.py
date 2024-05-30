@@ -37,11 +37,23 @@ from headless_cms.utils.custom_import_export import override_modelresource_facto
 
 
 class PublishStatusInlineMixin:
-    show_change_link = True
+    """
+    Mixin to show the publish status of related objects in inline admin.
+    """
 
+    show_change_link = True
     readonly_fields = ("publish_status",)
 
     def _get_publish_status(self, obj):
+        """
+        Get the publish status of an object.
+
+        Args:
+            obj (models.Model): The object to check.
+
+        Returns:
+            str: The publish status.
+        """
         published_state = "unpublished"
         if obj.published_version:
             last_ver = Version.objects.get_for_object(obj).first()
@@ -51,9 +63,18 @@ class PublishStatusInlineMixin:
                 published_state = "published (outdated)"
         return published_state
 
-    def publish_status(self, obj):  # noqa: C901
+    def publish_status(self, obj):
+        """
+        Get the publish status of an object for display in the admin.
+
+        Args:
+            obj (models.Model): The object to check.
+
+        Returns:
+            str: The publish status.
+        """
         published_state = "unpublished"
-        if hasattr(obj, "is_through_table") and obj.is_through_table:
+        if isinstance(obj, M2MSortedOrderThrough):
             fields = obj._meta.get_fields()
             for field in fields:
                 rel_model = field.related_model
@@ -88,6 +109,10 @@ class BaseGenericAdmin(
     PublishStatusInlineMixin,
     GenericStackedInline,
 ):
+    """
+    Base class for generic inlines with publish status.
+    """
+
     extra = 0
 
 
@@ -96,11 +121,23 @@ class BaseSortableGenericAdmin(
     SortableStackedInline,
     BaseGenericAdmin,
 ):
+    """
+    Base class for sortable generic inlines with publish status.
+    """
+
     extra = 0
 
 
 @admin.action(description="Publish selected")
 def publish(modeladmin, request, queryset):
+    """
+    Admin action to publish selected objects.
+
+    Args:
+        modeladmin (ModelAdmin): The model admin.
+        request (HttpRequest): The request object.
+        queryset (QuerySet): The selected objects.
+    """
     obj: LocalizedPublicationModel
 
     for obj in queryset.all():
@@ -109,6 +146,14 @@ def publish(modeladmin, request, queryset):
 
 @admin.action(description="Unpublish selected")
 def unpublish(modeladmin, request, queryset):
+    """
+    Admin action to unpublish selected objects.
+
+    Args:
+        modeladmin (ModelAdmin): The model admin.
+        request (HttpRequest): The request object.
+        queryset (QuerySet): The selected objects.
+    """
     obj: LocalizedPublicationModel
 
     for obj in queryset.all():
@@ -117,6 +162,14 @@ def unpublish(modeladmin, request, queryset):
 
 @admin.action(description="Translate untranslated contents")
 def translate_missing(modeladmin, request, queryset):
+    """
+    Admin action to translate missing content for selected objects.
+
+    Args:
+        modeladmin (ModelAdmin): The model admin.
+        request (HttpRequest): The request object.
+        queryset (QuerySet): The selected objects.
+    """
     obj: LocalizedPublicationModel
 
     for obj in queryset.all():
@@ -125,6 +178,14 @@ def translate_missing(modeladmin, request, queryset):
 
 @admin.action(description="Force translate (override old translation)")
 def force_translate(modeladmin, request, queryset):
+    """
+    Admin action to force translate selected objects, overriding old translations.
+
+    Args:
+        modeladmin (ModelAdmin): The model admin.
+        request (HttpRequest): The request object.
+        queryset (QuerySet): The selected objects.
+    """
     obj: LocalizedPublicationModel
 
     for obj in queryset.all():
@@ -139,17 +200,41 @@ TRANSLATE_ACTIONS = {"_translate"} | FORCE_TRANSLATE | RECURSIVELY_TRANSLATE
 class EnhancedLocalizedVersionAdmin(
     ImportExportActionModelAdmin, LocalizedFieldsAdminMixin, VersionAdmin
 ):
+    """
+    Enhanced admin class for localized versioned models.
+
+    Includes support for import/export, localization, and versioning.
+    """
+
     actions = [publish, unpublish, translate_missing, force_translate]
     formfield_overrides = {
         models.TextField: {"widget": AdminMartorWidget},
     }
 
     def get_list_display(self, request):
+        """
+        Get the list display fields for the admin changelist.
+
+        Args:
+            request (HttpRequest): The request object.
+
+        Returns:
+            tuple: The list display fields.
+        """
         list_display = super().get_list_display(request)
         return list_display + ("published_state",)
 
     def render_change_form(self, request, context, *args, **kwargs):
-        """We need to update the context to show the button."""
+        """
+        Render the change form for the admin.
+
+        Args:
+            request (HttpRequest): The request object.
+            context (dict): The context for the form.
+
+        Returns:
+            HttpResponse: The rendered change form.
+        """
         obj = kwargs.get("obj")
         if obj and not context.get("revert"):
             show_publish = True
@@ -185,6 +270,16 @@ class EnhancedLocalizedVersionAdmin(
         return super().render_change_form(request, context, *args, **kwargs)
 
     def changelist_view(self, request, extra_context=None):
+        """
+        Render the changelist view for the admin.
+
+        Args:
+            request (HttpRequest): The request object.
+            extra_context (dict, optional): Extra context for the view.
+
+        Returns:
+            HttpResponse: The rendered changelist view.
+        """
         if request.POST and "action" in request.POST:
             context = {
                 "has_change_permission": self.has_change_permission(request),
@@ -195,6 +290,18 @@ class EnhancedLocalizedVersionAdmin(
             return super().changelist_view(request, extra_context)
 
     def change_view(self, request, object_id, form_url="", extra_context=None):
+        """
+        Render the change view for the admin.
+
+        Args:
+            request (HttpRequest): The request object.
+            object_id (str): The ID of the object being changed.
+            form_url (str, optional): The form URL.
+            extra_context (dict, optional): Extra context for the view.
+
+        Returns:
+            HttpResponse: The rendered change view.
+        """
         res = super().change_view(request, object_id, form_url, extra_context)
 
         obj: LocalizedPublicationModel = self.get_object(request, unquote(object_id))
@@ -216,6 +323,16 @@ class EnhancedLocalizedVersionAdmin(
         return res
 
     def response_change(self, request, obj):
+        """
+        Handle the response after saving the object in the admin.
+
+        Args:
+            request (HttpRequest): The request object.
+            obj (models.Model): The object being saved.
+
+        Returns:
+            HttpResponse: The response.
+        """
         opts = self.opts
         preserved_filters = self.get_preserved_filters(request)
 
@@ -269,7 +386,18 @@ class EnhancedLocalizedVersionAdmin(
         return HttpResponseRedirect(redirect_url)
 
     def revision_view(self, request, object_id, version_id, extra_context=None):
-        """Displays the contents of the given revision."""
+        """
+        Displays the contents of the given revision.
+
+        Args:
+            request (HttpRequest): The request object.
+            object_id (str): The ID of the object being changed.
+            version_id (str): The ID of the version to display.
+            extra_context (dict, optional): Extra context for the view.
+
+        Returns:
+            HttpResponse: The rendered revision view.
+        """
         object_id = unquote(object_id)  # Underscores in primary key get quoted to "_5F"
         version = get_object_or_404(Version, pk=version_id, object_id=object_id)
         context = {
@@ -292,6 +420,18 @@ class EnhancedLocalizedVersionAdmin(
     def _reversion_revisionform_view(
         self, request, version, template_name, extra_context=None
     ):
+        """
+        Helper method for rendering the revision form view.
+
+        Args:
+            request (HttpRequest): The request object.
+            version (Version): The version to display.
+            template_name (str): The template name.
+            extra_context (dict, optional): Extra context for the view.
+
+        Returns:
+            HttpResponse: The rendered revision form view.
+        """
         old_published_version = (
             version.object.published_version if version.object else None
         )
@@ -309,6 +449,12 @@ class EnhancedLocalizedVersionAdmin(
         return res
 
     def get_resource_classes(self, *args, **kwargs):
+        """
+        Get the resource classes for import/export.
+
+        Returns:
+            list: The resource classes.
+        """
         if not self.resource_classes:
             return [override_modelresource_factory(self.model)]
         return super().get_resource_classes(*args, **kwargs)
@@ -316,6 +462,17 @@ class EnhancedLocalizedVersionAdmin(
 
 @lru_cache(maxsize=0)
 def create_m2m_inline_admin(model, sortable=False, fk_name=None):
+    """
+    Create an inline admin class for a many-to-many relationship.
+
+    Args:
+        model (models.Model): The model for the inline admin.
+        sortable (bool, optional): Whether the inline is sortable.
+        fk_name (str, optional): The foreign key name.
+
+    Returns:
+        type: The inline admin class.
+    """
     body = {"extra": 0, "model": model}
     if fk_name is not None:
         body["fk_name"] = fk_name
@@ -331,6 +488,16 @@ def create_m2m_inline_admin(model, sortable=False, fk_name=None):
 
 @lru_cache(maxsize=0)
 def create_generic_inline_admin(model, sortable=False):
+    """
+    Create an inline admin class for a generic relationship.
+
+    Args:
+        model (models.Model): The model for the inline admin.
+        sortable (bool, optional): Whether the inline is sortable.
+
+    Returns:
+        type: The inline admin class.
+    """
     return type(
         model.__name__ + "Inline",
         (BaseSortableGenericAdmin if sortable else BaseGenericAdmin,),
@@ -341,6 +508,12 @@ def create_generic_inline_admin(model, sortable=False):
 def auto_admins(
     model_list: list[type[models.Model]],
 ):
+    """
+    Automatically register admin classes for a list of models.
+
+    Args:
+        model_list (list): The list of models to register.
+    """
     for model in model_list:
         admin_attrs = {"history_latest_first": True}
         inlines = []

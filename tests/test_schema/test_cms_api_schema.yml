@@ -59,6 +59,7 @@ components:
   schemas:
     Category:
       type: object
+      description: Serializer for Category
       properties:
         id:
           type: integer
@@ -74,6 +75,7 @@ components:
       - id
     Item:
       type: object
+      description: Serializer for Item
       properties:
         id:
           type: integer
@@ -90,6 +92,7 @@ components:
       - id
     Post:
       type: object
+      description: Serializer for Post
       properties:
         id:
           type: integer
@@ -130,6 +133,7 @@ components:
       - tags
     PostTag:
       type: object
+      description: Serializer for PostTag
       properties:
         id:
           type: integer

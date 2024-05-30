@@ -23,6 +23,6 @@ class UrlField(CharField):
         return f"/{language_code}" + value
 
 
-class LocalizedMartorField(CharField):
+class LocalizedMartorFieldSerializer(CharField):
     def to_representation(self, value):
         return replace_placeholder(str(value), False)

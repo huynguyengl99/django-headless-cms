@@ -86,9 +86,9 @@ version_provider = "poetry"
 version_scheme = "pep440"
 
 [tool.commitizen.customize]
-bump_map = {build = "PATCH", ci = "PATCH", feat = "MINOR", fix = "PATCH", perf = "PATCH", refactor = "PATCH"}
-bump_pattern = '^(feat|fix|ci|build|perf|refactor)'
-schema_pattern = '^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump|my_custom_one)(\(\S+\))?\:?\s.*'
+bump_map = {build = "PATCH", ci = "PATCH", docs = "PATCH", feat = "MINOR", fix = "PATCH", perf = "PATCH", refactor = "PATCH"}
+bump_pattern = '^(feat|fix|ci|build|perf|refactor|docs)'
+schema_pattern = '^(build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert|bump)(\(\S+\))?\:?\s.*'
 
 [tool.coverage.run]
 omit = [
@@ -151,6 +151,7 @@ select = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"*" = ['C901']
 "tests/*" = ["PLR0913", "PLR2004"]
 "tests/test_utils/base.py" = ["N802"]
 

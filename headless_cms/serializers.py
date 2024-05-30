@@ -25,6 +25,25 @@ from headless_cms.settings import headless_cms_settings
 
 
 class LocalizedModelSerializer(ModelSerializer):
+    """
+    A base serializer for models with localized fields.
+
+    This serializer automatically maps localized fields to their corresponding
+    serializer fields in the Django REST Framework, making it easier to work with
+    models that have multiple language support.
+
+    Field Mapping:
+        - LocalizedField -> CharField
+        - LocalizedAutoSlugField -> SlugField
+        - LocalizedUniqueSlugField -> SlugField
+        - LocalizedFileField -> FileField
+        - LocalizedIntegerField -> IntegerField
+        - LocalizedFloatField -> FloatField
+        - LocalizedBooleanField -> BooleanField
+        - AutoLanguageUrlField -> UrlField
+        - LocalizedMartorField -> LocalizedMartorFieldSerializer
+    """
+
     serializer_field_mapping = ModelSerializer.serializer_field_mapping.copy()
     serializer_field_mapping[fields.LocalizedField] = CharField
     serializer_field_mapping[fields.LocalizedAutoSlugField] = SlugField
@@ -33,11 +52,20 @@ class LocalizedModelSerializer(ModelSerializer):
     serializer_field_mapping[fields.LocalizedIntegerField] = IntegerField
     serializer_field_mapping[fields.LocalizedFloatField] = FloatField
     serializer_field_mapping[fields.LocalizedBooleanField] = BooleanField
-    serializer_field_mapping[fields.LocalizedBooleanField] = BooleanField
     serializer_field_mapping[AutoLanguageUrlField] = serializer_fields.UrlField
     serializer_field_mapping[LocalizedMartorField] = (
-        serializer_fields.LocalizedMartorField
+        serializer_fields.LocalizedMartorFieldSerializer
     )
+
+    class Meta:
+        model = LocalizedPublicationModel
+        abstract = True
+
+    def __new__(cls, *args, **kwargs):
+        cls.__doc__ = (
+            cls.__doc__ or f"Serializer for {cls.Meta.model._meta.object_name}"
+        )
+        return super().__new__(cls, *args, **kwargs)
 
     def to_representation(self, instance):
         data = instance.published_data
@@ -76,6 +104,23 @@ class LocalizedModelSerializer(ModelSerializer):
 
 
 class LocalizedBaseSerializer(LocalizedModelSerializer):
+    """
+    A base serializer for localized models.
+
+    This serializer is designed to exclude certain fields by default, making it easier
+    to work with models that have localized fields. The excluded fields often include
+    those that are not necessary for the serialization process or that require special
+    handling.
+
+    Excluded Fields:
+        - `position`: Typically used for ordering and not needed in the serialized output.
+        - `content_type`: Used by Django's content types framework, often unnecessary in the output.
+        - `object_id`: The ID of the related object, usually not needed in the serialized form.
+
+    This list of excluded fields can be extended by modifying the `extra_exclude` attribute
+    in the `Meta` class.
+    """
+
     class Meta:
         extra_exclude = [
             "position",
@@ -86,9 +131,26 @@ class LocalizedBaseSerializer(LocalizedModelSerializer):
 
 
 class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
+    """
+    A serializer for models with dynamic file fields, primarily used for LocalizedDynamicFileModel.
+
+    This serializer is designed to handle models that have dynamic file fields, such as
+    fields for uploaded files or URLs to external resources. It adds a `src` field that
+    returns the absolute URL of the file, either from a local source or an external URL.
+    """
+
     src = serializers.SerializerMethodField()
 
     def get_src(self, obj):
+        """
+        Get the source URL of the file.
+
+        Args:
+            obj (models.Model): The model instance.
+
+        Returns:
+            str: The source URL.
+        """
         src_file = obj.src_file.translate()
         if src_file:
             return self.context["request"].build_absolute_uri(src_file.url)
@@ -103,12 +165,22 @@ class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
         ]
 
 
-@lru_cache(maxsize=0)
-def auto_serializer(  # noqa: C901
+def _auto_serializer(
     model: type[models.Model],
     ancestors: Optional[Iterable] = None,
     override_model_serializer_fields: Optional[dict] = None,
 ) -> type[serializers.ModelSerializer]:
+    """
+    Helper function to recursively create a serializer for a given model.
+
+    Args:
+        model (type[models.Model]): The model class.
+        ancestors (Optional[Iterable], optional): Ancestor models to exclude.
+        override_model_serializer_fields (Optional[dict], optional): Fields to override.
+
+    Returns:
+        type[serializers.ModelSerializer]: The generated serializer class.
+    """
     if ancestors is None:
         ancestors = set()
     if override_model_serializer_fields is None:
@@ -125,7 +197,7 @@ def auto_serializer(  # noqa: C901
             if isinstance(field, ForeignKey) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
-                serializer = auto_serializer(
+                serializer = _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
                 relations.update({field.name: serializer(read_only=True)})
@@ -140,7 +212,7 @@ def auto_serializer(  # noqa: C901
             elif (isinstance(field, (GenericRelation, ManyToManyField))) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
-                serializer = auto_serializer(
+                serializer = _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
                 relations.update({field.name: serializer(many=True, read_only=True)})
@@ -159,3 +231,28 @@ def auto_serializer(  # noqa: C901
     result.Meta = meta_class
 
     return result
+
+
+@lru_cache(maxsize=0)
+def auto_serializer(
+    model: type[models.Model],
+    override_model_serializer_fields: Optional[dict] = None,
+) -> type[serializers.ModelSerializer]:
+    """
+    Automatically create a serializer for a given model.
+
+    This function dynamically generates a Django REST Framework serializer for the specified
+    model. It handles relationships and nested serializers, making it easier to work with
+    complex model structures.
+
+    Args:
+        model (type[models.Model]): The model class for which to create the serializer.
+        override_model_serializer_fields (Optional[dict], optional): A dictionary of fields to
+            override in the generated serializer. Defaults to None.
+
+    Returns:
+        type[serializers.ModelSerializer]: The generated serializer class.
+    """
+    return _auto_serializer(
+        model, override_model_serializer_fields=override_model_serializer_fields
+    )
