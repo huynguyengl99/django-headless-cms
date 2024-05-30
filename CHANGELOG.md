@@ -1,3 +1,9 @@
+## v0.2.2 (2024-05-31)
+
+### Fix
+
+- add docs for main components and refactor some minor things
+
 ## v0.2.1 (2024-05-28)
 
 ### Fix
