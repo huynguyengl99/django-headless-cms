@@ -59,7 +59,7 @@ Make sure you have installed `cookiecutter` as mentioned above, then run this co
 
     python -m cookiecutter https://github.com/huynguyengl99/cookiecutter-djhcms
 
-.. image:: images/quick-start/img.png
+.. image:: images/quick-start/cookiecutter.png
    :alt: DjHCMS Cookiecutter
 
 - Open the created project.
@@ -131,7 +131,6 @@ d) Making Changes
 
 **Note:** If this is your first time using `Astro` or if you are unfamiliar with it, remember to restart the FE dev server after making API updates to ensure new API calls are made, as Astro caches your API requests.
 
-- Visit and update your posts.
 - Visit http://localhost:8000/admin/astrowind_posts/awpost/1/change/ to update the first post.
 - Update the `title` field under the `English` tab to: `Hello world`.
 - Update the `title` field under the `Vietnamese` tab to: `Xin chao`.
@@ -150,9 +149,9 @@ e) Create a New Post and Auto-Translate Using OpenAI ChatGPT
 - Restart the BE server.
 - Visit http://localhost:8000/admin/astrowind_posts/awpost/add/
 - Fill out the post in `English`, for example:
-  - Title: `My favorite post`
-  - Author: `John Doe`
-  - Content:
+   - Title: `My favorite post`
+   - Author: `John Doe`
+   - Content:
 
 .. code-block:: text
 
@@ -165,6 +164,10 @@ e) Create a New Post and Auto-Translate Using OpenAI ChatGPT
 - Click the `Translate missing` button to use AI to translate the post into other languages.
 - Click `Publish` to publish the post.
 - Restart the FE dev server.
-- Visit `http://localhost:4321/en/blog` to see the new post at the top of the page.
+- Visit http://localhost:4321/en/blog to see the new post at the top of the page.
 - Click the post to view its details.
 - Select other languages to see the post translated into different languages.
+
+
+**And that's all about getting started with Django-headless-cms in conjunction with Astrowind. For more information,
+explore the other sections of the documentation.**
