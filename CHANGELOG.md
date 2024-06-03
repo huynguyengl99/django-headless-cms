@@ -1,3 +1,9 @@
+## v0.3.0 (2024-06-03)
+
+### Feat
+
+- add project documentation and do some minor refactor
+
 ## v0.2.2 (2024-05-31)
 
 ### Fix
