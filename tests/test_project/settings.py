@@ -100,9 +100,9 @@ DATABASES = {
     "default": {
         "ENGINE": "psqlextra.backend",
         "HOST": env.str("POSTGRES_HOST", "localhost"),
-        "NAME": env.str("POSTGRES_DB"),
-        "USER": env.str("POSTGRES_USER"),
-        "PASSWORD": env.str("POSTGRES_PASSWORD"),
+        "NAME": env.str("POSTGRES_DB", "POSTGRES_DB"),
+        "USER": env.str("POSTGRES_USER", "POSTGRES_USER"),
+        "PASSWORD": env.str("POSTGRES_PASSWORD", "POSTGRES_PASSWORD"),
         "PORT": env.int("POSTGRES_PORT", 5432),
     },
 }
