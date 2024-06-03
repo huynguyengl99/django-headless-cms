@@ -21,14 +21,13 @@ from headless_cms.contrib.astrowind.astrowind_widgets.models import (
     AWStep2,
 )
 from headless_cms.models import (
-    LocalizedPublicationModel,
     LocalizedSingletonModel,
     M2MSortedOrderThrough,
 )
 
 
 @reversion.register(exclude=("published_version",))
-class AWIndexPage(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWIndexPage(LocalizedSingletonModel):
     title = LocalizedTextField(default=dict, blank=True, null=True)
 
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
@@ -60,7 +59,7 @@ class AWIndexPageContentThrough(M2MSortedOrderThrough):
 
 
 @reversion.register(exclude=("published_version",))
-class AWSite(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWSite(LocalizedSingletonModel):
     header = models.ForeignKey(
         AWHeader, blank=True, null=True, on_delete=models.SET_NULL
     )
@@ -95,7 +94,7 @@ class AWAboutStep2Through(M2MSortedOrderThrough):
 
 
 @reversion.register(exclude=("published_version",))
-class AWAboutPage(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWAboutPage(LocalizedSingletonModel):
     title = LocalizedTextField(default=dict, blank=True, null=True)
 
     hero = models.ForeignKey(AWHero, blank=True, null=True, on_delete=models.SET_NULL)
@@ -112,7 +111,7 @@ class AWAboutPage(LocalizedPublicationModel, LocalizedSingletonModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPricingPage(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWPricingPage(LocalizedSingletonModel):
     title = LocalizedTextField(default=dict, blank=True, null=True)
 
     hero_text = models.ForeignKey(
@@ -132,7 +131,7 @@ class AWPricingPage(LocalizedPublicationModel, LocalizedSingletonModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWContactPage(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWContactPage(LocalizedSingletonModel):
     title = LocalizedTextField(default=dict, blank=True, null=True)
 
     hero_text = models.ForeignKey(
@@ -147,7 +146,7 @@ class AWContactPage(LocalizedPublicationModel, LocalizedSingletonModel):
 
 
 @reversion.register(exclude=("published_version",))
-class AWPostPage(LocalizedPublicationModel, LocalizedSingletonModel):
+class AWPostPage(LocalizedSingletonModel):
     title = LocalizedTextField(default=dict, blank=True, null=True)
     subtitle = LocalizedTextField(default=dict, blank=True, null=True)
 

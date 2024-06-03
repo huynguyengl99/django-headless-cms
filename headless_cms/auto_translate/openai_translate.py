@@ -30,12 +30,29 @@ Here is your json object:
 
 
 class OpenAITranslate(BaseTranslate):
+    """
+    Translation class using OpenAI's chat model.
+
+    This class extends the BaseTranslate class to provide translation functionality
+    using OpenAI's chat model. It supports both single and batch translations.
+    """
+
     can_batch_translate = True
 
     def __init__(self, instance: LocalizedModel):
         super().__init__(instance)
 
     def translate(self, language, text):
+        """
+        Translate text to a single language using OpenAI's chat model.
+
+        Args:
+            language (str): The target language code.
+            text (str): The text to be translated.
+
+        Returns:
+            str: The translated text.
+        """
         prompts = [
             {"role": "system", "content": system_prompt.replace("{lang}", language)},
             {"role": "user", "content": text},
@@ -68,6 +85,17 @@ class OpenAITranslate(BaseTranslate):
         return result
 
     def batch_translate(self, batches: dict[str, dict]):
+        """
+        Batch translate multiple fields to multiple languages using OpenAI's chat model.
+
+        Args:
+            batches (dict[str, dict]): A dictionary where keys are language codes and values
+                are dictionaries mapping field names to text to be translated.
+
+        Returns:
+            dict[str, dict]: A dictionary where keys are language codes and values are
+                dictionaries mapping field names to translated text.
+        """
         langs = []
         prompt_list = []
         for language, obj_to_translate in batches.items():

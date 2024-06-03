@@ -41,7 +41,6 @@ class PublishStatusInlineMixin:
     Mixin to show the publish status of related objects in inline admin.
     """
 
-    show_change_link = True
     readonly_fields = ("publish_status",)
 
     def _get_publish_status(self, obj):

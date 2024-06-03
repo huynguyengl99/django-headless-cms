@@ -12,6 +12,21 @@ from headless_cms.utils.custom_import_export import override_modelresource_facto
 
 
 class Command(BaseRevisionCommand):
+    """
+    Exports data recursively of a Django app into JSON files.
+
+    Usage:
+        python manage.py export_cms_data [app_label ...] [--using DATABASE] [--model-db DATABASE] [--output DIRECTORY] [--compress] [--cf FORMAT]
+
+    Options:
+        app_label: Optional app_label or app_label.model_name list.
+        --using: The database to query for revision data.
+        --model-db: The database to query for model data.
+        --output: Export data to this directory.
+        --compress: Compress data.
+        --cf, --compress-format: Compression format (default is zip).
+    """
+
     help = "Export data recursively of a Django app into JSON files."
 
     def add_arguments(self, parser):
@@ -84,6 +99,9 @@ class Command(BaseRevisionCommand):
         self.base_output_dir = Path(options["output"])
         self.current_time = datetime.now().strftime("%Y%m%d-%H%M%S")
         self.data_output_dir = self.base_output_dir / self.current_time
+
+        print(f"Export data to {self.data_output_dir}")
+
         self.should_compress = options["compress"]
 
         if not self.data_output_dir.exists():

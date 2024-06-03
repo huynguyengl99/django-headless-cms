@@ -7,6 +7,7 @@ import os
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
 import django
@@ -21,7 +22,11 @@ django.setup()
 project = "Django Headless CMS"
 copyright = "2024, Huy Nguyen"
 author = "Huy Nguyen"
-release = "0.0.1"
+
+release = version("django-headless-cms")
+version = release
+
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # -- General configuration ---------------------------------------------------
@@ -34,10 +39,11 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "images"]
 
 
 # -- Options for HTML output -------------------------------------------------

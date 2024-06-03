@@ -1,8 +1,7 @@
 import reversion
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from headless_cms.fields.martor_field import LocalizedMartorField
-from headless_cms.fields.url_field import AutoLanguageUrlField
+from headless_cms.fields import AutoLanguageUrlField, LocalizedMartorField
 from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedPublicationModel,

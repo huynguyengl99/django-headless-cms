@@ -15,7 +15,7 @@ from localized_fields.models import LocalizedModel
 from reversion.models import Version
 from solo.models import SingletonModel
 
-from headless_cms.fields.slug_field import LocalizedUniqueNormalizedSlugField
+from headless_cms.fields import LocalizedUniqueNormalizedSlugField
 from headless_cms.settings import headless_cms_settings
 
 
@@ -249,7 +249,7 @@ class LocalizedPublicationModel(LocalizedModel):
     published_state.allow_tags = True
 
 
-class LocalizedSingletonModel(SingletonModel):
+class LocalizedSingletonModel(LocalizedPublicationModel, SingletonModel):
     """
     Abstract model for localized singleton.
 

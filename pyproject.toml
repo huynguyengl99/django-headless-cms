@@ -38,7 +38,6 @@ dependencies = [
   "django-admin-sortable2",
   "django-filter",
   "django-import-export",
-  "django-jsonform",
   "django-localized-fields",
   "django-reversion",
   "django-solo",

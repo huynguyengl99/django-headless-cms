@@ -603,20 +603,6 @@ xlsx = ["tablib[xlsx] (==3.5.0)"]
 yaml = ["tablib[yaml] (==3.5.0)"]
 
 [[package]]
-name = "django-jsonform"
-version = "2.22.0"
-description = "A user-friendly JSON editing form for Django admin."
-optional = false
-python-versions = ">=3.4"
-files = [
-    {file = "django-jsonform-2.22.0.tar.gz", hash = "sha256:0c9d50fb371938e7262a7fef7c5a60835dd288f872f87b952d5e2ea84c825221"},
-    {file = "django_jsonform-2.22.0-py3-none-any.whl", hash = "sha256:c4dd1ba2b0152bd3164aacf326a83c35355c70d12de81908b5ced5f94c8263d6"},
-]
-
-[package.dependencies]
-django = ">=2.0"
-
-[[package]]
 name = "django-localized-fields"
 version = "6.7"
 description = "Implementation of localized model fields using PostgreSQL HStore fields."
@@ -2267,4 +2253,4 @@ openai = ["openai"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "68916284a0dd2f81067e9141208c706aaef3ca63a271a8b9101051f235305503"
+content-hash = "f2ed5c8b48096a719c74416afc1d54adf21a74d1529b8a087dba7c74c288b116"

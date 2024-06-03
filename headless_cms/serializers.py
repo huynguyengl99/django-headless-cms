@@ -18,8 +18,7 @@ from rest_framework.fields import (
 from rest_framework.serializers import ModelSerializer
 
 from headless_cms import serializer_fields
-from headless_cms.fields.martor_field import LocalizedMartorField
-from headless_cms.fields.url_field import AutoLanguageUrlField
+from headless_cms.fields import AutoLanguageUrlField, LocalizedMartorField
 from headless_cms.models import LocalizedDynamicFileModel, LocalizedPublicationModel
 from headless_cms.settings import headless_cms_settings
 

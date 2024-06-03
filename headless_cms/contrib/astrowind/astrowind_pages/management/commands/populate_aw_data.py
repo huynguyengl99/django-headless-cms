@@ -6,6 +6,12 @@ from headless_cms.models import LocalizedPublicationModel
 
 
 class Command(BaseRevisionCommand):
+    """
+    Populates Astrowind data.
+
+    Usage:
+        python manage.py populate_aw_data
+    """
 
     help = "Populate astrowind data."
 

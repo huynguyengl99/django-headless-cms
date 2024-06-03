@@ -9,7 +9,7 @@ from localized_fields.fields import (
     LocalizedTextField,
 )
 
-from headless_cms.fields.url_field import AutoLanguageUrlField
+from headless_cms.fields import AutoLanguageUrlField
 from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedPublicationModel,

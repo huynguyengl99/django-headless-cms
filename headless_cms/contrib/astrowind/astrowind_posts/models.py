@@ -7,7 +7,7 @@ from localized_fields.fields import (
 )
 
 from headless_cms.contrib.astrowind.astrowind_metadata.models import AWMetadata
-from headless_cms.fields.martor_field import LocalizedMartorField
+from headless_cms.fields import LocalizedMartorField
 from headless_cms.models import (
     LocalizedDynamicFileModel,
     LocalizedTitleSlugModel,

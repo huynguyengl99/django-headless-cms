@@ -9,6 +9,18 @@ from headless_cms.models import LocalizedPublicationModel
 
 
 class Command(BaseRevisionCommand):
+    """
+    Deletes outdated drafts.
+
+    Usage:
+        python manage.py clean_outdated_drafts [app_label ...] [--using DATABASE] [--model-db DATABASE] [--days DAYS]
+
+    Options:
+        app_label: Optional app_label or app_label.model_name list.
+        --using: The database to query for revision data.
+        --model-db: The database to query for model data.
+        --days: Delete only revisions older than the specified number of days.
+    """
 
     help = "Deletes outdated drafts."
 

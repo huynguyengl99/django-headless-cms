@@ -22,6 +22,7 @@ EnhancedLocalizedVersionAdmin
     :undoc-members:
     :show-inheritance:
     :noindex:
+    :exclude-members: actions, change_view, changelist_view, formfield_overrides, get_list_display, get_resource_classes, media, render_change_form, response_change, revision_view
 
 PublishStatusInlineMixin
 ------------------------

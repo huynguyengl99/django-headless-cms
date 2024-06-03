@@ -6,11 +6,17 @@ from localized_fields.value import LocalizedValue
 
 
 class BaseTranslate:
-    """Class to use when click on admin translation buttons.
+    """
+    Base class for translating localized fields in Django models.
+
+    This class provides the framework for translating localized fields in Django models,
+    specifically for use with translation buttons in the Django admin interface.
 
     Attributes:
-        can_translate_object: Indicates whether the inherited class can translate multiple fields
-         in batch or not for improving the processing time.
+        can_batch_translate (bool): Indicates whether the class supports batch translation.
+
+    Args:
+        instance (LocalizedModel): The Django model instance to be translated.
     """
 
     can_batch_translate = False
@@ -20,11 +26,34 @@ class BaseTranslate:
         self.fields = instance._meta.get_fields()
 
     def translate(self, language: str, text: str):
-        """Override this function to translate text to a single language"""
+        """
+        Translate text to a single language.
+
+        This method should be overridden in subclasses to provide the actual translation logic.
+
+        Args:
+            language (str): The target language code.
+            text (str): The text to be translated.
+
+        Returns:
+            str: The translated text.
+        """
         return text
 
     def batch_translate(self, batches: dict[str, dict]) -> dict[str, dict]:
-        """Override this function to translate an object to a single language"""
+        """
+        Batch translate multiple fields to a single language.
+
+        This method should be overridden in subclasses to provide the actual batch translation logic.
+
+        Args:
+            batches (dict[str, dict]): A dictionary where keys are language codes and values
+                are dictionaries mapping field names to text to be translated.
+
+        Returns:
+            dict[str, dict]: A dictionary where keys are language codes and values are
+                dictionaries mapping field names to translated text.
+        """
         raise NotImplementedError
 
     def _handle_translate(self, field_value: LocalizedValue, lang: str, text: str):
@@ -98,11 +127,13 @@ class BaseTranslate:
         self.instance.save()
 
     def process(self, force=False):
-        """Call this one to process the translation for the database object instance, it will translate
-        all localized fields.
+        """
+        Process the translation for the database object instance.
 
-        Arguments:
-            force: whether to force retranslation for all localized fields(even
-                the fields are already translated).
+        This method translates all localized fields of the instance.
+
+        Args:
+            force (bool): Whether to force retranslation for all localized fields
+                (even if the fields are already translated).
         """
         self._process_translation(force)

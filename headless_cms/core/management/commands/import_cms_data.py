@@ -15,7 +15,21 @@ from headless_cms.utils.custom_import_export import override_modelresource_facto
 
 
 class Command(BaseRevisionCommand):
-    help = "Export data recursively of a Django app into JSON files."
+    """
+    Imports data recursively of a Django app from JSON files.
+
+    Usage:
+        python manage.py import_cms_data [app_label ...] [--using DATABASE] [--model-db DATABASE] [--input DIRECTORY_OR_FILE] [--cf FORMAT]
+
+    Options:
+        app_label: Optional app_label or app_label.model_name list.
+        --using: The database to query for revision data.
+        --model-db: The database to query for model data.
+        --input: Directory or compression file to import data from.
+        --cf, --compress-format: Compression format (default is zip).
+    """
+
+    help = "Import data recursively of a Django app from JSON files."
 
     def add_arguments(self, parser):
         super().add_arguments(parser)
