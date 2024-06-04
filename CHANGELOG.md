@@ -1,3 +1,9 @@
+## v0.5.0 (2024-06-05)
+
+### Feat
+
+- update localized unique normalized slug field to use lazy generator
+
 ## v0.4.0 (2024-06-04)
 
 ### Feat
