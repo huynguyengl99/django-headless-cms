@@ -52,6 +52,10 @@ INSTALLED_APPS = [
     "solo",
     "adminsortable2",
     "test_app",
+    "headless_cms.contrib.astrowind.astrowind_widgets",
+    "headless_cms.contrib.astrowind.astrowind_pages",
+    "headless_cms.contrib.astrowind.astrowind_posts",
+    "headless_cms.contrib.astrowind.astrowind_metadata",
 ]
 
 MIDDLEWARE = [

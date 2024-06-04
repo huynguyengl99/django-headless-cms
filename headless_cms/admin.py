@@ -27,6 +27,7 @@ from reversion.admin import VersionAdmin
 from reversion.models import Version
 from solo.admin import SingletonModelAdmin
 
+from headless_cms.fields import LocalizedUniqueNormalizedSlugField
 from headless_cms.models import (
     LocalizedPublicationModel,
     LocalizedSingletonModel,
@@ -517,9 +518,13 @@ def auto_admins(
         admin_attrs = {"history_latest_first": True}
         inlines = []
         exclude = []
+        readonly_fields = []
         model_fields = model._meta.get_fields()
         has_sortable_base = False
         for field in model_fields:
+            if isinstance(field, LocalizedUniqueNormalizedSlugField):
+                readonly_fields.append(field.name)
+
             if isinstance(field, ManyToManyField) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
@@ -549,6 +554,7 @@ def auto_admins(
 
         admin_attrs["inlines"] = inlines
         admin_attrs["exclude"] = exclude
+        admin_attrs["readonly_fields"] = readonly_fields
 
         base_admin = []
         if has_sortable_base:
