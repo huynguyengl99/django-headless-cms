@@ -1,3 +1,9 @@
+## v0.5.1 (2024-06-05)
+
+### Fix
+
+- clear all language field data when primary lang is clear
+
 ## v0.5.0 (2024-06-05)
 
 ### Feat
