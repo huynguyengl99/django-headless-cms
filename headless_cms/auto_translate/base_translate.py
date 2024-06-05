@@ -60,13 +60,17 @@ class BaseTranslate:
         translated_value = self.translate(lang, text)
         field_value.set(lang, translated_value)
 
-    def _prepare_batch_translate(self, force: bool) -> dict[str, dict]:
+    def _prepare_batch_translate(
+        self, force: bool
+    ) -> tuple[dict[str, dict], dict[str, dict]]:
         batches = {}
+        clean_batches = {}
 
         for lang, _lang_name in settings.LANGUAGES:
             if lang == settings.LANGUAGE_CODE:
                 continue
             obj_to_translate = {}
+            obj_to_clean = {}
 
             for field in self.fields:
                 if isinstance(field, LocalizedField) and not isinstance(
@@ -79,11 +83,15 @@ class BaseTranslate:
                             continue
 
                         obj_to_translate[field.name] = base_value
+                    else:
+                        obj_to_clean[field.name] = ""
 
             if obj_to_translate or force:
                 batches[lang] = obj_to_translate
+            if obj_to_clean:
+                clean_batches[lang] = obj_to_clean
 
-        return batches
+        return batches, clean_batches
 
     def _handle_batch_translate(self, force: bool):
         fields_map = {
@@ -92,12 +100,16 @@ class BaseTranslate:
             if isinstance(field, LocalizedField)
         }
 
-        batches = self._prepare_batch_translate(force)
+        batches, clean_batches = self._prepare_batch_translate(force)
 
         translated_batches = self.batch_translate(batches)
 
         for lang, translated_obj in translated_batches.items():
             for k, v in translated_obj.items():
+                fields_map[k].set(lang, v)
+
+        for lang, obj in clean_batches.items():
+            for k, v in obj.items():
                 fields_map[k].set(lang, v)
 
         for k, v in fields_map.items():
@@ -123,6 +135,8 @@ class BaseTranslate:
                                     continue
 
                                 self._handle_translate(field_value, lang, base_value)
+                            elif force:
+                                setattr(self.instance, field.name, {})
 
         self.instance.save()
 
