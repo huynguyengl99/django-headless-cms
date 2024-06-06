@@ -87,9 +87,7 @@ class TestOpenAITranslate(BaseTestCase):
     def test_process(self, mock_openai_create):
         def mock_open_ai_create_side_effect(**kwargs):
             messages = kwargs["messages"]
-            trans_lang = re.search("into (.*) language", messages[0]["content"]).group(
-                1
-            )
+            trans_lang = re.search(r"into (.*) \(", messages[0]["content"]).group(1)
             obj_to_translate = json.loads(messages[1]["content"])
             translated_obj = {
                 k: f"Translated {trans_lang}: {v}" for k, v in obj_to_translate.items()

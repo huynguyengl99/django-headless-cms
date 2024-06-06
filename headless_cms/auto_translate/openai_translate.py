@@ -1,7 +1,9 @@
 import asyncio
 import json
+from functools import cache
 from inspect import isclass
 
+from django.conf import settings
 from localized_fields.models import LocalizedModel
 
 from headless_cms.auto_translate.base_translate import BaseTranslate
@@ -29,6 +31,11 @@ Here is your json object:
 """
 
 
+@cache
+def _get_language_map():
+    return dict(settings.LANGUAGES)
+
+
 class OpenAITranslate(BaseTranslate):
     """
     Translation class using OpenAI's chat model.
@@ -53,8 +60,10 @@ class OpenAITranslate(BaseTranslate):
         Returns:
             str: The translated text.
         """
+        lang_name = _get_language_map().get(language)
+        lang = language + f" ({lang_name})" if lang_name else ""
         prompts = [
-            {"role": "system", "content": system_prompt.replace("{lang}", language)},
+            {"role": "system", "content": system_prompt.replace("{lang}", lang)},
             {"role": "user", "content": text},
         ]
         res = openai_client.chat.completions.create(
@@ -100,12 +109,14 @@ class OpenAITranslate(BaseTranslate):
         prompt_list = []
         for language, obj_to_translate in batches.items():
             langs.append(language)
+            lang_name = _get_language_map().get(language)
+            lang = language + f" ({lang_name})" if lang_name else ""
             prompt_list.append(
                 [
                     {
                         "role": "system",
                         "content": system_batch_translate_prompt.replace(
-                            "{lang}", language
+                            "{lang}", lang
                         ),
                     },
                     {"role": "user", "content": json.dumps(obj_to_translate)},
