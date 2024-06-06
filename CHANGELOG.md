@@ -1,3 +1,9 @@
+## v0.5.2 (2024-06-07)
+
+### Fix
+
+- Add language name to openai translation prompt
+
 ## v0.5.1 (2024-06-05)
 
 ### Fix
