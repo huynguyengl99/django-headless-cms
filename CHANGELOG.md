@@ -1,3 +1,9 @@
+## v0.6.1 (2024-06-08)
+
+### Fix
+
+- update recursive_action param pos
+
 ## v0.6.0 (2024-06-07)
 
 ### Feat
