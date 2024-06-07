@@ -1,3 +1,9 @@
+## v0.6.0 (2024-06-07)
+
+### Feat
+
+- deduplicated for recursive translation
+
 ## v0.5.2 (2024-06-07)
 
 ### Fix
