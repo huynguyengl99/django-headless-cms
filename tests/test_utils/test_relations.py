@@ -20,12 +20,16 @@ class RelationTests(BaseTestCase):
             "posts__category__published_version",
             "posts__items",
             "posts__items__published_version",
+            "posts__note",
+            "posts__note__published_version",
             "articles",
             "articles__images",
             "articles__images__published_version",
             "articles__published_version",
             "articles__items",
             "articles__items__published_version",
+            "articles__note",
+            "articles__note__published_version",
         }
         assert set(select_relation) == {
             "published_version",

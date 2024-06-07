@@ -22,6 +22,11 @@ class Item(SortableGenericBaseModel):
     icon = models.CharField(blank=True, default="")
 
 
+@reversion.register(exclude=("published_version",))
+class Note(LocalizedPublicationModel):
+    text = LocalizedTextField(blank=True, null=True, required=False)
+
+
 class News(LocalizedPublicationModel):
     title = LocalizedTextField(blank=True, null=True, required=False)
     subtitle = LocalizedTextField(blank=True, null=True, required=False)
@@ -37,6 +42,14 @@ class Post(News):
     body = LocalizedMartorField(blank=False, null=False, required=False)
 
     href = AutoLanguageUrlField(blank=True, null=True)
+
+    note = models.ForeignKey(
+        "Note",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="note_posts",
+    )
 
     tags = models.ManyToManyField("PostTag", blank=True, related_name="posts")
     category = models.ForeignKey(
@@ -62,6 +75,14 @@ class PostTag(LocalizedTitleSlugModel):
 class Article(News):
     story = LocalizedMartorField(blank=False, null=False, required=False)
     images = models.ManyToManyField("ArticleImage", through="ArticleImageThrough")
+
+    note = models.ForeignKey(
+        "Note",
+        on_delete=models.SET_NULL,
+        related_name="note_articles",
+        blank=True,
+        null=True,
+    )
 
 
 @reversion.register(exclude=("published_version",))

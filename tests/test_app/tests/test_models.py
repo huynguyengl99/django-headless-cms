@@ -1,10 +1,17 @@
+from unittest.mock import Mock, call
+
 import reversion
 from django.utils import translation
 from reversion.models import Version
 
 from helpers.base import BaseTestCase
-from test_app.factories import PostFactory
-from test_app.models import Post
+from test_app.factories import (
+    ArticleFactory,
+    BlogFactory,
+    NoteFactory,
+    PostFactory,
+)
+from test_app.models import Article, Blog, Post
 
 
 class TestPublicationModel(BaseTestCase):
@@ -60,3 +67,33 @@ class TestPublicationModel(BaseTestCase):
         assert Post.objects.all().count() == 2
         assert Post.published_objects.published().count() == 1
         assert Post.published_objects.published().first() == obj2
+
+    def test_recursive_action(self):
+        with reversion.create_revision():
+            self.note = NoteFactory.create()
+
+        with reversion.create_revision():
+            self.post: Post = PostFactory.create(note=self.note)
+
+        with reversion.create_revision():
+            self.article: Article = ArticleFactory.create(note=self.note)
+
+        with reversion.create_revision():
+            self.blog: Blog = BlogFactory.create()
+
+        self.blog.articles.add(self.article)
+        self.blog.posts.add(self.post)
+
+        action = Mock()
+
+        self.blog.recursive_action(action)
+
+        action.assert_has_calls(
+            [
+                call(self.blog),
+                call(self.post),
+                call(self.note),
+                call(self.article),
+            ],
+            any_order=True,
+        )  # note only call once because we have deduplicated

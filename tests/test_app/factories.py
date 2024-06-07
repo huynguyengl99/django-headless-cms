@@ -11,11 +11,19 @@ from test_app.models import (
     Category,
     Domain,
     Item,
+    Note,
     Post,
     PostTag,
 )
 
 f = Faker()
+
+
+class NoteFactory(DjangoModelFactory):
+    class Meta:
+        model = Note
+
+    text = factory.Faker("paragraph", nb_sentences=3)
 
 
 class CategoryFactory(DjangoModelFactory):
@@ -116,4 +124,3 @@ class BlogFactory(DjangoModelFactory):
         model = Blog
 
     name = factory.Faker("sentence", nb_words=3)
-    domain = factory.SubFactory(DomainFactory)

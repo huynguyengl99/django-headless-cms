@@ -146,14 +146,23 @@ class LocalizedPublicationModel(LocalizedModel):
             self.published_version = last_ver
             self.save()
 
-    def recursive_action(self, action, *args, **kwargs):
+    def recursive_action(self, action, tracker=None, *args, **kwargs):
         """
         Perform an action recursively on the object and its related objects.
 
         Args:
             action (callable): The action to be performed.
+            tracker: the list to track the object processed, not to do it again when being reference multiple times
         """
+        if tracker is None:
+            tracker = set()
+
+        track = (self._meta.object_name, self.id)
+        if track in tracker:
+            return
+
         action(self, *args, **kwargs)
+        tracker.add(track)
 
         for f in self._meta.get_fields():
             if (
@@ -165,11 +174,15 @@ class LocalizedPublicationModel(LocalizedModel):
                 if f.many_to_one:
                     rel_obj = getattr(self, f.name)
                     if rel_obj:
-                        rel_obj.recursive_action(action, *args, **kwargs)
+                        rel_obj.recursive_action(
+                            action, *args, tracker=tracker, **kwargs
+                        )
                 elif f.many_to_many or f.one_to_many:
                     rel_objs = getattr(self, f.name).all()
                     for rel_obj in rel_objs:
-                        rel_obj.recursive_action(action, *args, **kwargs)
+                        rel_obj.recursive_action(
+                            action, *args, tracker=tracker, **kwargs
+                        )
 
     def recursively_publish(self, user=None):
         """
@@ -178,7 +191,7 @@ class LocalizedPublicationModel(LocalizedModel):
         Args:
             user (User, optional): The user performing the publish action.
         """
-        self.recursive_action(self.__class__.publish, user)
+        self.recursive_action(self.__class__.publish, user=user)
 
     def unpublish(self, user=None):
         """

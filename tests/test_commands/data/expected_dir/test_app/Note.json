@@ -1,0 +1,18 @@
+[
+  {
+    "id": "1",
+    "text": {
+      "en": "Note for en",
+      "ro": "Note for ro",
+      "vi": "Note for vi"
+    }
+  },
+  {
+    "id": "2",
+    "text": {
+      "en": "Note 2 for en",
+      "ro": "Note 2 for ro",
+      "vi": "Note 2 for vi"
+    }
+  }
+]

@@ -61,6 +61,10 @@ class ExportCMSDataTests(BaseTestCase):
             assert Item.objects.count() == 9
 
             call_command("export_cms_data", "test_app", output=self.result_dir)
+            # comment out next line to create zip file
+            # call_command(
+            #     "export_cms_data", "test_app", output=self.result_dir, compress=True
+            # )
             result = self.result_dir / now
 
             self.compare_folder(self.expected_data_dir, result)

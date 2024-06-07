@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "note": 2,
     "title": {
       "en": "First Article",
       "ro": "Primul articol",
@@ -19,6 +20,7 @@
   },
   {
     "id": "2",
+    "note": 1,
     "title": {
       "en": "Second Article",
       "ro": "Al doilea articol",
@@ -37,6 +39,7 @@
   },
   {
     "id": "3",
+    "note": 2,
     "title": {
       "en": "Third Article",
       "ro": "Al treilea articol",

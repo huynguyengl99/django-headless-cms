@@ -90,12 +90,28 @@ components:
           type: string
       required:
       - id
+    Note:
+      type: object
+      description: Serializer for Note
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        text:
+          type: string
+          nullable: true
+      required:
+      - id
     Post:
       type: object
       description: Serializer for Post
       properties:
         id:
           type: integer
+          readOnly: true
+        note:
+          allOf:
+          - $ref: '#/components/schemas/Note'
           readOnly: true
         category:
           allOf:
@@ -130,6 +146,7 @@ components:
       - category
       - id
       - items
+      - note
       - tags
     PostTag:
       type: object

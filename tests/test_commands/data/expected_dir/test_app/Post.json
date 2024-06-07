@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "note": 1,
     "title": {
       "en": "Understanding Django ORM",
       "ro": "\u00cen\u021belegerea ORM-ului Django",
@@ -26,6 +27,7 @@
   },
   {
     "id": "2",
+    "note": 2,
     "title": {
       "en": "Health Tips for 2023",
       "ro": "Sfaturi pentru s\u0103n\u0103tate pentru 2023",
@@ -51,6 +53,7 @@
   },
   {
     "id": "3",
+    "note": 1,
     "title": {
       "en": "Modern Lifestyle Hacks",
       "ro": "Trucuri pentru un stil de via\u021b\u0103 modern",

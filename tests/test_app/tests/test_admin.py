@@ -54,9 +54,7 @@ class AdminImportExportViewTests(BaseTestCase):
             PostFactory.create()
         res = self.client.get(resolve_url("admin:test_app_post_import"))
 
-        subtitle = (
-            "<code>id, title, subtitle, description, body, href, tags, category</code>"
-        )
+        subtitle = "<code>id, title, subtitle, description, body, href, note, tags, category</code>"
         self.assertContains(res, subtitle)
 
 
