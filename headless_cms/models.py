@@ -146,7 +146,7 @@ class LocalizedPublicationModel(LocalizedModel):
             self.published_version = last_ver
             self.save()
 
-    def recursive_action(self, action, tracker=None, *args, **kwargs):
+    def recursive_action(self, action, *args, tracker=None, **kwargs):
         """
         Perform an action recursively on the object and its related objects.
 
