@@ -1,3 +1,9 @@
+## v0.6.2 (2024-06-09)
+
+### Fix
+
+- add docs for missing components
+
 ## v0.6.1 (2024-06-08)
 
 ### Fix
