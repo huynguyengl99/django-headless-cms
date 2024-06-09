@@ -325,3 +325,99 @@ Django-headless-cms provides several useful management commands to assist you:
 - :ref:`Import CMS Data`: Imports your exported CMS data from a local file or remote URL.
 
 For more information and detailed usage instructions, refer to the respective documentation for each command.
+
+How to Use Admin Panel
+----------------------
+
+The Django-headless-cms admin panel offers several features to help you manage your content efficiently:
+
+Publish/Draft & Versioning Content
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Publish/Draft content
+- Versioning content: Revert to any previously saved version
+- Recursive publish
+
+.. image:: images/how-to-use/publish.png
+   :alt: Publish actions
+
+.. image:: images/how-to-use/history.png
+   :alt: Versioning content
+
+Translation
+~~~~~~~~~~~
+
+To set up the languages for your content, you need to configure the following settings in `DJANGO_SETTINGS`:
+
+::
+
+    LANGUAGE_CODE = "en"  # your primary content language
+
+    LANGUAGES = [
+        ("en", "English"),
+        ("af", "Afrikaans"),
+        ("ar", "العربية"),
+        # list your languages, with the primary one at the top for convenience
+    ]
+
+- Auto-translate objects (if using OpenAI) and recursively translate.
+
+.. image:: images/how-to-use/translation.png
+   :alt: Translation
+
+Reset Translation
+~~~~~~~~~~~~~~~~~
+
+.. note::
+    To reset translations, follow these steps:
+      - Clear the content of the primary language.
+      - Click on `Translation Missing`.
+      - All your content will be flushed. You can now add your primary language content again.
+
+Markdown Editor
+~~~~~~~~~~~~~~~
+
+- Use :ref:`LocalizedMartorField` to add a markdown editor field with multi-language support.
+
+.. image:: images/how-to-use/markdown-1.png
+   :alt: Markdown editor
+
+- Preview the markdown content and its utilities inside the editor.
+
+.. image:: images/how-to-use/markdown-preview.png
+   :alt: Markdown preview
+
+- Preview the content in full screen to focus more on editing markdown content.
+
+.. image:: images/how-to-use/markdown-full-screen.png
+   :alt: Markdown full screen
+
+For more customization options for the markdown editor, refer to the Martor original documentation at
+`django-markdown-editor (Martor) <https://github.com/agusmakmun/django-markdown-editor>`_.
+
+Import/Export Items
+~~~~~~~~~~~~~~~~~~~
+
+- **Single Item Export**: Use the *export* button at the end of the admin page to export a single item (you may need to update the `django-import-export` package to have this feature).
+
+.. image:: images/how-to-use/export-single.png
+   :alt: Export single
+
+- **Multiple Item Export**: Use admin actions in the list view to export multiple items at the same time (see the `Admin List Actions` section).
+
+- **Import Items**: Use the *import* button on the admin list page to import exported content into your system. Note that imported items will be `unpublished` by default.
+
+.. image:: images/how-to-use/import-button.png
+   :alt: Import button
+
+Admin List Actions
+~~~~~~~~~~~~~~~~~~
+
+On the admin list page, you can perform actions on multiple items:
+
+- Publish/Unpublish items
+- Translate/Force re-translate items
+- Export items
+
+.. image:: images/how-to-use/admin-actions.png
+   :alt: Admin actions

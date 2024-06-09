@@ -30,6 +30,7 @@ Contents
     :caption: Reference
 
     reference/models
+    reference/fields
     reference/admin
     reference/serializers
     reference/mixins
