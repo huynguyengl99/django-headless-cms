@@ -1,5 +1,6 @@
 import asyncio
 import json
+import logging
 from functools import cache
 from inspect import isclass
 
@@ -30,10 +31,15 @@ Additionally, keep these term as it is: {str(headless_cms_settings.AUTO_TRANSLAT
 Here is your json object:
 """
 
+continue_prompt = "Continue the work for me. WRITE the next response as you are working, continue from the previous one."
+
 
 @cache
 def _get_language_map():
     return dict(settings.LANGUAGES)
+
+
+logger = logging.getLogger("headless_cms")
 
 
 class OpenAITranslate(BaseTranslate):
@@ -74,21 +80,43 @@ class OpenAITranslate(BaseTranslate):
         translated_content = res.choices[0].message.content
         return translated_content
 
-    def chat_gpt_translate(self, prompt):
+    def chat_gpt_translate(self, prompts):
+        prompts = list(prompts)
         res = openai_client.chat.completions.create(
             model=headless_cms_settings.OPENAI_CHAT_MODEL,
             temperature=0.7,
-            messages=prompt,
+            messages=prompts,
             response_format={"type": "json_object"},
         )
-        translated_content = res.choices[0].message.content
-        return json.loads(translated_content)
+        finish_reason = res.choices[0].finish_reason
+        content = res.choices[0].message.content
 
-    async def _async_translate(self, prompt_list):
+        while finish_reason != "stop":
+            prompts.extend(
+                [
+                    res.choices[0].message,
+                    {"role": "user", "content": continue_prompt},
+                ]
+            )
+            res = openai_client.chat.completions.create(
+                model="gpt-4-turbo",
+                temperature=0.3,
+                messages=prompts,
+            )
+            content += res.choices[0].message.content
+            finish_reason = res.choices[0].finish_reason
+
+        try:
+            return json.loads(content, strict=False)
+        except json.decoder.JSONDecodeError as e:
+            logger.error(e)
+            return {}
+
+    async def _async_translate(self, prompts_list):
         loop = asyncio.get_event_loop()
         futures = [
-            loop.run_in_executor(None, self.chat_gpt_translate, prompt)
-            for prompt in prompt_list
+            loop.run_in_executor(None, self.chat_gpt_translate, prompts)
+            for prompts in prompts_list
         ]
         result = await asyncio.gather(*futures)
         return result

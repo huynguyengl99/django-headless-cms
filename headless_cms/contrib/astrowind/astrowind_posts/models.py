@@ -55,7 +55,6 @@ class AWPost(LocalizedTitleSlugModel):
     )
 
     publish_date = DateTimeField(blank=True, null=True)
-    updated_date = DateTimeField()
     created_date = DateTimeField(auto_now_add=True)
 
     class Meta:

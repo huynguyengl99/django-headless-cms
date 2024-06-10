@@ -56,21 +56,44 @@ class TestOpenAITranslate(BaseTestCase):
             "description": "Translated description",
             "body": "Translated body",
         }
-        mock_openai_create.return_value = ChatCompletion(
-            id="id",
-            model="any-model",
-            created=int(time.time()),
-            object="chat.completion",
-            choices=[
-                Choice(
-                    finish_reason="stop",
-                    index=0,
-                    message=ChatCompletionMessage(
-                        content=json.dumps(translated_obj), role="assistant"
-                    ),
+        translated_res = json.dumps(translated_obj)
+
+        def mock_openai_translate_create(*args, **kwargs):
+            if len(kwargs["messages"]) == 2:
+                return ChatCompletion(
+                    id="id",
+                    model="any-model",
+                    created=int(time.time()),
+                    object="chat.completion",
+                    choices=[
+                        Choice(
+                            finish_reason="length",
+                            index=0,
+                            message=ChatCompletionMessage(
+                                content=translated_res[:20], role="assistant"
+                            ),
+                        )
+                    ],
                 )
-            ],
-        )
+            else:
+                return ChatCompletion(
+                    id="id",
+                    model="any-model",
+                    created=int(time.time()),
+                    object="chat.completion",
+                    choices=[
+                        Choice(
+                            finish_reason="stop",
+                            index=0,
+                            message=ChatCompletionMessage(
+                                content=translated_res[20:], role="assistant"
+                            ),
+                        )
+                    ],
+                )
+
+        mock_openai_create.side_effect = mock_openai_translate_create
+
         obj_to_translate = {
             "title": "title",
             "description": "description",

@@ -106,7 +106,7 @@ class BaseTranslate:
 
         for lang, translated_obj in translated_batches.items():
             for k, v in translated_obj.items():
-                fields_map[k].set(lang, v)
+                fields_map[k].set(lang, v or "")
 
         for lang, obj in clean_batches.items():
             for k, v in obj.items():
