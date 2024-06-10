@@ -1,3 +1,9 @@
+## v0.6.3 (2024-06-10)
+
+### Fix
+
+- improve long object translation
+
 ## v0.6.2 (2024-06-09)
 
 ### Fix
