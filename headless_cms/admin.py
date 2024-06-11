@@ -358,6 +358,11 @@ class EnhancedLocalizedVersionAdmin(
                 _("The {name} “{obj}” was published successfully."),
                 **msg_dict,
             )
+        elif "_recursively_publish" in request_post_keys:
+            msg = format_html(
+                _("The {name} “{obj}” was recursively published."),
+                **msg_dict,
+            )
         elif "_unpublish" in request_post_keys:
             msg = format_html(
                 _("The {name} “{obj}” was unpublished."),

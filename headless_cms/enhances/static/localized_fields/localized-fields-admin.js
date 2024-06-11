@@ -20,51 +20,49 @@
         });
     }
 
-    $(function (){
-        $(window).on("load", function () {
-            $('.localized-fields-widget[role="tabs"]').each(function () {
-                function handle_martor_edit(i, obj){
-                    var mainMartor = $(obj);
-                    var field_name = mainMartor.data('field-name');
-                    var editorId = 'martor-' + field_name;
-                    var editor = ace.edit(editorId);
-                    editor.on('change', function (evt){
-                        if (editor.curOp && editor.curOp.command.name){
-                            var value = editor.getValue();
-                            var curText = mainMartor.parents(
-                                '.localized-fields-widget[role="tabs"]'
-                            ).find('.localized-panel').not('[style*="display: none"]').find('textarea')
-                            curText.val(value)
-                        }
-                    })
-                }
-
-                $(this).find('.main-martor').each(handle_martor_edit)
-            });
-
-            if (window.sessionStorage) {
-                var lang = window.sessionStorage.getItem('localized-field-lang');
-
-                if (lang) {
-                    syncTabs(lang);
-                    return
-                }
+    $(window).on("load", function () {
+        $('.localized-fields-widget[role="tabs"]').each(function () {
+            function handle_martor_edit(i, obj){
+                var mainMartor = $(obj);
+                var field_name = mainMartor.data('field-name');
+                var editorId = 'martor-' + field_name;
+                var editor = ace.edit(editorId);
+                editor.on('change', function (evt){
+                    if (editor.curOp && editor.curOp.command.name){
+                        var value = editor.getValue();
+                        var curText = mainMartor.parents(
+                            '.localized-fields-widget[role="tabs"]'
+                        ).find('.localized-panel').not('[style*="display: none"]').find('textarea')
+                        curText.val(value)
+                    }
+                })
             }
-            $('.localized-fields-widget>[role="tabpanel"]').hide();
 
-            $('.localized-fields-widget[role="tabs"]').each(function () {
-                var label = $(this).find('.localized-fields-widget.tab:first label').text();
-                syncTabs(label)
-            });
+            $(this).find('.main-martor').each(handle_martor_edit)
         });
 
-        $('.localized-fields-widget.tab label').click(function(event) {
-            event.preventDefault();
-            syncTabs(this.innerText);
-            if (window.sessionStorage) {
-                window.sessionStorage.setItem('localized-field-lang', this.innerText);
+        if (window.sessionStorage) {
+            var lang = window.sessionStorage.getItem('localized-field-lang');
+
+            if (lang) {
+                syncTabs(lang);
+                return
             }
-            return false;
+        }
+        $('.localized-fields-widget>[role="tabpanel"]').hide();
+
+        $('.localized-fields-widget[role="tabs"]').each(function () {
+            var label = $(this).find('.localized-fields-widget.tab:first label').text();
+            syncTabs(label)
         });
+    });
+
+    $('.localized-fields-widget.tab label').click(function(event) {
+        event.preventDefault();
+        syncTabs(this.innerText);
+        if (window.sessionStorage) {
+            window.sessionStorage.setItem('localized-field-lang', this.innerText);
+        }
+        return false;
     });
 })(django.jQuery)
