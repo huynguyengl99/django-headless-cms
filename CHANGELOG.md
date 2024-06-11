@@ -1,3 +1,9 @@
+## v0.6.4 (2024-06-12)
+
+### Fix
+
+- fix localized toggle lang and admin recursively publish msg
+
 ## v0.6.3 (2024-06-10)
 
 ### Fix
