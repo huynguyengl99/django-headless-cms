@@ -55,14 +55,15 @@
             var label = $(this).find('.localized-fields-widget.tab:first label').text();
             syncTabs(label)
         });
+
+        $('.localized-fields-widget.tab label').click(function(event) {
+            event.preventDefault();
+            syncTabs(this.innerText);
+            if (window.sessionStorage) {
+                window.sessionStorage.setItem('localized-field-lang', this.innerText);
+            }
+            return false;
+        });
     });
 
-    $('.localized-fields-widget.tab label').click(function(event) {
-        event.preventDefault();
-        syncTabs(this.innerText);
-        if (window.sessionStorage) {
-            window.sessionStorage.setItem('localized-field-lang', this.innerText);
-        }
-        return false;
-    });
 })(django.jQuery)
