@@ -1,3 +1,9 @@
+## v0.6.5 (2024-06-12)
+
+### Fix
+
+- fix localized tab click
+
 ## v0.6.4 (2024-06-12)
 
 ### Fix
