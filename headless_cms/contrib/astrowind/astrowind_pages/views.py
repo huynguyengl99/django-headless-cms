@@ -10,7 +10,7 @@ from headless_cms.contrib.astrowind.astrowind_pages.models import (
     AWSite,
 )
 from headless_cms.mixins import CMSSchemaMixin
-from headless_cms.serializers import auto_serializer
+from headless_cms.serializers import HashModelSerializer, auto_serializer
 
 
 class AWPageView(CMSSchemaMixin, RetrieveAPIView):
@@ -51,4 +51,34 @@ class AWContactPageView(AWPageView):
 
 class AWPostPageView(AWPageView):
     serializer_class = auto_serializer(AWPostPage)
+    model = AWPostPage
+
+
+class AWIndexPageHashView(AWPageView):
+    serializer_class = HashModelSerializer
+    model = AWIndexPage
+
+
+class AWSiteHashView(AWPageView):
+    serializer_class = HashModelSerializer
+    model = AWSite
+
+
+class AWAboutPageHashView(AWPageView):
+    serializer_class = HashModelSerializer
+    model = AWAboutPage
+
+
+class AWPricingPageHashView(AWPageView):
+    serializer_class = HashModelSerializer
+    model = AWPricingPage
+
+
+class AWContactPageHashView(AWPageView):
+    serializer_class = HashModelSerializer
+    model = AWContactPage
+
+
+class AWPostPageHashView(AWPageView):
+    serializer_class = HashModelSerializer
     model = AWPostPage

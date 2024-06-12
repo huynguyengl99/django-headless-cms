@@ -1,4 +1,5 @@
 from functools import cached_property
+from typing import Optional
 
 import reversion
 from django.contrib import admin
@@ -17,6 +18,7 @@ from solo.models import SingletonModel
 
 from headless_cms.fields import LocalizedUniqueNormalizedSlugField
 from headless_cms.settings import headless_cms_settings
+from headless_cms.utils.hash_utils import HashTracker
 
 
 class PublishedQuerySet(models.QuerySet):
@@ -236,6 +238,38 @@ class LocalizedPublicationModel(LocalizedModel):
             force (bool, optional): Whether to force the translation.
         """
         self.recursive_action(self.__class__.translate, user, force=force)
+
+    def accumulate_hash(self, hash_tracker: Optional[HashTracker]):
+        """
+        Accumulate the hash of the current object's published version ID into the hash tracker.
+
+        This method is primarily used within a recursive hashing mechanism to roll up the hashes
+        of an object and its dependencies or related items.
+
+        Args:
+            hash_tracker (HashTracker, optional): An instance of HashTracker that accumulates
+            hashes.
+        """
+        hash_tracker.update_hash(self.published_version_id)
+
+    def get_recursive_hash(self):
+        """
+        Generate and retrieve a composite hash representing the current object and its relations.
+
+        This method initializes a new HashTracker and uses it to recursively accumulate hashes
+        starting from the current object's published version ID. It leverages the accumulate_hash
+        method to traverse and include related entities in the hash computation.
+
+        Returns:
+            str: The final calculated hash as a hexadecimal string, representing the state of
+            this object and its recursively related entities.
+        """
+        hash_tracker = HashTracker()
+        hash_tracker.update_hash(self.published_version_id)
+
+        self.recursive_action(self.__class__.accumulate_hash, hash_tracker)
+
+        return hash_tracker.current_hash
 
     @admin.display
     def published_state(self):

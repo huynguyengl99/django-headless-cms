@@ -127,6 +127,9 @@ components:
           items:
             $ref: '#/components/schemas/Item'
           readOnly: true
+        hash:
+          type: string
+          readOnly: true
         title:
           type: string
           nullable: true
@@ -144,6 +147,7 @@ components:
       required:
       - body
       - category
+      - hash
       - id
       - items
       - note

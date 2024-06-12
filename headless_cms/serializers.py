@@ -164,23 +164,49 @@ class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
         ]
 
 
+class HashModelSerializer(serializers.Serializer):
+    """
+    A serializer for representing a model's data with an additional hash field that reflects
+    the recursive hash of the model instance and its related entities.
+    """
+
+    id = serializers.IntegerField(read_only=True)
+    hash = serializers.SerializerMethodField()
+
+    def get_hash(self, obj):
+        return obj.get_recursive_hash()
+
+
 def _auto_serializer(
     model: type[models.Model],
     ancestors: Optional[Iterable] = None,
     override_model_serializer_fields: Optional[dict] = None,
 ) -> type[serializers.ModelSerializer]:
     """
-    Helper function to recursively create a serializer for a given model.
+    Helper function to recursively create a serializer for a given model, incorporating handling
+    of related fields, custom field serialization logic, and a 'hash' field that dynamically computes
+    a hash of the object and its descendants.
+
+    This function is used internally by the `auto_serializer` function. It manages recursion and
+    tracks ancestors to avoid infinite recursion in self-referential models. The 'hash' field is
+    added at the root level of the serializer, providing a hash that encapsulates the state of the
+    object and all its recursively related entities.
 
     Args:
-        model (type[models.Model]): The model class.
-        ancestors (Optional[Iterable], optional): Ancestor models to exclude.
-        override_model_serializer_fields (Optional[dict], optional): Fields to override.
+        model (type[models.Model]): The model class from which the serializer is generated.
+        ancestors (Optional[Iterable], optional): A set of ancestor models that are currently
+            being processed in the recursion chain to prevent infinite loops. Defaults to None.
+        override_model_serializer fields (Optional[dict], optional): A mapping from model classes
+            to dictionaries that specify how to override fields in the serializer. Defaults to None.
 
     Returns:
-        type[serializers.ModelSerializer]: The generated serializer class.
+        type[serializers.ModelSerializer]: A dynamically created serializer class for the specified
+        model. This serializer includes handling for related fields, any specific overrides, and a
+        'hash' field that represents the composite state of the object and its children.
     """
+    entry_point = False
     if ancestors is None:
+        entry_point = True
         ancestors = set()
     if override_model_serializer_fields is None:
         override_model_serializer_fields = {}
@@ -188,7 +214,7 @@ def _auto_serializer(
 
     model_fields = model._meta.get_fields()
 
-    relations = {}
+    custom_fields = {}
 
     if model not in ancestors:
         ancestors.add(model)
@@ -199,7 +225,7 @@ def _auto_serializer(
                 serializer = _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
-                relations.update({field.name: serializer(read_only=True)})
+                custom_fields.update({field.name: serializer(read_only=True)})
             elif isinstance(field, ManyToManyField) and field.related_model == model:
 
                 def get_objs(self, obj, my_field=field):
@@ -207,26 +233,38 @@ def _auto_serializer(
                         getattr(obj, my_field.name).all(), many=True
                     ).data
 
-                relations.update({f"get_{field.name}": get_objs})
+                custom_fields.update({f"get_{field.name}": get_objs})
             elif (isinstance(field, (GenericRelation, ManyToManyField))) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
                 serializer = _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
-                relations.update({field.name: serializer(many=True, read_only=True)})
+                custom_fields.update(
+                    {field.name: serializer(many=True, read_only=True)}
+                )
 
     if override_model_serializer_fields.get(model):
-        relations.update(override_model_serializer_fields[model])
+        custom_fields.update(override_model_serializer_fields[model])
 
     if issubclass(model, LocalizedDynamicFileModel):
         base_serializer = LocalizedDynamicFileSerializer
     else:
         base_serializer = LocalizedBaseSerializer
 
+    if entry_point:
+        custom_fields.update({"hash": serializers.SerializerMethodField()})
+
+        def get_hash(self, obj):
+            return obj.get_recursive_hash()
+
+        custom_fields.update({"get_hash": get_hash})
+
     meta_class = type("Meta", (base_serializer.Meta,), {})
     meta_class.model = model
-    result = type(model.__name__ + "Serializer", (base_serializer,), dict(relations))
+    result = type(
+        model.__name__ + "Serializer", (base_serializer,), dict(custom_fields)
+    )
     result.Meta = meta_class
 
     return result
@@ -238,19 +276,25 @@ def auto_serializer(
     override_model_serializer_fields: Optional[dict] = None,
 ) -> type[serializers.ModelSerializer]:
     """
-    Automatically create a serializer for a given model.
+     Automatically create a serializer for a given model using Django REST Framework, including
+    a 'hash' field that dynamically computes a hash representing the state of the object and its
+    descendants.
 
-    This function dynamically generates a Django REST Framework serializer for the specified
-    model. It handles relationships and nested serializers, making it easier to work with
-    complex model structures.
+    This function simplifies the creation of serializers for models with complex relationships or
+    custom serialization requirements. It dynamically generates serializers that handle related
+    objects and apply specified field overrides. The 'hash' field is included to provide a dynamic
+    representation of the state of the object and all its related entities.
 
     Args:
-        model (type[models.Model]): The model class for which to create the serializer.
-        override_model_serializer_fields (Optional[dict], optional): A dictionary of fields to
-            override in the generated serializer. Defaults to None.
+        model (type[models.Model]): The Django model class for which to create the serializer.
+        override_model_serializer_fields (Optional[dict], optional): A dictionary specifying
+            custom field serializers, allowing for customization of the generated serializers.
+            Defaults to None.
 
     Returns:
-        type[serializers.ModelSerializer]: The generated serializer class.
+        type[serializers.ModelSerializer]: A dynamically generated serializer class tailored to
+        the specified model, capable of handling nested serialization, field overrides, and
+        providing a dynamic hash of the object and its descendants.
     """
     return _auto_serializer(
         model, override_model_serializer_fields=override_model_serializer_fields

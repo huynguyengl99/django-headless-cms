@@ -13,7 +13,7 @@ from headless_cms.contrib.astrowind.astrowind_posts.models import (
 from headless_cms.contrib.astrowind.astrowind_posts.serializers import (
     RelatedPostSerializer,
 )
-from headless_cms.mixins import CMSSchemaMixin
+from headless_cms.mixins import CMSSchemaMixin, HashModelMixin
 from headless_cms.serializers import auto_serializer
 
 
@@ -44,7 +44,7 @@ class PostFilter(django_filters.FilterSet):
         fields = ["category", "tag"]
 
 
-class AWPostCMSViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
+class AWPostCMSViewSet(CMSSchemaMixin, HashModelMixin, ReadOnlyModelViewSet):
     queryset = AWPost.published_objects.published(auto_prefetch=True)
     serializer_class = auto_serializer(
         AWPost,
@@ -56,13 +56,13 @@ class AWPostCMSViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
     pagination_class = AWPostPaginator
 
 
-class AWPostTagViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
+class AWPostTagViewSet(CMSSchemaMixin, HashModelMixin, ReadOnlyModelViewSet):
     queryset = AWPostTag.published_objects.published()
     serializer_class = auto_serializer(AWPostTag)
     pagination_class = None
 
 
-class AWCategoryViewSet(CMSSchemaMixin, ReadOnlyModelViewSet):
+class AWCategoryViewSet(CMSSchemaMixin, HashModelMixin, ReadOnlyModelViewSet):
     queryset = AWCategory.published_objects.published()
     serializer_class = auto_serializer(AWCategory)
     pagination_class = None

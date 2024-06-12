@@ -13,3 +13,13 @@ CMSSchemaMixin
     :undoc-members:
     :show-inheritance:
     :noindex:
+
+
+HashModelMixin
+--------------
+
+.. autoclass:: headless_cms.mixins.HashModelMixin
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
