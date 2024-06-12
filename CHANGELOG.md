@@ -1,3 +1,9 @@
+## v0.7.0 (2024-06-13)
+
+### Feat
+
+- add hash field to track change of the object
+
 ## v0.6.5 (2024-06-12)
 
 ### Fix
