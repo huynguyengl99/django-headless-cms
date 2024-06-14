@@ -225,7 +225,9 @@ def _auto_serializer(
                 serializer = _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
-                custom_fields.update({field.name: serializer(read_only=True)})
+                custom_fields.update(
+                    {field.name: serializer(allow_null=True, required=False)}
+                )
             elif isinstance(field, ManyToManyField) and field.related_model == model:
 
                 def get_objs(self, obj, my_field=field):
@@ -241,7 +243,7 @@ def _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
                 custom_fields.update(
-                    {field.name: serializer(many=True, read_only=True)}
+                    {field.name: serializer(many=True, required=False, allow_null=True)}
                 )
 
     if override_model_serializer_fields.get(model):
@@ -276,7 +278,7 @@ def auto_serializer(
     override_model_serializer_fields: Optional[dict] = None,
 ) -> type[serializers.ModelSerializer]:
     """
-     Automatically create a serializer for a given model using Django REST Framework, including
+    Automatically create a serializer for a given model using Django REST Framework, including
     a 'hash' field that dynamically computes a hash representing the state of the object and its
     descendants.
 
@@ -295,6 +297,7 @@ def auto_serializer(
         type[serializers.ModelSerializer]: A dynamically generated serializer class tailored to
         the specified model, capable of handling nested serialization, field overrides, and
         providing a dynamic hash of the object and its descendants.
+
     """
     return _auto_serializer(
         model, override_model_serializer_fields=override_model_serializer_fields

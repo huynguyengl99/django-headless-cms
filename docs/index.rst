@@ -34,6 +34,7 @@ Contents
     reference/admin
     reference/serializers
     reference/mixins
+    reference/filters
     reference/schema
     reference/auto_translate
     reference/commands

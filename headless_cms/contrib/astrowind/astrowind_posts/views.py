@@ -23,6 +23,7 @@ class AWPostPaginator(PageNumberPagination):
 
 
 class PostFilter(django_filters.FilterSet):
+    id = django_filters.AllValuesMultipleFilter()
     category = extend_schema_field(OpenApiTypes.STR)(
         django_filters.AllValuesFilter(
             field_name="category__slug",
@@ -41,7 +42,7 @@ class PostFilter(django_filters.FilterSet):
 
     class Meta:
         model = AWPost
-        fields = ["category", "tag"]
+        fields = ["id", "category", "tag"]
 
 
 class AWPostCMSViewSet(CMSSchemaMixin, HashModelMixin, ReadOnlyModelViewSet):
