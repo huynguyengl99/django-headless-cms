@@ -1,3 +1,9 @@
+## v0.7.1 (2024-06-15)
+
+### Fix
+
+- improve hash and create auto generate id query param when inhance hash model mixin
+
 ## v0.7.0 (2024-06-13)
 
 ### Feat
