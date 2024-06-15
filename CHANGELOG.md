@@ -1,3 +1,9 @@
+## v0.7.4 (2024-06-15)
+
+### Fix
+
+- fix languages tab change and add type annotation for get hash
+
 ## v0.7.3 (2024-06-15)
 
 ### Fix
