@@ -138,7 +138,7 @@ class LocalizedDynamicFileSerializer(LocalizedBaseSerializer):
     returns the absolute URL of the file, either from a local source or an external URL.
     """
 
-    src = serializers.SerializerMethodField()
+    src = serializers.SerializerMethodField(required=False, allow_null=True)
 
     def get_src(self, obj):
         """
@@ -226,7 +226,11 @@ def _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
                 custom_fields.update(
-                    {field.name: serializer(allow_null=True, required=False)}
+                    {
+                        field.name: serializer(
+                            allow_null=True, required=False, read_only=True
+                        )
+                    }
                 )
             elif isinstance(field, ManyToManyField) and field.related_model == model:
 
@@ -243,7 +247,11 @@ def _auto_serializer(
                     field.related_model, ancestors, override_model_serializer_fields
                 )
                 custom_fields.update(
-                    {field.name: serializer(many=True, required=False, allow_null=True)}
+                    {
+                        field.name: serializer(
+                            many=True, required=False, allow_null=True, read_only=True
+                        )
+                    }
                 )
 
     if override_model_serializer_fields.get(model):
@@ -255,7 +263,13 @@ def _auto_serializer(
         base_serializer = LocalizedBaseSerializer
 
     if entry_point:
-        custom_fields.update({"hash": serializers.SerializerMethodField()})
+        custom_fields.update(
+            {
+                "hash": serializers.SerializerMethodField(
+                    required=False, allow_null=True, read_only=True
+                )
+            }
+        )
 
         def get_hash(self, obj):
             return obj.get_recursive_hash()
