@@ -41,6 +41,16 @@
             $(this).find('.main-martor').each(handle_martor_edit)
         });
 
+
+        $('.localized-fields-widget.tab label').click(function(event) {
+            event.preventDefault();
+            syncTabs(this.innerText);
+            if (window.sessionStorage) {
+                window.sessionStorage.setItem('localized-field-lang', this.innerText);
+            }
+            return false;
+        });
+
         if (window.sessionStorage) {
             var lang = window.sessionStorage.getItem('localized-field-lang');
 
@@ -56,14 +66,6 @@
             syncTabs(label)
         });
 
-        $('.localized-fields-widget.tab label').click(function(event) {
-            event.preventDefault();
-            syncTabs(this.innerText);
-            if (window.sessionStorage) {
-                window.sessionStorage.setItem('localized-field-lang', this.innerText);
-            }
-            return false;
-        });
     });
 
 })(django.jQuery)

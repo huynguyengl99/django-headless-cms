@@ -173,7 +173,7 @@ class HashModelSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     hash = serializers.SerializerMethodField()
 
-    def get_hash(self, obj):
+    def get_hash(self, obj) -> str:
         return obj.get_recursive_hash()
 
 
@@ -271,7 +271,7 @@ def _auto_serializer(
             }
         )
 
-        def get_hash(self, obj):
+        def get_hash(self, obj) -> str:
             return obj.get_recursive_hash()
 
         custom_fields.update({"get_hash": get_hash})
