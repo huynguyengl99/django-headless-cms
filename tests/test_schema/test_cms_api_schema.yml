@@ -113,23 +113,28 @@ components:
           allOf:
           - $ref: '#/components/schemas/Note'
           readOnly: true
+          nullable: true
         category:
           allOf:
           - $ref: '#/components/schemas/Category'
           readOnly: true
+          nullable: true
         tags:
           type: array
           items:
             $ref: '#/components/schemas/PostTag'
           readOnly: true
+          nullable: true
         items:
           type: array
           items:
             $ref: '#/components/schemas/Item'
           readOnly: true
+          nullable: true
         hash:
           type: string
           readOnly: true
+          nullable: true
         title:
           type: string
           nullable: true
