@@ -125,6 +125,7 @@ class LocalizedBaseSerializer(LocalizedModelSerializer):
             "position",
             "content_type",
             "object_id",
+            "skip_translation",
         ] + headless_cms_settings.GLOBAL_EXCLUDED_SERIALIZED_FIELDS
         abstract = True
 

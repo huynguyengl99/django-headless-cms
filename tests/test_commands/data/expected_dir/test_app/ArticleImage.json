@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "skip_translation": "1",
     "src_file": {
       "en": "",
       "ro": "",
@@ -19,6 +20,7 @@
   },
   {
     "id": "2",
+    "skip_translation": "0",
     "src_file": {
       "en": "",
       "ro": "",
@@ -37,6 +39,7 @@
   },
   {
     "id": "3",
+    "skip_translation": "0",
     "src_file": {
       "en": "",
       "ro": "",

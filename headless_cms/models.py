@@ -1,3 +1,5 @@
+import asyncio
+import functools
 from functools import cached_property
 from typing import Optional
 
@@ -111,6 +113,7 @@ class LocalizedPublicationModel(LocalizedModel):
         Version, editable=False, null=True, on_delete=models.SET_NULL
     )
     versions = GenericRelation(Version)
+    skip_translation = models.BooleanField(default=False)
 
     objects = models.Manager()
     published_objects = PublishedManager()
@@ -136,6 +139,12 @@ class LocalizedPublicationModel(LocalizedModel):
         Args:
             user (User, optional): The user performing the publish action.
         """
+
+        last_ver = Version.objects.get_for_object(self).first()
+
+        if last_ver and last_ver.id == self.published_version_id:
+            return
+
         with reversion.create_revision():
             reversion.set_comment("Publish")
             if user:
@@ -148,7 +157,7 @@ class LocalizedPublicationModel(LocalizedModel):
             self.published_version = last_ver
             self.save()
 
-    def recursive_action(self, action, *args, tracker=None, **kwargs):
+    def build_actions(self, action, *args, tracker=None, **kwargs):
         """
         Perform an action recursively on the object and its related objects.
 
@@ -156,14 +165,15 @@ class LocalizedPublicationModel(LocalizedModel):
             action (callable): The action to be performed.
             tracker: the list to track the object processed, not to do it again when being reference multiple times
         """
+        action_list = []
         if tracker is None:
             tracker = set()
 
         track = (self._meta.object_name, self.id)
         if track in tracker:
-            return
+            return action_list
 
-        action(self, *args, **kwargs)
+        action_list.append((action, self, args, kwargs))
         tracker.add(track)
 
         for f in self._meta.get_fields():
@@ -176,15 +186,35 @@ class LocalizedPublicationModel(LocalizedModel):
                 if f.many_to_one:
                     rel_obj = getattr(self, f.name)
                     if rel_obj:
-                        rel_obj.recursive_action(
-                            action, *args, tracker=tracker, **kwargs
+                        action_list.extend(
+                            rel_obj.build_actions(
+                                action, *args, tracker=tracker, **kwargs
+                            )
                         )
                 elif f.many_to_many or f.one_to_many:
                     rel_objs = getattr(self, f.name).all()
                     for rel_obj in rel_objs:
-                        rel_obj.recursive_action(
-                            action, *args, tracker=tracker, **kwargs
+                        action_list.extend(
+                            rel_obj.build_actions(
+                                action, *args, tracker=tracker, **kwargs
+                            )
                         )
+        return action_list
+
+    def recursive_action(self, action, *args, **kwargs):
+        action_list = self.build_actions(action, *args, **kwargs)
+
+        async def run_actions(actions):
+            loop = asyncio.get_event_loop()
+            futures = []
+            for action, _self, args, kwargs in actions:
+                p_action = functools.partial(action, _self, *args, **kwargs)
+                futures.append(loop.run_in_executor(None, p_action))
+
+            result = await asyncio.gather(*futures)
+            return result
+
+        asyncio.run(run_actions(action_list))
 
     def recursively_publish(self, user=None):
         """
@@ -221,6 +251,9 @@ class LocalizedPublicationModel(LocalizedModel):
             user (User, optional): The user performing the translation.
             force (bool, optional): Whether to force the translation.
         """
+        if self.skip_translation:
+            return
+
         with reversion.create_revision():
             reversion.set_comment(f"Object translated{' (forced)' if force else ''}.")
 

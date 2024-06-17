@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "skip_translation": "0",
     "title": {
       "en": "Django",
       "ro": "Django",
@@ -14,6 +15,7 @@
   },
   {
     "id": "2",
+    "skip_translation": "0",
     "title": {
       "en": "Python",
       "ro": "Python",
@@ -27,6 +29,7 @@
   },
   {
     "id": "3",
+    "skip_translation": "0",
     "title": {
       "en": "Web Development",
       "ro": "Dezvoltare web",

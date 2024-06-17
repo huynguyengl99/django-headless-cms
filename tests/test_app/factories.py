@@ -45,6 +45,7 @@ class PostFactory(DjangoModelFactory):
         model = Post
 
     title = factory.Faker("sentence", nb_words=3)
+    subtitle = factory.Faker("sentence", nb_words=3)
     description = factory.Faker("paragraph", nb_sentences=3)
     body = factory.Faker("paragraph", nb_sentences=5)
 

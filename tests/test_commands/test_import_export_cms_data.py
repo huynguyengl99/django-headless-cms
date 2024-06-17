@@ -14,7 +14,7 @@ from helpers.base import BaseTestCase
 from test_app.models import Article, Category, Item, Post
 
 
-class ExportCMSDataTests(BaseTestCase):
+class ImportExportCMSDataTests(BaseTestCase):
     reset_sequences = True
 
     def setUp(self):
@@ -28,8 +28,8 @@ class ExportCMSDataTests(BaseTestCase):
 
     def tearDown(self):
         """Comment out this tear down to keep the results for comparison."""
-        if self.result_dir.exists():
-            shutil.rmtree(self.result_dir)
+        # if self.result_dir.exists():
+        #     shutil.rmtree(self.result_dir)
 
     def get_folder_contents(self, folder_path):
         res = {}

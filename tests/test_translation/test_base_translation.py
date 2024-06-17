@@ -48,6 +48,7 @@ class TestBaseTranslate(BaseTestCase):
 
         obj_to_translate = {
             "title": getattr(self.instance.title, settings.LANGUAGE_CODE),
+            "subtitle": getattr(self.instance.subtitle, settings.LANGUAGE_CODE),
             "description": getattr(self.instance.description, settings.LANGUAGE_CODE),
             "body": getattr(self.instance.body, settings.LANGUAGE_CODE),
         }
@@ -77,7 +78,9 @@ class TestBaseTranslate(BaseTestCase):
         for lang, _code in settings.LANGUAGES:
             data[lang] = "value"
 
-        self.instance: Post = PostFactory(title=data, description=data, body=data)
+        self.instance: Post = PostFactory(
+            title=data, description=data, body=data, subtitle=data
+        )
         self.translate = BaseTranslate(self.instance)
 
         self.translate.translate = MagicMock(side_effect=lambda lang, text: text[::-1])
@@ -107,7 +110,9 @@ class TestBaseTranslate(BaseTestCase):
         for lang, _code in settings.LANGUAGES:
             data[lang] = "value"
 
-        self.instance: Post = PostFactory(title=data, description=data, body=data)
+        self.instance: Post = PostFactory(
+            title=data, description=data, body=data, subtitle=data
+        )
         self.translate = BaseTranslate(self.instance)
 
         self.translate.translate = MagicMock(side_effect=lambda lang, text: text[::-1])
@@ -135,6 +140,7 @@ class TestBaseTranslate(BaseTestCase):
         self.translate.process(force=True)
         obj_to_translate = {
             "title": getattr(self.instance.title, settings.LANGUAGE_CODE),
+            "subtitle": getattr(self.instance.subtitle, settings.LANGUAGE_CODE),
             "description": getattr(self.instance.description, settings.LANGUAGE_CODE),
             "body": getattr(self.instance.body, settings.LANGUAGE_CODE),
         }

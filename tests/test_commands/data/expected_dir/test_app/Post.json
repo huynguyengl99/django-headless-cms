@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "note": 1,
+    "skip_translation": "1",
     "title": {
       "en": "Understanding Django ORM",
       "ro": "\u00cen\u021belegerea ORM-ului Django",
@@ -23,11 +23,12 @@
       "vi": "Django ORM l\u00e0 m\u1ed9t c\u00f4ng c\u1ee5 m\u1ea1nh m\u1ebd \u0111\u1ec3 t\u01b0\u01a1ng t\u00e1c v\u1edbi c\u01a1 s\u1edf d\u1eef li\u1ec7u."
     },
     "href": "{'en': 'https://example.com/en/understanding-django-orm', 'ro': 'https://example.com/ro/in\u021belegerea-django-orm', 'vi': 'https://example.com/vi/hi\u1ec3u-v\u1ec1-django-orm'}",
+    "note": 1,
     "category": 1
   },
   {
     "id": "2",
-    "note": 2,
+    "skip_translation": "0",
     "title": {
       "en": "Health Tips for 2023",
       "ro": "Sfaturi pentru s\u0103n\u0103tate pentru 2023",
@@ -49,11 +50,12 @@
       "vi": "L\u00e0m theo nh\u1eefng m\u1eb9o n\u00e0y s\u1ebd gi\u00fap b\u1ea1n duy tr\u00ec s\u1ee9c kh\u1ecfe."
     },
     "href": "{'en': 'https://example.com/en/health-tips-2023', 'ro': 'https://example.com/ro/sfaturi-pentru-s\u0103n\u0103tate-pentru-2023', 'vi': 'https://example.com/vi/m\u1eb9o-s\u1ee9c-kh\u1ecfe-cho-n\u0103m-2023'}",
+    "note": 2,
     "category": 2
   },
   {
     "id": "3",
-    "note": 1,
+    "skip_translation": "0",
     "title": {
       "en": "Modern Lifestyle Hacks",
       "ro": "Trucuri pentru un stil de via\u021b\u0103 modern",
@@ -75,6 +77,7 @@
       "vi": "S\u1eed d\u1ee5ng nh\u1eefng m\u1eb9o n\u00e0y \u0111\u1ec3 c\u1ea3i thi\u1ec7n th\u00f3i quen h\u00e0ng ng\u00e0y c\u1ee7a b\u1ea1n."
     },
     "href": "{'en': 'https://example.com/en/modern-lifestyle-hacks', 'ro': 'https://example.com/ro/trucuri-pentru-un-stil-de-via\u021b\u0103-modern', 'vi': 'https://example.com/vi/m\u1eb9o-s\u1ed1ng-hi\u1ec7n-\u0111\u1ea1i'}",
+    "note": 1,
     "category": 3
   }
 ]

@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "note": 2,
+    "skip_translation": "0",
     "title": {
       "en": "First Article",
       "ro": "Primul articol",
@@ -16,11 +16,12 @@
       "en": "This is the story of the first article.",
       "ro": "Aceasta este povestea primului articol.",
       "vi": "\u0110\u00e2y l\u00e0 c\u00e2u chuy\u1ec7n c\u1ee7a b\u00e0i vi\u1ebft \u0111\u1ea7u ti\u00ean."
-    }
+    },
+    "note": 2
   },
   {
     "id": "2",
-    "note": 1,
+    "skip_translation": "0",
     "title": {
       "en": "Second Article",
       "ro": "Al doilea articol",
@@ -35,11 +36,12 @@
       "en": "This is the story of the second article.",
       "ro": "Aceasta este povestea al doilea articol.",
       "vi": "\u0110\u00e2y l\u00e0 c\u00e2u chuy\u1ec7n c\u1ee7a b\u00e0i vi\u1ebft th\u1ee9 hai."
-    }
+    },
+    "note": 1
   },
   {
     "id": "3",
-    "note": 2,
+    "skip_translation": "0",
     "title": {
       "en": "Third Article",
       "ro": "Al treilea articol",
@@ -54,6 +56,7 @@
       "en": "This is the story of the third article.",
       "ro": "Aceasta este povestea al treilea articol.",
       "vi": "\u0110\u00e2y l\u00e0 c\u00e2u chuy\u1ec7n c\u1ee7a b\u00e0i vi\u1ebft th\u1ee9 ba."
-    }
+    },
+    "note": 2
   }
 ]

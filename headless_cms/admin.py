@@ -302,8 +302,6 @@ class EnhancedLocalizedVersionAdmin(
         Returns:
             HttpResponse: The rendered change view.
         """
-        res = super().change_view(request, object_id, form_url, extra_context)
-
         obj: LocalizedPublicationModel = self.get_object(request, unquote(object_id))
 
         request_post_keys = set(request.POST.keys())
@@ -320,7 +318,10 @@ class EnhancedLocalizedVersionAdmin(
                 obj.recursively_translate(request.user, force)
             else:
                 obj.translate(request.user, force)
-        return res
+        else:
+            return super().change_view(request, object_id, form_url, extra_context)
+
+        return self.changeform_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
         """

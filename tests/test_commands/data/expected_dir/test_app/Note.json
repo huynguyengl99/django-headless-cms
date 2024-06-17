@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "skip_translation": "0",
     "text": {
       "en": "Note for en",
       "ro": "Note for ro",
@@ -9,6 +10,7 @@
   },
   {
     "id": "2",
+    "skip_translation": "0",
     "text": {
       "en": "Note 2 for en",
       "ro": "Note 2 for ro",

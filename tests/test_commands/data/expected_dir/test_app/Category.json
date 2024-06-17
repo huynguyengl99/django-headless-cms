@@ -1,6 +1,7 @@
 [
   {
     "id": "1",
+    "skip_translation": "0",
     "title": {
       "en": "Technology",
       "ro": "Tehnologie",
@@ -14,6 +15,7 @@
   },
   {
     "id": "2",
+    "skip_translation": "0",
     "title": {
       "en": "Health",
       "ro": "S\u0103n\u0103tate",
@@ -27,6 +29,7 @@
   },
   {
     "id": "3",
+    "skip_translation": "0",
     "title": {
       "en": "Lifestyle",
       "ro": "Stil de via\u021b\u0103",
