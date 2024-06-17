@@ -1,3 +1,9 @@
+## v0.8.0 (2024-06-17)
+
+### Feat
+
+- add skip translation field and improve recursive action time using asyncio
+
 ## v0.7.4 (2024-06-15)
 
 ### Fix
