@@ -1,3 +1,9 @@
+## v0.8.1 (2024-06-18)
+
+### Fix
+
+- update test and handle incorrect change_view behavior
+
 ## v0.8.0 (2024-06-17)
 
 ### Feat
