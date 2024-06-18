@@ -213,34 +213,35 @@ class AdminPostRequestTests(BaseTestCase):
         self.note.refresh_from_db()
         self.assertIsNotNone(self.note.published_version)
 
-    #
-    # def test_recursively_translate_post(self):
-    #     with reversion.create_revision():
-    #         self.note: Note = NoteFactory.create(**factory.build(dict, FACTORY_CLASS=NoteFactory))
-    #         self.obj.note = self.note
-    #         self.obj.save()
-    #
-    #     base_lang = settings.LANGUAGE_CODE
-    #     for lang, _code in settings.LANGUAGES:
-    #         if lang == base_lang:
-    #             continue
-    #         assert not getattr(self.obj.title, lang)
-    #         assert not getattr(self.note.text, lang)
-    #
-    #     res = self.client.post(
-    #         resolve_url("admin:test_app_post_change", self.obj.id),
-    #         {"_recursively_translate": "Recursively Translate", **self.localized_dt},
-    #     )
-    #     self.obj.refresh_from_db()
-    #     self.assertEqual(res.status_code, 302)  # Check redirect
-    #
-    #     self.note.refresh_from_db()
-    #
-    #     for lang, _code in settings.LANGUAGES:
-    #         if lang == base_lang:
-    #             continue
-    #         # assert getattr(self.obj.title, lang)  # why ? TODO: resolve later
-    #         assert getattr(self.note.text, lang)
+    def test_recursively_translate_post(self):
+        with reversion.create_revision():
+            self.note: Note = NoteFactory.create(
+                **factory.build(dict, FACTORY_CLASS=NoteFactory)
+            )
+            self.obj.note = self.note
+            self.obj.save()
+
+        base_lang = settings.LANGUAGE_CODE
+        for lang, _code in settings.LANGUAGES:
+            if lang == base_lang:
+                continue
+            assert not getattr(self.obj.title, lang)
+            assert not getattr(self.note.text, lang)
+
+        res = self.client.post(
+            resolve_url("admin:test_app_post_change", self.obj.id),
+            {"_recursively_translate": "Recursively Translate", **self.localized_dt},
+        )
+        self.obj.refresh_from_db()
+        self.assertEqual(res.status_code, 302)  # Check redirect
+
+        self.note.refresh_from_db()
+
+        for lang, _code in settings.LANGUAGES:
+            if lang == base_lang:
+                continue
+            assert getattr(self.obj.title, lang)
+            assert getattr(self.note.text, lang)
 
 
 class AdminAddViewTests(BaseTestCase):

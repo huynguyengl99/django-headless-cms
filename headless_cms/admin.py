@@ -305,6 +305,8 @@ class EnhancedLocalizedVersionAdmin(
         obj: LocalizedPublicationModel = self.get_object(request, unquote(object_id))
 
         request_post_keys = set(request.POST.keys())
+        res = self.changeform_view(request, object_id, form_url, extra_context)
+
         if "_unpublish" in request_post_keys:
             obj.unpublish(request.user)
         elif "_publish" in request_post_keys:
@@ -318,10 +320,7 @@ class EnhancedLocalizedVersionAdmin(
                 obj.recursively_translate(request.user, force)
             else:
                 obj.translate(request.user, force)
-        else:
-            return super().change_view(request, object_id, form_url, extra_context)
-
-        return self.changeform_view(request, object_id, form_url, extra_context)
+        return res
 
     def response_change(self, request, obj):
         """
