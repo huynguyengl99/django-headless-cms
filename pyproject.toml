@@ -77,7 +77,6 @@ line-length = 88
 preview = true
 
 [tool.commitizen]
-major_version_zero = true
 name = "cz_conventional_commits"
 tag_format = "v$version"
 update_changelog_on_bump = true

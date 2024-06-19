@@ -36,6 +36,8 @@ Features
 - **Rapid API Development**: Build APIs (Views/Viewsets) quickly and easily with auto serializers and optimized queries.
 - **Easy Data Import/Export**: Use the admin interface or management commands.
 - **Auto-generated API Documentation & Playground**: Automatically generate API documentation and an interactive playground.
+- **Hash**: Provide hash utilities to check whether an object (and its descendant children) has changed or not (thanks
+  to versioning). This can be helpful in building caching mechanisms to reduce API calls and improve performance.
 
 Dependencies
 ~~~~~~~~~~~~

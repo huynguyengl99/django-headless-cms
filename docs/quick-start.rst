@@ -2,7 +2,19 @@
 Quick Start
 =============
 
-Why is this section placed first? Because a small demo is worth a thousand times more than raw documentation. This demo uses Django-Headless-CMS to create content and publish APIs while utilizing Astrowind as the front-end framework for display.
+Why is this section placed first? Because a small demo is worth a thousand times more than raw documentation.
+This demo uses Django-Headless-CMS to create content and publish APIs while utilizing Astrowind as the front-end
+framework for display.
+
+Demo
+====
+
+At the end of this tutorial, you will have a site that looks like this:
+
+https://django-astrowind.netlify.app/en
+
+.. image:: images/quick-start/demo.png
+   :alt: Django Astrowind Demo
 
 What This Demo Includes
 =======================
