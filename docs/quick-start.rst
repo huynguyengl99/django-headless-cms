@@ -96,6 +96,18 @@ c) Frontend - Django Astrowind Setup
 
     npm install
 
+- Sync schemas (from your backend API schema), types (inferred from your schema), and contents (fetched from your backend):
+
+.. code-block:: shell
+
+    npm run sync:all
+
+.. note::
+    Your *schemas*, *types*, and *content* will be placed in the following files/folders respectively:
+        - src/schemas/content.ts
+        - src/types/content.ts
+        - src/content/auto-*
+
 - Run the project:
 
 .. code-block:: shell
@@ -129,23 +141,36 @@ Examples:
 d) Making Changes
 -----------------
 
-**Note:** If this is your first time using `Astro` or if you are unfamiliar with it, remember to restart the FE dev server after making API updates to ensure new API calls are made, as Astro caches your API requests.
+.. note::
+    Remember to sync content with the command `npm run sync:content` every time you want to update data from the backend.
 
 - Visit http://localhost:8000/admin/astrowind_posts/awpost/1/change/ to update the first post.
 - Update the `title` field under the `English` tab to: `Hello world`.
 - Update the `title` field under the `Vietnamese` tab to: `Xin chao`.
 - Save the post.
-- Restart the FE dev server.
-- Visit the blog page again (http://localhost:4321/en/blog). You will notice that nothing has changed. This is because the post has not been published yet, so the API call uses the published version, and the title remains unchanged.
+- Sync the API by running `npm run sync:content` in the frontend terminal. You will see that nothing updates (the
+  last line you see would be `> vite-node scripts/sync.ts`).
+- Now restart the frontend server.
+- Visit the blog page again (http://localhost:4321/en/blog). You will notice that **NOTHING HAS CHANGED** (The title
+  of the first blog is still the same). This is because the post has not been published yet, so the API call uses the
+  published version, and the title remains unchanged.
 - Visit http://localhost:8000/admin/astrowind_posts/awpost/1/change/ again. You will see `Item published (outdated).`.
 - Click the `Publish` button to publish the post.
-- Restart the FE dev server.
+- Sync the API again by running `npm run sync:content` in the frontend terminal. You will now see logs like
+  `Write to file /path/to/your/project/src/content/auto-posts/en/1.json` (and so on for other languages).
+- Restart the frontend server again.
 - Visit the blog page again. This time, you will see the updated title.
 
 e) Create a New Post and Auto-Translate Using OpenAI ChatGPT
 ------------------------------------------------------------
 
-- Open your BE project and add your OpenAI key to `OPENAI_API_KEY` in the `.env` file.
+- This option is **optional**. Make sure that you are familiar with ChatGPT (very famous now); otherwise, you can skip
+  this section.
+- Open your backend project and add your OpenAI key to `OPENAI_API_KEY` in the `.env` file.
+
+.. note::
+    You can create your OpenAI keys at: https://platform.openai.com/api-keys.
+
 - Restart the BE server.
 - Visit http://localhost:8000/admin/astrowind_posts/awpost/add/
 - Fill out the post in `English`, for example:
@@ -159,14 +184,34 @@ e) Create a New Post and Auto-Translate Using OpenAI ChatGPT
 
     This is the greeting, said in English.
 
-- Updated date: Click on `today` and `now` to auto-populate.
+- Publish date: Click on `today` and `now` to auto-populate.
 - Click `Save and continue editing`.
 - Click the `Translate missing` button to use AI to translate the post into other languages.
 - Click `Publish` to publish the post.
+- Sync the API by running `npm run sync:content` in the frontend terminal.
 - Restart the FE dev server.
 - Visit http://localhost:4321/en/blog to see the new post at the top of the page.
 - Click the post to view its details.
 - Select other languages to see the post translated into different languages.
+
+Troubleshooting
+---------------
+- How to add other languages:
+
+  - On the backend side, refer to the :ref:`Translation` documentation for more information.
+  - On the frontend side, visit `src/utils/languages.ts` and uncomment (add) your desired languages. You can also
+    change your default language as well.
+
+- When I increase the number of languages, the `npm run sync:content` command raises errors, and on the backend side,
+  I see some `Broken Pipe` logs.
+
+  - This is because the Django *runserver* command cannot handle multiple concurrent requests well. You can migrate
+    to use the uvicorn command. For example:
+
+.. code-block:: shell
+
+    uvicorn config.wsgi:application --app-dir ./your_project_slug --host 0.0.0.0 --interface wsgi
+
 
 
 **And that's all about getting started with Django-headless-cms in conjunction with Astrowind. For more information,

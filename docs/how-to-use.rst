@@ -335,7 +335,7 @@ Publish/Draft & Versioning Content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - Publish/Draft content
-- Versioning content: Revert to any previously saved version
+- Versioning content: Revert to any previously saved version (click on the `History` button on the detail page)
 - Recursive publish
 
 .. image:: images/how-to-use/publish.png

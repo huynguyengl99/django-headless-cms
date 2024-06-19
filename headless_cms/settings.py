@@ -10,7 +10,7 @@ HEADLESS_CMS_DEFAULTS: dict[str, Any] = {
     ],
     "AUTO_TRANSLATE_IGNORES": [],
     "GLOBAL_EXCLUDED_SERIALIZED_FIELDS": [],
-    "OPENAI_CHAT_MODEL": "",
+    "OPENAI_CHAT_MODEL": "gpt-4-turbo",
     "OPENAI_CLIENT": "openai.OpenAI",
     "DEFAULT_CMS_PERMISSION_CLASS": "rest_framework.permissions.AllowAny",
     "CMS_HOST": "http://localhost:8000",

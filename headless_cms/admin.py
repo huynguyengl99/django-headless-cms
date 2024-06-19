@@ -196,6 +196,10 @@ FORCE_TRANSLATE = {"_force_translate", "_recursively_force_translate"}
 RECURSIVELY_TRANSLATE = {"_recursively_translate", "_recursively_force_translate"}
 TRANSLATE_ACTIONS = {"_translate"} | FORCE_TRANSLATE | RECURSIVELY_TRANSLATE
 
+PUBLISH_ACTIONS = {"_publish", "_unpublish", "_recursively_publish"}
+
+HEADLESS_CMS_ACTIONS = PUBLISH_ACTIONS | TRANSLATE_ACTIONS
+
 
 class EnhancedLocalizedVersionAdmin(
     ImportExportActionModelAdmin, LocalizedFieldsAdminMixin, VersionAdmin
@@ -305,22 +309,26 @@ class EnhancedLocalizedVersionAdmin(
         obj: LocalizedPublicationModel = self.get_object(request, unquote(object_id))
 
         request_post_keys = set(request.POST.keys())
-        res = self.changeform_view(request, object_id, form_url, extra_context)
 
-        if "_unpublish" in request_post_keys:
-            obj.unpublish(request.user)
-        elif "_publish" in request_post_keys:
-            obj.publish(request.user)
-        elif "_recursively_publish" in request_post_keys:
-            obj.recursively_publish(request.user)
-        elif not TRANSLATE_ACTIONS.isdisjoint(request_post_keys):
-            force = not FORCE_TRANSLATE.isdisjoint(request_post_keys)
-            recursively = not RECURSIVELY_TRANSLATE.isdisjoint(request_post_keys)
-            if recursively:
-                obj.recursively_translate(request.user, force)
-            else:
-                obj.translate(request.user, force)
-        return res
+        if not HEADLESS_CMS_ACTIONS.isdisjoint(request_post_keys):
+            res = self.changeform_view(request, object_id, form_url, extra_context)
+
+            if "_unpublish" in request_post_keys:
+                obj.unpublish(request.user)
+            elif "_publish" in request_post_keys:
+                obj.publish(request.user)
+            elif "_recursively_publish" in request_post_keys:
+                obj.recursively_publish(request.user)
+            elif not TRANSLATE_ACTIONS.isdisjoint(request_post_keys):
+                force = not FORCE_TRANSLATE.isdisjoint(request_post_keys)
+                recursively = not RECURSIVELY_TRANSLATE.isdisjoint(request_post_keys)
+                if recursively:
+                    obj.recursively_translate(request.user, force)
+                else:
+                    obj.translate(request.user, force)
+            return res
+        else:
+            return super().change_view(request, object_id, form_url, extra_context)
 
     def response_change(self, request, obj):
         """

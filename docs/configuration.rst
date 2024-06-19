@@ -15,6 +15,8 @@ Here is the structure of the configuration with detailed comments explaining eac
 
     HEADLESS_CMS_SETTINGS = {
         # The class used for automatic translation of content.
+        # Alternative, using ChatGPT: "headless_cms.auto_translate.openai_translate.OpenAITranslate"
+        # You can create a translation class yourself by inheriting from BaseTranslate.
         "AUTO_TRANSLATE_CLASS": "headless_cms.auto_translate.BaseTranslate",
 
         # Preprocessing hooks for DRF Spectacular.
@@ -29,7 +31,9 @@ Here is the structure of the configuration with detailed comments explaining eac
         "GLOBAL_EXCLUDED_SERIALIZED_FIELDS": [],
 
         # The OpenAI model to use for chat-based translation.
-        "OPENAI_CHAT_MODEL": "",
+        # The default model is gpt-4-turbo because we find it slightly better than gpt-4.
+        # But you can choose any model you want here.
+        "OPENAI_CHAT_MODEL": "gpt-4-turbo",
 
         # The OpenAI client to use for translation.
         "OPENAI_CLIENT": "openai.OpenAI",
@@ -38,6 +42,8 @@ Here is the structure of the configuration with detailed comments explaining eac
         "DEFAULT_CMS_PERMISSION_CLASS": "rest_framework.permissions.AllowAny",
 
         # The host URL of the CMS.
+        # Normally, this is applied for localhost.
+        # For production, if you use django-storage, you don't need to configure this.
         "CMS_HOST": "http://localhost:8000",
     }
 
