@@ -1,3 +1,9 @@
+## v1.0.0 (2024-06-20)
+
+### Feat
+
+- Initial stable release version 1.0.0
+
 ## v0.8.2 (2024-06-19)
 
 ### Fix
