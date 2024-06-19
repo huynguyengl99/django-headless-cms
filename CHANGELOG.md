@@ -1,3 +1,9 @@
+## v0.8.2 (2024-06-19)
+
+### Fix
+
+- do some small fixes and update docs
+
 ## v0.8.1 (2024-06-18)
 
 ### Fix
