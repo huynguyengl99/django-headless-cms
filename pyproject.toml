@@ -101,7 +101,7 @@ name = 'headless_cms'
 packages = [
   {include = "headless_cms"}
 ]
-version = "1.0.0"
+version = "1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.27.0"

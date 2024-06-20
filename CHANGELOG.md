@@ -1,3 +1,9 @@
+## v1.1.0 (2024-06-21)
+
+### Feat
+
+- add localized url field to prevent translation on url
+
 ## v1.0.0 (2024-06-20)
 
 ### Feat
