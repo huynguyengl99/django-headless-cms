@@ -4,6 +4,8 @@ from localized_fields.fields.file_field import LocalizedFileField
 from localized_fields.models import LocalizedModel
 from localized_fields.value import LocalizedValue
 
+from headless_cms.fields import LocalizedUrlField
+
 
 class BaseTranslate:
     """
@@ -74,7 +76,7 @@ class BaseTranslate:
 
             for field in self.fields:
                 if isinstance(field, LocalizedField) and not isinstance(
-                    field, LocalizedFileField
+                    field, (LocalizedFileField, LocalizedUrlField)
                 ):
                     field_value = getattr(self.instance, field.name)
                     base_value = getattr(field_value, settings.LANGUAGE_CODE)
@@ -126,7 +128,7 @@ class BaseTranslate:
                 else:
                     for field in self.fields:
                         if isinstance(field, LocalizedField) and not isinstance(
-                            field, LocalizedFileField
+                            field, (LocalizedFileField, LocalizedUrlField)
                         ):
                             field_value = getattr(self.instance, field.name)
                             base_value = getattr(field_value, settings.LANGUAGE_CODE)

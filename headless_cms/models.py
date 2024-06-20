@@ -10,7 +10,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.html import format_html
 from localized_fields.fields import (
-    LocalizedCharField,
     LocalizedFileField,
     LocalizedTextField,
 )
@@ -18,7 +17,7 @@ from localized_fields.models import LocalizedModel
 from reversion.models import Version
 from solo.models import SingletonModel
 
-from headless_cms.fields import LocalizedUniqueNormalizedSlugField
+from headless_cms.fields import LocalizedUniqueNormalizedSlugField, LocalizedUrlField
 from headless_cms.settings import headless_cms_settings
 from headless_cms.utils.hash_utils import HashTracker
 
@@ -387,7 +386,7 @@ class LocalizedDynamicFileModel(LocalizedPublicationModel):
     """
 
     src_file = LocalizedFileField(default=dict, blank=True, null=True, required=False)
-    src_url = LocalizedCharField(default=dict, blank=True, null=True, required=False)
+    src_url = LocalizedUrlField(default=dict, blank=True, null=True, required=False)
     alt = LocalizedTextField(blank=True, null=True, required=False)
 
     class Meta:

@@ -41,6 +41,15 @@ LocalizedUniqueNormalizedSlugField
     :show-inheritance:
     :noindex:
 
+LocalizedUrlField
+----------------------------------
+
+.. autoclass:: headless_cms.fields.LocalizedUrlField
+    :members:
+    :undoc-members:
+    :show-inheritance:
+    :noindex:
+
 AutoLanguageUrlField
 --------------------
 
