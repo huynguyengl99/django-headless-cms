@@ -1,3 +1,9 @@
+## v1.1.5 (2025-04-03)
+
+### Fix
+
+- **readthedocs**: fix readthedocs poetry
+
 ## v1.1.4 (2025-04-03)
 
 ### Fix
