@@ -1,3 +1,9 @@
+## v1.1.7 (2025-04-03)
+
+### Fix
+
+- fix readthedocs install
+
 ## v1.1.6 (2025-04-03)
 
 ### Fix
