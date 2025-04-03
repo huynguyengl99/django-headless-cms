@@ -1,3 +1,9 @@
+## v1.1.6 (2025-04-03)
+
+### Fix
+
+- **virtualenv-readthedocs**: fix virtualenv version for readthedocs install
+
 ## v1.1.5 (2025-04-03)
 
 ### Fix
