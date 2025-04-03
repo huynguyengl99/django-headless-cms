@@ -8,6 +8,7 @@ build:
      post_install:
        # Install poetry
       # https://python-poetry.org/docs/#installing-manually
+      - pip install virtualenv==20.16.0
       - pip install poetry
       # Install dependencies with 'docs' dependency group
       # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
