@@ -1,3 +1,9 @@
+## v1.1.1 (2025-04-03)
+
+### Fix
+
+- **poetry**: upgrade poetry to the official version 2
+
 ## v1.1.0 (2024-06-21)
 
 ### Feat
