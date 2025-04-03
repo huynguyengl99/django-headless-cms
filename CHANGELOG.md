@@ -1,3 +1,9 @@
+## v1.1.3 (2025-04-03)
+
+### Fix
+
+- **readthedocs**: increase poetry version for readthedocs build
+
 ## v1.1.2 (2025-04-03)
 
 ### Fix
