@@ -1,1 +1,1 @@
-poetry @ git+https://github.com/radoering/poetry.git@pep621-support # TODO: update to official poetry later
+poetry>=2.0.0,<3.0.0

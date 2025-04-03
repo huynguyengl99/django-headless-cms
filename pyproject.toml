@@ -1,7 +1,7 @@
 [build-system]
 build-backend = "poetry.core.masonry.api"
 requires = [
-  "poetry @ git+https://github.com/radoering/poetry.git@pep621-support"  # TODO: update to official poetry later
+  "poetry-core>=2.0"  # TODO: update to official poetry later
 ]
 
 [project]
@@ -51,6 +51,7 @@ dynamic = ["version"]
 name = "django-headless-cms"
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
+version = "1.1.0"
 license.file = "LICENSE"
 
 [project.optional-dependencies]
@@ -80,7 +81,7 @@ preview = true
 name = "cz_conventional_commits"
 tag_format = "v$version"
 update_changelog_on_bump = true
-version_provider = "poetry"
+version_provider = "pep621"
 version_scheme = "pep440"
 
 [tool.commitizen.customize]
@@ -97,11 +98,9 @@ omit = [
 ]
 
 [tool.poetry]
-name = 'headless_cms'
 packages = [
   {include = "headless_cms"}
 ]
-version = "1.1.0"
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^3.27.0"

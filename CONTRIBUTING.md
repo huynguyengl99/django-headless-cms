@@ -13,7 +13,7 @@ source .venv/bin/activate
 
 Then we recommend installing initial requirements and use poetry install all dev package:
 ```bash
-pip install requirements-init.txt
+pip install -r requirements-init.txt
 poetry install --all-extras
 ```
 
