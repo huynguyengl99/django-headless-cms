@@ -1,3 +1,9 @@
+## v1.1.4 (2025-04-03)
+
+### Fix
+
+- **readthedocs**: fix install poetry
+
 ## v1.1.3 (2025-04-03)
 
 ### Fix
