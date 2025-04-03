@@ -1,3 +1,9 @@
+## v1.1.2 (2025-04-03)
+
+### Fix
+
+- **.github/workflows**: update github workflow
+
 ## v1.1.1 (2025-04-03)
 
 ### Fix
