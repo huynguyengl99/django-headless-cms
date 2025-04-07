@@ -1,13 +1,37 @@
 [build-system]
-build-backend = "poetry.core.masonry.api"
-requires = [
-  "poetry-core>=2.0"  # TODO: update to official poetry later
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[dependency-groups]
+dev = [
+  "commitizen>=3.27.0,<4",
+  "setuptools>=78.1.0"
+]
+docs = [
+  "Sphinx>=7.0.0,<8",
+  "sphinx_rtd_theme"
+]
+lint = [
+  "black",
+  "pre-commit>=3.4.0,<4.0.0",
+  "ruff",
+  "toml-sort"
+]
+test = [
+  "coverage[toml]",
+  "django-environ",
+  "django-extensions",
+  "factory-boy",
+  "freezegun",
+  "openai>=1",
+  "pytest",
+  "pytest-cov",
+  "pytest-django",
+  "pytest-mock"
 ]
 
 [project]
-authors = [
-  {email = "danghuy1999@gmail.com", name = "Huy Nguyen"}
-]
+authors = [{email = "danghuy1999@gmail.com", name = "Huy Nguyen"}]
 classifiers = [
   "Environment :: Web Environment",
   "Framework :: Django :: 4.0",
@@ -32,7 +56,7 @@ classifiers = [
   "Topic :: Software Development"
 ]
 dependencies = [
-  "Django>=4",
+  "Django>=4,<5.1",
   "Unidecode",
   "django-admin-interface",
   "django-admin-sortable2",
@@ -47,12 +71,11 @@ dependencies = [
   "psycopg"
 ]
 description = "A simple django-based headless CMS."
-dynamic = ["version"]
+license = {file = "LICENSE"}
 name = "django-headless-cms"
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
 version = "1.1.7"
-license.file = "LICENSE"
 
 [project.optional-dependencies]
 openai = ["openai>=1"]
@@ -97,35 +120,11 @@ omit = [
   "tests/*"
 ]
 
-[tool.poetry]
-packages = [
-  {include = "headless_cms"}
-]
+[tool.hatch.build.targets.sdist]
+include = ["headless_cms"]
 
-[tool.poetry.group.dev.dependencies]
-commitizen = "^3.27.0"
-
-[tool.poetry.group.docs.dependencies]
-Sphinx = ">=7.0.0,<8"
-sphinx_rtd_theme = "*"
-
-[tool.poetry.group.lint.dependencies]
-black = "*"
-pre-commit = ">=3.4.0,<4.0.0"
-ruff = "*"
-toml-sort = "*"
-
-[tool.poetry.group.test.dependencies]
-coverage = {extras = ['toml'], version = "*"}
-django-environ = "*"
-django-extensions = "*"
-factory-boy = "*"
-freezegun = "*"
-openai = ">=1"
-pytest = "*"
-pytest-cov = "*"
-pytest-django = "*"
-pytest-mock = "*"
+[tool.hatch.build.targets.wheel]
+include = ["headless_cms"]
 
 [tool.ruff]
 src = ["headless_cms", 'tests']
@@ -156,3 +155,11 @@ select = [
 all = true
 in_place = true
 spaces_before_inline_comment = 2
+
+[tool.uv]
+default-groups = [
+  "dev",
+  "docs",
+  "lint",
+  "test"
+]

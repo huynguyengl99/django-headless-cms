@@ -18,30 +18,13 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v4
-      - name: Set up Python
-        id: setup-python
-        uses: actions/setup-python@v5
+      - name: Install the latest version of uv and set the python version to 3.13t
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.11"
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 2.1.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: .venv
-          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-django-headless-cms-${{ hashFiles('**/poetry.lock') }}-lint
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --only lint
+          enable-cache: true
+          python-version: 3.11
       - name: Lint
-        run: |
-          source .venv/bin/activate
-          bash scripts/lint.sh
+        run: uv run bash scripts/lint.sh
 
   test:
     runs-on: ubuntu-latest
@@ -74,35 +57,15 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        id: setup-python
+      - uses: actions/checkout@v4
+      - name: Install the latest version of uv and set the python version
+        uses: astral-sh/setup-uv@v5
         with:
+          enable-cache: true
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 2.1.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
-          installer-parallel: true
-      - uses: actions/cache@v4
-        id: cache
-        with:
-          path: .venv
-          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-django-headless-cms-${{ hashFiles('**/poetry.lock') }}-test
-      - name: Install Initial Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements-init.txt
-      - name: Install Dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: poetry install --no-interaction --only test --only main
       - run: mkdir coverage
       - name: Test
-        run: |
-          source .venv/bin/activate
-          coverage run -m pytest tests
+        run: uv run --group test coverage run -m pytest tests
         env:
           COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
           CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}

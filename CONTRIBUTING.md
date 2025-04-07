@@ -4,17 +4,18 @@ Contributions are welcome! Here are some pointers to help you install the librar
 
 ## Install the library for development
 
-First create your own `venv` and activate it:
+
+First install [uv](https://docs.astral.sh/uv/getting-started/installation/), create your own `.venv`
+and activate it:
 
 ```bash
-pythin -m venv .venv
+uv venv # or pythin -m venv .venv
 source .venv/bin/activate
 ```
 
-Then we recommend installing initial requirements and use poetry install all dev package:
+Then use uv install all dev package:
 ```bash
-pip install -r requirements-init.txt
-poetry install --all-extras
+uv sync
 ```
 
 ## Validate the changes before creating a pull request

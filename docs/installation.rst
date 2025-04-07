@@ -3,7 +3,7 @@ Installation
 ==============================
 
 django-headless-cms is available on the Python Package Index (PyPI), so it
-can be installed with standard Python tools like ``pip`` or ``poetry``.
+can be installed with standard Python tools like ``pip``.
 
 Installation Methods
 --------------------
@@ -27,20 +27,6 @@ Optional dependencies for OpenAI support can be installed with:
 
     pip install django-headless-cms[openai]
 
-Using Poetry
-~~~~~~~~~~~~
-
-If you're using Poetry for dependency management, you can add django-headless-cms to your project with:
-
-.. code-block:: shell
-
-    poetry add django-headless-cms
-
-To include optional dependencies, you can specify the extra:
-
-.. code-block:: shell
-
-    poetry add django-headless-cms -E openai
 
 Development Version
 ~~~~~~~~~~~~~~~~~~~

@@ -206,8 +206,8 @@ class LocalizedPublicationModel(LocalizedModel):
         async def run_actions(actions):
             loop = asyncio.get_event_loop()
             futures = []
-            for action, _self, args, kwargs in actions:
-                p_action = functools.partial(action, _self, *args, **kwargs)
+            for act, _self, r_args, r_kwargs in actions:
+                p_action = functools.partial(act, _self, *r_args, **r_kwargs)
                 futures.append(loop.run_in_executor(None, p_action))
 
             result = await asyncio.gather(*futures)

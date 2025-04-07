@@ -15,5 +15,7 @@ class CMSSpectacularAPIView(SpectacularAPIView):
     """
 
     custom_settings = {
-        "PREPROCESSING_HOOKS": headless_cms_settings.CMS_DRF_SPECTACULAR_PREPROCESSING_HOOKS,
+        "PREPROCESSING_HOOKS": (
+            headless_cms_settings.CMS_DRF_SPECTACULAR_PREPROCESSING_HOOKS
+        ),
     }
