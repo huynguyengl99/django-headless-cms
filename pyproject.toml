@@ -75,7 +75,7 @@ license = {file = "LICENSE"}
 name = "django-headless-cms"
 readme = "README.md"
 requires-python = ">=3.9,<4.0"
-version = "1.1.7"
+version = "1.2.0"
 
 [project.optional-dependencies]
 openai = ["openai>=1"]

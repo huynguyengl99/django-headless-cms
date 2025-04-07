@@ -1,3 +1,9 @@
+## v1.2.0 (2025-04-08)
+
+### Feat
+
+- **uv**: migrate package management from poetry to uv
+
 ## v1.1.7 (2025-04-03)
 
 ### Fix
