@@ -30,7 +30,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
+        django-version: ["4.2", "5.0", "5.1", "5.2"]
       fail-fast: false
     services:
       postgres:
@@ -64,11 +65,13 @@ jobs:
           enable-cache: true
           python-version: ${{ matrix.python-version }}
       - run: mkdir coverage
+      - name: Install Django
+        run: uv add "Django~=${{ matrix.django-version }}.0"
       - name: Test
         run: uv run --group test coverage run -m pytest tests
         env:
-          COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}
-          CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}
+          COVERAGE_FILE: coverage/.coverage.${{ runner.os }}-py${{ matrix.python-version }}-django${{ matrix.django-version }}
+          CONTEXT: ${{ runner.os }}-py${{ matrix.python-version }}-django${{ matrix.django-version }}
       - name: Store coverage files
         uses: actions/upload-artifact@v4
         with:

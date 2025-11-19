@@ -76,7 +76,7 @@ class BaseTranslate:
 
             for field in self.fields:
                 if isinstance(field, LocalizedField) and not isinstance(
-                    field, (LocalizedFileField, LocalizedUrlField)
+                    field, LocalizedFileField | LocalizedUrlField
                 ):
                     field_value = getattr(self.instance, field.name)
                     base_value = getattr(field_value, settings.LANGUAGE_CODE)
@@ -128,7 +128,7 @@ class BaseTranslate:
                 else:
                     for field in self.fields:
                         if isinstance(field, LocalizedField) and not isinstance(
-                            field, (LocalizedFileField, LocalizedUrlField)
+                            field, LocalizedFileField | LocalizedUrlField
                         ):
                             field_value = getattr(self.instance, field.name)
                             base_value = getattr(field_value, settings.LANGUAGE_CODE)

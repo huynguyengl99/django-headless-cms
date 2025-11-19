@@ -1,7 +1,6 @@
 import asyncio
 import functools
 from functools import cached_property
-from typing import Optional
 
 import reversion
 from django.contrib import admin
@@ -271,7 +270,7 @@ class LocalizedPublicationModel(LocalizedModel):
         """
         self.recursive_action(self.__class__.translate, user, force=force)
 
-    def accumulate_hash(self, hash_tracker: Optional[HashTracker]):
+    def accumulate_hash(self, hash_tracker: HashTracker | None):
         """
         Accumulate the hash of the current object's published version ID into the hash tracker.
 

@@ -1,6 +1,5 @@
 from collections.abc import Iterable
 from functools import lru_cache
-from typing import Optional
 
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
@@ -180,8 +179,8 @@ class HashModelSerializer(serializers.Serializer):
 
 def _auto_serializer(
     model: type[models.Model],
-    ancestors: Optional[Iterable] = None,
-    override_model_serializer_fields: Optional[dict] = None,
+    ancestors: Iterable | None = None,
+    override_model_serializer_fields: dict | None = None,
 ) -> type[serializers.ModelSerializer]:
     """
     Helper function to recursively create a serializer for a given model, incorporating handling
@@ -241,7 +240,7 @@ def _auto_serializer(
                     ).data
 
                 custom_fields.update({f"get_{field.name}": get_objs})
-            elif (isinstance(field, (GenericRelation, ManyToManyField))) and issubclass(
+            elif (isinstance(field, GenericRelation | ManyToManyField)) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
                 serializer = _auto_serializer(
@@ -290,7 +289,7 @@ def _auto_serializer(
 @lru_cache(maxsize=0)
 def auto_serializer(
     model: type[models.Model],
-    override_model_serializer_fields: Optional[dict] = None,
+    override_model_serializer_fields: dict | None = None,
 ) -> type[serializers.ModelSerializer]:
     """
     Automatically create a serializer for a given model using Django REST Framework, including

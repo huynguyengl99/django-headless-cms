@@ -5,7 +5,7 @@ from pathlib import Path
 from urllib.request import urlopen, urlretrieve
 
 from django.contrib.contenttypes.fields import GenericRelation
-from django.db import transaction
+from django.db import models, transaction
 from django.db.models import ForeignKey, ManyToManyField
 from reversion.management.commands import BaseRevisionCommand
 from tablib import Dataset
@@ -56,7 +56,7 @@ class Command(BaseRevisionCommand):
         self.temp_extracted_input_dir = None
         self.verbosity = 0
 
-    def import_model(self, model):
+    def import_model(self, model: type[models.Model]) -> None:
         if model in self.imported_models:
             return
         self.imported_models.add(model)
@@ -64,7 +64,7 @@ class Command(BaseRevisionCommand):
 
         through_models = []
         for field in model_fields:
-            if isinstance(field, (GenericRelation, ForeignKey)) and issubclass(
+            if isinstance(field, GenericRelation | ForeignKey) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
                 self.import_model(field.related_model)

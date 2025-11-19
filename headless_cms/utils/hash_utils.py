@@ -1,9 +1,8 @@
 import hashlib
-from typing import Optional, Union
 
 
 class HashTracker:
-    def __init__(self, initial_data: Optional[str] = None, algo: str = "md5") -> None:
+    def __init__(self, initial_data: str | None = None, algo: str = "md5") -> None:
         """
         Initialize the HashTracker instance with an optional initial data and a hashing algorithm.
 
@@ -16,7 +15,7 @@ class HashTracker:
         self.hasher = hashlib.new(
             self.algo
         )  # Initialize hasher at the creation of an instance
-        self._current_hash: Optional[bytes] = None
+        self._current_hash: bytes | None = None
         if initial_data is not None:
             self.update_hash(initial_data)
 
@@ -42,9 +41,9 @@ class HashTracker:
         Returns:
             bytes: The result of the XOR combination of the two hashes.
         """
-        return bytes(a ^ b for a, b in zip(hash1, hash2))
+        return bytes(a ^ b for a, b in zip(hash1, hash2, strict=False))
 
-    def update_hash(self, new_data: Optional[Union[str, type[int]]]) -> None:
+    def update_hash(self, new_data: str | type[int] | None) -> None:
         """
         Update the current hash with new data by combining it with the existing hash.
         If new_data is None, the method does nothing.
@@ -62,7 +61,7 @@ class HashTracker:
             self._current_hash = self._combine_hashes(self._current_hash, new_hash)
 
     @property
-    def current_hash(self) -> Optional[str]:
+    def current_hash(self) -> str | None:
         """
         Get the current hash state as a hexadecimal string.
 

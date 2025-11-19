@@ -66,7 +66,7 @@ class Command(BaseRevisionCommand):
         self.exported_models.add(model)
         model_fields = model._meta.get_fields()
         for field in model_fields:
-            if isinstance(field, (GenericRelation, ForeignKey)) and issubclass(
+            if isinstance(field, GenericRelation | ForeignKey) and issubclass(
                 field.related_model, LocalizedPublicationModel
             ):
                 self.export_model(field.related_model)

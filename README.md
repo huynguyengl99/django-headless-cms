@@ -7,7 +7,8 @@ of headless architecture and the efficiency of Django, reshaping your
 CMS workflow.
 ## Requirements
 
-* Python 3.9 or greater.
+* Python 3.10 or greater.
+* Django 4.0+ (supports up to Django 5.2+).
 * Django knowledge.
 
 ## Installation
