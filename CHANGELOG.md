@@ -1,3 +1,9 @@
+## v1.3.0 (2025-11-19)
+
+### Fix
+
+- update type syntax to satisfy linter
+
 ## v1.2.0 (2025-04-08)
 
 ### Feat
